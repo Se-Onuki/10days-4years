@@ -7,21 +7,14 @@
 
 #include "../Engine/DirectBase/Base/DirectXCommon.h"
 #include "../Engine/DirectBase/Descriptor/DescriptorHandle.h"
-#include "../Engine/DirectBase/Model/ModelManager.h"
-#include "../Engine/DirectBase/Render/CameraManager.h"
 #include "../Header/Object/Fade.h"
 #include "../../Engine/Utils/SoLib/SoLib.h"
 #include <imgui.h>
 #include "TitleScene.h"
-#include "../Header/Entity/Component/ModelComp.h"
 #include "../../Engine/Utils/Math/Angle.h"
-#include "../Engine/ECS/System/Systems.h"
-#include "../Engine/LevelEditor/LevelData.h"
-#include "../Engine/LevelEditor/LevelImporter.h"
-#include "../Engine/ECS/System/FunctionalSystem.h"
-#include "../Engine/ECS/System/NewSystems.h"
-#include "../Engine/DirectBase/Model/SkeletonAnimation/Skeleton.h"
 #include "../Engine/ResourceManager/ResourceLoader.h"
+
+#include "../Engine/DirectBase/Base/TextureManager.h"
 
 GameScene::GameScene() {
 	input_ = SolEngine::Input::GetInstance();
@@ -48,8 +41,10 @@ void GameScene::OnEnter() {
 	file >> sceneJson;
 	resourceLoadManager.Init(sceneJson["Resources"]);
 	resourceLoadManager.Load();
-	
+
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+
+	texture_ = TextureManager::Load("white2x2.png");
 
 
 	offScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
@@ -72,16 +67,14 @@ void GameScene::OnEnter() {
 void GameScene::OnExit() {
 	audio_->StopAllWave();
 
-	ECS::System::Par::WeaponCollision::attackCollisions_.reset();
 
 }
 
 void GameScene::Update() {
 
-	static bool skeletonDraw = false;
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
-
+	SoLib::ImGuiWidget("Texture", &texture_);
 
 	// grayScaleParam_ = 1;
 
@@ -207,10 +200,10 @@ void GameScene::PostEffectEnd()
 
 void GameScene::Load(const GlobalVariables::Group &)
 {
-	
+
 }
 
 void GameScene::Save(GlobalVariables::Group &) const
 {
-	
+
 }

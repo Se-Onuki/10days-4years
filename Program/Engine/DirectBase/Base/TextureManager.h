@@ -180,9 +180,18 @@ private:
 	std::list<ComPtr<ID3D12Resource>> intermediateData_;
 };
 
+/// @brief テクスチャハンドルの短縮リテラル
+using TextureHandle = TextureManager::TextureHandle;
+
 namespace SoLib {
 	template <>
 	bool ImGuiWidget(const char *const label, TextureManager::Texture *const value);
+	template <>
+	bool ImGuiWidget(const char *const label, const TextureManager::Texture *const value);
+	template <>
+	bool ImGuiWidget(const char *const label, TextureManager::TextureHandle *const value);
+	template <>
+	bool ImGuiWidget(const char *const label, const TextureManager::TextureHandle *const value);
 }
 
 namespace SolEngine {
@@ -242,9 +251,6 @@ namespace SolEngine {
 	};
 
 }
-
-/// @brief テクスチャハンドルの短縮リテラル
-using TextureHandle = TextureManager::TextureHandle;
 
 namespace std {
 

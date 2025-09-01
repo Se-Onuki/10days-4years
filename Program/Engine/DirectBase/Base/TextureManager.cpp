@@ -245,6 +245,24 @@ bool SoLib::ImGuiWidget(const char *const label, TextureManager::Texture *const 
 {
 #ifdef USE_IMGUI
 
+	const auto *const texture = value;
+
+	return ImGuiWidget(label, texture);
+
+#else 
+
+	label; value;
+
+	return false;
+
+#endif // USE_IMGUI
+}
+
+template<>
+bool SoLib::ImGuiWidget(const char *const label, const TextureManager::Texture *const value)
+{
+#ifdef USE_IMGUI
+
 	// もし値がnullptrなら､falseを返す
 	if (value == nullptr or label == nullptr) {
 		return false;
@@ -268,4 +286,16 @@ bool SoLib::ImGuiWidget(const char *const label, TextureManager::Texture *const 
 	return false;
 
 #endif // USE_IMGUI
+}
+
+template<>
+bool SoLib::ImGuiWidget(const char *const label, TextureManager::TextureHandle *const value)
+{
+	return ImGuiWidget(label, value->GetTexture());
+}
+
+template<>
+bool SoLib::ImGuiWidget(const char *const label, const TextureManager::TextureHandle *const value)
+{
+	return ImGuiWidget(label, value->GetTexture());
 }

@@ -34,6 +34,8 @@
 #include "../Engine/VFX/Particle/Particle.h"
 #include "../Game/UI/ControllerUI.h"
 
+#include "../Engine/DirectBase/Base/TextureManager.h"
+
 /// @class GameScene
 /// @brief ゲームシーン
 class GameScene : public SolEngine::IScene {
@@ -113,5 +115,7 @@ private:
 	SoLib::Color::RGB4 shadowColor_ = 0x00000055;
 	// 経験値の色
 	SoLib::Color::RGB4 expColor_ = 0x555500FF;
+
+	TextureHandle texture_;
 
 };
