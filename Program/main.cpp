@@ -56,7 +56,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp::StaticInit();
 
 	WinApp *const winApp = WinApp::GetInstance();
-	winApp->CreateGameWindow("LE3A_03_オヌキ_セイヤ");
+	winApp->CreateGameWindow("四年チーム制作");
 
 	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Init(winApp);
