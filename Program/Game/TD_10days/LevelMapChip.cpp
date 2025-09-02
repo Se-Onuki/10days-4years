@@ -59,7 +59,7 @@ namespace TD_10days {
 		pLevelMapChip_ = &levelMapChip;
 	}
 
-	void LevelMapChipRenderer::Draw()
+	void LevelMapChipRenderer::Draw(const SolEngine::Camera2D &camera)
 	{
 		spriteList_.clear();
 		// マップチップの情報の取得
@@ -68,7 +68,8 @@ namespace TD_10days {
 		// マップチップのサイズの取得
 		const auto [mapChipY, mapChipX] = pLevelMapChip_->GetSize();
 		// カメラの行列の取得
-		//const auto &cameraViewProjection = camera.matView_ * camera.matProjection_;
+		const auto &cameraViewProjection = camera.matView_ * camera.matProjection_;
+		Sprite::SetProjection(cameraViewProjection);
 
 		///
 		/// マップチップの描画
@@ -91,7 +92,7 @@ namespace TD_10days {
 				// マップチップの位置
 				const auto mapChipPosition = CalcMapChipPosition(y, x, mapChipScale);
 
-				if(mapChipType == LevelMapChip::MapChip::kEmpty) {
+				if (mapChipType == LevelMapChip::MapChip::kEmpty) {
 					continue;
 				}
 				// データの追加
@@ -99,16 +100,25 @@ namespace TD_10days {
 			}
 		}
 
+		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
+			// マップチップのテクスチャハンドル
 			const TextureHandle textureHandle = mapChips[index].GetTextureHandle();
+			// 座標
 			for (const auto &position : positions) {
-				spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2{ mapChipScale, mapChipScale }));
+				// スプライトの生成
+				auto sprite = spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2{ mapChipScale, mapChipScale })).get();
+				// スプライトの設定
+				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
+				sprite->SetInvertY(true);			// UVのY軸反転
 			}
 		}
+		// 全てに対して描画を実行
 		for (const auto &sprite : spriteList_) {
 			sprite->Draw();
 		}
 
+		Sprite::SetDefaultProjection();
 	}
 	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x, const float scale) const
 	{

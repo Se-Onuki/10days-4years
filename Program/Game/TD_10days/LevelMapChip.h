@@ -80,7 +80,7 @@ namespace TD_10days {
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
 
-		VItem(float, MapChipScale, _) = 32.f;
+		VItem(float, MapChipScale, _) = 64.f;
 	};
 
 	class LevelMapChipRenderer {
@@ -89,7 +89,7 @@ namespace TD_10days {
 		LevelMapChipRenderer() = default;
 		LevelMapChipRenderer(const LevelMapChipRenderer &) = delete;
 		void Init(const LevelMapChip &levelMapChip);
-		void Draw();
+		void Draw(const SolEngine::Camera2D& camera);
 
 	private:
 

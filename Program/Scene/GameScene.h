@@ -122,4 +122,6 @@ private:
 	TD_10days::LevelMapChip levelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 
+	SolEngine::Camera2D camera_;
+
 };

@@ -62,11 +62,16 @@ void GameScene::OnEnter() {
 	levelMapChip_.SetMapChipData(
 		{
 		{},
-		{ TextureHandle{TextureManager::Load("white2x2.png")} },
+		{ TextureHandle{TextureManager::Load("uvChecker.png")} },
 		});
 	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
+	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChipRenderer_.Init(levelMapChip_);
 
+
+	camera_.Init();
 }
 
 void GameScene::OnExit() {
@@ -86,6 +91,9 @@ void GameScene::Update() {
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
 	ImGui::DragInt("Size", &gaussianParam_->second);
 
+	camera_.UpdateMatrix();
+	SoLib::ImGuiWidget("CameraPos", &camera_.translation_);
+	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
@@ -103,7 +111,7 @@ void GameScene::Draw() {
 	Sprite::StartDraw(commandList);
 
 	// スプライトの描画
-	levelMapChipRenderer_.Draw();
+	levelMapChipRenderer_.Draw(camera_);
 
 	Sprite::EndDraw();
 

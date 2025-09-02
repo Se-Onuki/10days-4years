@@ -94,7 +94,7 @@ namespace SolEngine {
 	}
 
 	void Camera<Render::CameraType::Othographic>::CalcMatrix() {
-		matView_ = Matrix4x4::Affine(Vector3::one, rotation_, translation_).InverseSRT();
+		matView_ = Matrix4x4::Affine(Vector3{ 1,-1,1 }, rotation_, translation_).InverseSRT();
 
 		matProjection_ = Render::MakeOrthographicMatrix(windowSize_ * -.5f, windowSize_ * +.5f, 0.f, 100.f);
 	}

@@ -388,6 +388,11 @@ void Sprite::MapVertex()
 
 }
 
+void Sprite::SetDefaultProjection()
+{
+	SetProjection(SolEngine::Render::MakeOrthographicMatrix({ 0.f,0.f }, { (float)WinApp::kWindowWidth,(float)WinApp::kWindowHeight }, 0.f, 100.f));
+}
+
 void Sprite::CreateBuffer() {
 
 	vertexData_.SetVertexData(std::array<VertexData, 4u>{ VertexData{}, VertexData{}, VertexData{}, VertexData{} });
@@ -414,7 +419,7 @@ void Sprite::CreateBuffer() {
 }
 
 void Sprite::StartDraw(ID3D12GraphicsCommandList *const commandList) {
-	assert(!commandList_ && "EndDrawが呼び出されていません");
+	assert(not commandList_ && "EndDrawが呼び出されていません");
 	commandList_ = commandList;
 
 	// RootSignatureを設定。
@@ -424,7 +429,7 @@ void Sprite::StartDraw(ID3D12GraphicsCommandList *const commandList) {
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い。
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	matProjection_ = SolEngine::Render::MakeOrthographicMatrix({ 0.f,0.f }, { (float)WinApp::kWindowWidth,(float)WinApp::kWindowHeight }, 0.f, 100.f);
+	SetDefaultProjection();
 }
 
 void Sprite::EndDraw() {
@@ -438,13 +443,11 @@ void Sprite::SetBlendMode(BlendMode blendMode)
 }
 
 void Sprite::ImGuiWidget() {
-	/*if (transform_.ImGuiWidget2D()) {
-		transform_.CalcMatrix();
-	}*/
+
 	SoLib::ImGuiWidget(&constData_->color);
 
-	static char filePath[32];
-	ImGui::InputText("filePath", filePath, 32u);
+	static std::string filePath;
+	SoLib::ImGuiWidget("filePath", &filePath);
 	if (ImGui::Button("Load")) {
 		SetTextureHaundle(TextureManager::Load(filePath));
 	}
@@ -525,6 +528,11 @@ void Sprite::CalcBuffer() {
 	vertexArray[(uint32_t)VertexNumer::LTop].texCoord = { texOrigin.x,texOrigin.y };// 左上 { 0, 0 }
 	vertexArray[(uint32_t)VertexNumer::RDown].texCoord = { texDiff.x,texDiff.y };	// 右下 { 1, 1 }
 	vertexArray[(uint32_t)VertexNumer::RTop].texCoord = { texDiff.x,texOrigin.y };	// 右上 { 1, 0 }
+
+	if (isInvertY_) {
+		std::swap(vertexArray[(uint32_t)VertexNumer::LDown].texCoord, vertexArray[(uint32_t)VertexNumer::LTop].texCoord);
+		std::swap(vertexArray[(uint32_t)VertexNumer::RDown].texCoord, vertexArray[(uint32_t)VertexNumer::RTop].texCoord);
+	}
 
 #pragma endregion
 

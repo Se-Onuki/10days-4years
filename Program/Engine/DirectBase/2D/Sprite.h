@@ -118,6 +118,8 @@ public:
 	/// @param[in] matProjection 射影行列
 	static void SetProjection(const Matrix4x4 &matProjection) { matProjection_ = matProjection; }
 
+	static void SetDefaultProjection();
+
 private:
 	/// @fn void CreateBuffer(void)
 	/// @brief バッファを生成
@@ -162,6 +164,9 @@ private:
 	/// @brief スプライトの表示状態
 	bool isVisible_ = true;
 
+	/// @brief Y軸反転フラグ
+	bool isInvertY_ = false;
+
 public:
 	/// @fn void SetTextureHaundle(const uint32_t)
 	/// @brief テクスチャ設定
@@ -196,6 +201,17 @@ public:
 	/// @brief 表示状態取得
 	/// @return 表示中ならtrue
 	bool GetVisible() const { return isVisible_; }
+
+	/// @fn void SetInvertY(bool)
+	/// @brief Y軸反転設定
+	/// @param[in] invertY Y軸反転フラグ
+	/// @details デフォルトではテクスチャのY軸は上が0で下が1となっている｡
+	void SetInvertY(bool invertY) { isInvertY_ = invertY; CalcBuffer(); }
+
+	/// @fn bool GetInvertY(void)
+	/// @brief Y軸反転取得
+	/// @return Y軸反転フラグ
+	bool GetInvertY() const { return isInvertY_; }
 
 	/// @fn void SetPivot(const Vector2)
 	/// @brief 中心点設定
