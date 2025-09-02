@@ -187,7 +187,7 @@
     <Filter Include="Game\TD_10days">
       <UniqueIdentifier>{8a990cef-fdb3-4bd4-b0d3-62b3ac98a3c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\TD_10days\Component">
+    <Filter Include="Game\TD_10days\Player">
       <UniqueIdentifier>{0bc0a4d3-bbf0-4bb8-9534-ed9b94c87f9e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -1109,8 +1109,8 @@
     <ClInclude Include="Engine\Utils\SoLib\SoLib_Memory.h">
       <Filter>Engine\Utils\SoLib</Filter>
     </ClInclude>
-    <ClInclude Include="Game\TD_10days\Component\Player.h">
-      <Filter>Game\TD_10days\Component</Filter>
+    <ClInclude Include="Game\TD_10days\Player\Player.h">
+      <Filter>Game\TD_10days\Player</Filter>
     </ClInclude>
     <ClInclude Include="Game\TD_10days\LevelMapChip.h">
       <Filter>Game\TD_10days</Filter>
