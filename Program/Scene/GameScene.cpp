@@ -44,8 +44,6 @@ void GameScene::OnEnter() {
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
-	texture_ = TextureManager::Load("white2x2.png");
-
 
 	offScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
 	offScreen_->Init();
@@ -60,7 +58,14 @@ void GameScene::OnEnter() {
 	vignettingParam_ = { 16.f, 0.8f };
 
 
-
+	levelMapChip_.Init(10, 10);
+	levelMapChip_.SetMapChipData(
+		{
+		{},
+		{ TextureHandle{TextureManager::Load("white2x2.png")} },
+		});
+	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
+	levelMapChipRenderer_.Init(levelMapChip_);
 
 }
 
@@ -73,8 +78,6 @@ void GameScene::OnExit() {
 void GameScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
-
-	SoLib::ImGuiWidget("Texture", &texture_);
 
 	// grayScaleParam_ = 1;
 
@@ -100,6 +103,7 @@ void GameScene::Draw() {
 	Sprite::StartDraw(commandList);
 
 	// スプライトの描画
+	levelMapChipRenderer_.Draw();
 
 	Sprite::EndDraw();
 

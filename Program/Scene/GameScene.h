@@ -36,6 +36,9 @@
 
 #include "../Engine/DirectBase/Base/TextureManager.h"
 
+#include "../Game/TD_10days/LevelMapChip.h"
+
+
 /// @class GameScene
 /// @brief ゲームシーン
 class GameScene : public SolEngine::IScene {
@@ -116,6 +119,7 @@ private:
 	// 経験値の色
 	SoLib::Color::RGB4 expColor_ = 0x555500FF;
 
-	TextureHandle texture_;
+	TD_10days::LevelMapChip levelMapChip_;
+	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 
 };

@@ -36,6 +36,10 @@ SoLib::IO::CsvData &SoLib::IO::CSV::operator[](const size_t index) {
 	return this->data_.at(index);
 }
 
+const SoLib::IO::CsvData &SoLib::IO::CSV::operator[](const size_t index) const {
+	return this->data_.at(index);
+}
+
 SoLib::IO::CsvData &SoLib::IO::CsvData::operator=(const std::string &line) {
 	cellList_.clear();
 

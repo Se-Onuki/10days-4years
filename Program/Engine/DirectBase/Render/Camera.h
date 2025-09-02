@@ -145,4 +145,7 @@ namespace SolEngine {
 	/// @brief 3次元カメラ
 	using Camera3D = Camera<Render::CameraType::Projecction>;
 
+	/// @brief 2次元カメラ
+	using Camera2D = Camera<Render::CameraType::Othographic>;
+
 }

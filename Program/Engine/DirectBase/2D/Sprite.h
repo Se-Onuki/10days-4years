@@ -113,6 +113,11 @@ public:
 	/// @brief 終了
 	static void Finalize();
 
+	/// @fn static void SetProjection(const Matrix4x4 &)
+	/// @brief 射影行列の設定
+	/// @param[in] matProjection 射影行列
+	static void SetProjection(const Matrix4x4 &matProjection) { matProjection_ = matProjection; }
+
 private:
 	/// @fn void CreateBuffer(void)
 	/// @brief バッファを生成
