@@ -70,8 +70,9 @@ void GameScene::OnEnter() {
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChipRenderer_.Init(levelMapChip_);
 
-
 	camera_.Init();
+
+	player_.Init();
 }
 
 void GameScene::OnExit() {
@@ -91,9 +92,12 @@ void GameScene::Update() {
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
 	ImGui::DragInt("Size", &gaussianParam_->second);
 
-	camera_.UpdateMatrix();
 	SoLib::ImGuiWidget("CameraPos", &camera_.translation_);
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
+	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
+	camera_.UpdateMatrix();
+
+	player_.Update(deltaTime);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
@@ -110,8 +114,12 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
 	// スプライトの描画
-	levelMapChipRenderer_.Draw(camera_);
+	levelMapChipRenderer_.Draw();
+	player_.Draw();
+
+	Sprite::SetDefaultProjection();
 
 	Sprite::EndDraw();
 

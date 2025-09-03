@@ -37,6 +37,7 @@
 #include "../Engine/DirectBase/Base/TextureManager.h"
 
 #include "../Game/TD_10days/LevelMapChip.h"
+#include "../Game/TD_10days/Player/Player.h"
 
 
 /// @class GameScene
@@ -123,5 +124,7 @@ private:
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 
 	SolEngine::Camera2D camera_;
+
+	TD_10days::Player player_;
 
 };

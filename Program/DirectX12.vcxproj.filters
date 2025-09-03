@@ -558,6 +558,9 @@
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp">
       <Filter>Game\TD_10days</Filter>
     </ClCompile>
+    <ClCompile Include="Game\TD_10days\Player\Player.cpp">
+      <Filter>Game\TD_10days\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene\SceneManager.h">

@@ -65,8 +65,6 @@ namespace TD_10days {
 		/// @return マップチップに対応するデータの配列
 		std::span<const MapChipData> GetMapChipData() const { return mapChipData_; }
 
-		const float GetMapChipScale() const { return vMapChipScale_; }
-
 		std::span<const MapChip> GetMapChips() const { return mapChips_; }
 
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
@@ -79,8 +77,6 @@ namespace TD_10days {
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
-
-		VItem(float, MapChipScale, _) = 64.f;
 	};
 
 	class LevelMapChipRenderer {
@@ -89,14 +85,17 @@ namespace TD_10days {
 		LevelMapChipRenderer() = default;
 		LevelMapChipRenderer(const LevelMapChipRenderer &) = delete;
 		void Init(const LevelMapChip &levelMapChip);
-		void Draw(const SolEngine::Camera2D& camera);
+		void Draw();
 
 	private:
 
 		std::list<std::unique_ptr<Sprite>> spriteList_;
 		const LevelMapChip *pLevelMapChip_;
 		/// @brief マップチップの位置を計算する
-		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x, const float scale) const;
+		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
+
+
+		VItem(float, MapChipScale, _) = 1.f;
 
 	};
 }

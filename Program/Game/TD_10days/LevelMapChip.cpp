@@ -54,22 +54,17 @@ namespace TD_10days {
 		return std::span<const MapChip>{ &mapChips_[index * x_], x_ };
 	}
 
-	void LevelMapChipRenderer::Init(const LevelMapChip &levelMapChip)
-	{
+	void LevelMapChipRenderer::Init(const LevelMapChip &levelMapChip) {
 		pLevelMapChip_ = &levelMapChip;
 	}
 
-	void LevelMapChipRenderer::Draw(const SolEngine::Camera2D &camera)
-	{
+	void LevelMapChipRenderer::Draw() {
 		spriteList_.clear();
 		// マップチップの情報の取得
 		const auto &mapChips = pLevelMapChip_->GetMapChipData();
 
 		// マップチップのサイズの取得
 		const auto [mapChipY, mapChipX] = pLevelMapChip_->GetSize();
-		// カメラの行列の取得
-		const auto &cameraViewProjection = camera.matView_ * camera.matProjection_;
-		Sprite::SetProjection(cameraViewProjection);
 
 		///
 		/// マップチップの描画
@@ -77,9 +72,6 @@ namespace TD_10days {
 
 		// 描画リスト
 		std::unordered_map<size_t, std::vector<Vector2>> drawList;
-
-		// マップチップのスケール
-		const float mapChipScale = pLevelMapChip_->GetMapChipScale();
 
 		// マップチップのイテレータ
 		auto mapChipItr = pLevelMapChip_->GetMapChips().begin();
@@ -90,7 +82,7 @@ namespace TD_10days {
 				// マップチップのデータ
 				//const auto &mapChipData = mapChips[static_cast<size_t>(mapChipType)];
 				// マップチップの位置
-				const auto mapChipPosition = CalcMapChipPosition(y, x, mapChipScale);
+				const auto mapChipPosition = CalcMapChipPosition(y, x);
 
 				if (mapChipType == LevelMapChip::MapChip::kEmpty) {
 					continue;
@@ -107,21 +99,21 @@ namespace TD_10days {
 			// 座標
 			for (const auto &position : positions) {
 				// スプライトの生成
-				auto sprite = spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2{ mapChipScale, mapChipScale })).get();
+				auto sprite = spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2::one * vMapChipScale_)).get();
 				// スプライトの設定
 				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
 				sprite->SetInvertY(true);			// UVのY軸反転
 			}
 		}
+
 		// 全てに対して描画を実行
 		for (const auto &sprite : spriteList_) {
 			sprite->Draw();
 		}
 
-		Sprite::SetDefaultProjection();
 	}
-	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x, const float scale) const
+	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x) const
 	{
-		return Vector2(x * scale, y * scale);
+		return Vector2(x * vMapChipScale_, y * vMapChipScale_);
 	}
 }

@@ -244,6 +244,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
+    <ClCompile Include="Game\TD_10days\Player\Player.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
     <ClCompile Include="Header\Entity\Component\FollowCameraComp.cpp" />
