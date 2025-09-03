@@ -184,6 +184,15 @@
     <Filter Include="Engine\Utils\IO\HID">
       <UniqueIdentifier>{09a7d777-774a-43fd-96c5-cf54d2088e51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Editor">
+      <UniqueIdentifier>{5690257a-822e-4822-a1bf-3f333bc963e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{eb65c116-c14c-4a38-839b-0f8ae1c98d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Collision\Collider">
+      <UniqueIdentifier>{495e47db-904a-4742-9e7e-a7d1e8885277}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene\SceneManager.cpp">
@@ -548,6 +557,12 @@
     </ClCompile>
     <ClCompile Include="Engine\Utils\Text\Text.cpp">
       <Filter>Engine\Utils\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Editor\TextureEditor.cpp">
+      <Filter>Game\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Collider\UICollider.cpp">
+      <Filter>Game\Collision\Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1099,6 +1114,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Utils\SoLib\SoLib_Memory.h">
       <Filter>Engine\Utils\SoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Editor\TextureEditor.h">
+      <Filter>Game\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="User\AoMidori.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Collider\UICollider.h">
+      <Filter>Game\Collision\Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

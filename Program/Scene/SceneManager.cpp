@@ -27,6 +27,9 @@ namespace SolEngine {
 		sceneFactory_["NT_ServerScene"] = []()->std::unique_ptr<IScene> { return std::make_unique<NT_ServerScene>(); };
 		sceneFactory_["NT_ClientScene"] = []()->std::unique_ptr<IScene> { return std::make_unique<NT_ClientScene>(); };
 		sceneFactory_["BeTaskScene"] = []()->std::unique_ptr<IScene> { return std::make_unique<BeTaskScene>(); };
+
+		texEditor_ = TextureEditor::GetInstance();
+		texEditor_->Initialize();
 	}
 
 	void SceneManager::Cancel() {
@@ -107,6 +110,7 @@ namespace SolEngine {
 
 		if (currentScene_) {
 			currentScene_->Update();
+			texEditor_->Update(SceneID::Title);
 		}
 	}
 
