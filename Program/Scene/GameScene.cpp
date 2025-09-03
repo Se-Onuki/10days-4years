@@ -66,6 +66,7 @@ void GameScene::OnEnter() {
 		});
 	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChipRenderer_.Init(levelMapChip_);

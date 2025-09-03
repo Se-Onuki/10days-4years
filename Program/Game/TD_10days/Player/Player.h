@@ -40,7 +40,7 @@ namespace TD_10days {
 		// 加速度
 		Vector2 acceleration_{};
 
-		Vector2 size_ = Vector2::one * 0.985f;
+		Vector2 size_ = Vector2::one * 0.8f;
 
 		// 描画スプライト
 		std::unique_ptr<Sprite> sprite_;

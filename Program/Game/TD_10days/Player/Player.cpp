@@ -92,7 +92,7 @@ namespace TD_10days {
 				// ヒットボックスの作成
 				AABB hitBox = AABB::Create(
 					Vector3(static_cast<float>(xi), static_cast<float>(yi), 0.f),
-					Vector3::one / 2.f
+					Vector3::one * 0.51f
 				);
 
 				// プレイヤの各点からレイキャスト
@@ -128,21 +128,30 @@ namespace TD_10days {
 
 						// 角同士が衝突した場合
 						if (dotVec == Vector2::zero) {
-							// 隣のブロックを参照して残す法線を決定する
-							std::erase_if(normalList,[&](const Vector3 &normal) {
-								// 隣のブロックへの相対座標
-								const Vector2 diff = toHitPosSign - normal.ToVec2();
-								// 隣のブロックの座標
-								const Vector2 checkPos = boxCenter + diff;
+							// もし法線が1つしかない場合かつ､頂点に近似している場合､もう片方の法線も追加する
+							if (normalList.size() == 1.f and std::fabsf(std::fabsf(toHitPoint.x) - std::fabsf(toHitPoint.y)) < 0.05f) {
+								const auto vec = (toHitPosSign - normalList.front().ToVec2());
+								normalList.emplace_back(vec.x, vec.y, 0.f);
+							}
 
-								// その場所にブロックがあるか
-								const bool isHitBox = checkPos.x >= 0.f and checkPos.y >= 0.f and pHitBox_->at(static_cast<size_t>(checkPos.y), static_cast<size_t>(checkPos.x));
-								// 無かったらその法線を無効化する
-								return not isHitBox;
+							if (normalList.size() > 1.f) {
+
+								// 隣のブロックを参照して残す法線を決定する
+								std::erase_if(normalList, [&](const Vector3 &normal) {
+									// 隣のブロックへの相対座標
+									const Vector2 diff = toHitPosSign - normal.ToVec2();
+									// 隣のブロックの座標
+									const Vector2 checkPos = boxCenter + diff;
+
+									// その場所にブロックがあるか
+									const bool isHitBox = checkPos.x >= 0.f and checkPos.y >= 0.f and pHitBox_->at(static_cast<size_t>(checkPos.y), static_cast<size_t>(checkPos.x));
+									// 無かったらその法線を無効化する
+									return not isHitBox;
 
 
-								}
-							);
+									}
+								);
+							}
 						}
 
 						for (Vector3 normal : normalList) {
