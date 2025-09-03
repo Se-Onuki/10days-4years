@@ -31,7 +31,7 @@ void TitleScene::OnEnter() {
 	blockHandleRender_->Init(1024u);
 	ModelManager::GetInstance()->CreateDefaultModel();
 
-	sprite_ = Sprite::Generate(TextureManager::Load("UI/TitleECS.dds"));
+	sprite_ = Sprite::Generate(TextureManager::Load("UI/Title/TitleECS.dds"));
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
@@ -43,7 +43,7 @@ void TitleScene::OnEnter() {
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
 
-	soundA_.Play(true, 0.5f);
+	soundA_.Play(true, 0.1f);
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 

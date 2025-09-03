@@ -181,9 +181,7 @@ private:
 
 	/*std::unique_ptr<Easing> easing_;*/
 
-	Vector2 potGoalScale_;
-
-	Vector2 potBaseScale_;
+	const Vector2 kPivotValue_ = { 0.5f,0.5f };
 
 	Matrix4x4 camera_;
 

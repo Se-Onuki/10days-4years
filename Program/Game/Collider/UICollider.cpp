@@ -2,8 +2,6 @@
 
 bool UICollider::IsMouseOverRotatedRect(const Vector2& rectCenter, float rotationRadians, const Vector2& size){
     Vector2 mousePos = ImVec2toSolVec(ImGui::GetMousePos());
-    mousePos.y *= -1; // Y反転（上が正になる）
-    mousePos += Vector2{ -640, 360 };
 
     // 四角形の中心を基準に相対座標
     Vector2 boxCenter = Vector2{ rectCenter.x,rectCenter.y };

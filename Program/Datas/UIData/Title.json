@@ -1,0 +1,50 @@
+{
+    "UIs": {
+        "Title": [
+            {
+                "TextureFullPath": "UI\\Title\\Shuriken.png",
+                "TextureName": "Shuriken",
+                "UVScale": [
+                    310.0,
+                    502.0
+                ],
+                "UVTranslate": [
+                    1.0,
+                    1.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    340.0,
+                    512.0
+                ],
+                "translate": [
+                    1042.0,
+                    391.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Stone.png",
+                "TextureName": "Stone",
+                "UVScale": [
+                    310.0,
+                    502.0
+                ],
+                "UVTranslate": [
+                    1.0,
+                    1.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    320.0,
+                    512.0
+                ],
+                "translate": [
+                    208.0,
+                    412.0
+                ]
+            }
+        ]
+    }
+}

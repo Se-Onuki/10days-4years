@@ -18,9 +18,6 @@ void TextureEditor::Initialize() {
 	//配置用のものなのでwhiteTex
 	newTex_->sprite = Sprite::Generate(TextureManager::LoadDefaultTexture());
 
-	potGoalScale_ = { 84.0f,44.0f };
-	potBaseScale_ = { 64.0f,64.0f };
-
 	camera_.Identity();
 	//最初に読み込んでおく
 	auto file = GetFilePathFormDir("./resources/UI/", ".png");
@@ -44,11 +41,9 @@ void TextureEditor::Update(const SceneID id) {
 	
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-	mousePos.y *= -1; // Y反転（上が正になる）
-	mousePos += Vector2{ -640, 360 };
 	if (isDecideToPlace_) {
 		//左クリックしたら
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
 			//マウスの位置に合わせる
 			newTex_->transform.translate_ = mousePos;
 		}
@@ -94,6 +89,15 @@ void TextureEditor::Draw(const SceneID id) {
 		if (i != static_cast<size_t>(id))
 			continue;
 		for (size_t j = 0; j < texies_[i].size(); j++) {
+			texies_[i][j]->sprite->SetColor(texies_[i][j]->color);
+			texies_[i][j]->sprite->SetPosition(texies_[i][j]->transform.translate_);
+			texies_[i][j]->sprite->SetScale(texies_[i][j]->transform.scale_);
+			texies_[i][j]->sprite->SetRotate(texies_[i][j]->transform.rotate_.Get());
+			texies_[i][j]->sprite->SetTexOrigin(texies_[i][j]->uvTransform.translate_);
+			texies_[i][j]->sprite->SetTexDiff(texies_[i][j]->uvTransform.scale_);
+
+			texies_[i][j]->sprite->SetPivot(kPivotValue_);
+
 			texies_[i][j]->sprite->Draw();
 		}
 	}
@@ -101,6 +105,12 @@ void TextureEditor::Draw(const SceneID id) {
 
 void TextureEditor::PutDraw() {
 	if (isDecideToPlace_) {
+		newTex_->sprite->SetColor(newTex_->color);
+		newTex_->sprite->SetPosition(newTex_->transform.translate_);
+		newTex_->sprite->SetScale(newTex_->transform.scale_);
+		newTex_->sprite->SetRotate(newTex_->transform.rotate_.Get());
+		newTex_->sprite->SetPivot(kPivotValue_);
+
 		newTex_->sprite->Draw();
 	}
 }
@@ -202,7 +212,7 @@ void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Ve
 				}
 
 				if (ImGui::TreeNode("ファイル読み込み")) {
-					auto file = GetFilePathFormDir(kDirectoryPath_, ".json");
+					auto file = GetFilePathFormDirOrigin(kDirectoryPath_, ".json");
 
 					for (auto& i : file) {
 						if (ImGui::Button(i.string().c_str())) {
@@ -246,7 +256,7 @@ void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Ve
 
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("ショートカットの説明")) {
+			/*if (ImGui::BeginMenu("ショートカットの説明")) {
 				ImGui::Text("機能にてチェックボックスにマークを入れると利用可能になります");
 				ImGui::Text("左ctrl + s		現在のシーンを保存");
 				ImGui::Text("左ctrl + l		現在のシーンのファイルを読み込む");
@@ -254,7 +264,7 @@ void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Ve
 				ImGui::Text("削除に関してはaキーを追加で押しているとシーン内の画像すべてを削除できます");
 
 				ImGui::EndMenu();
-			}
+			}*/
 			ImGui::EndMenuBar();
 
 		}
@@ -754,20 +764,22 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 
 				if (ImGui::IsMouseDown(0)) {
 					//重複がしないように
-					if (selectNumber_ == -1) {
+					if (selectNumber_ == -1 and !ImGui::GetIO().WantCaptureMouse) {
 						selectNumber_ = int(j);
 						selectTexNumber_ = selectNumber_;
 						selectTexImguiNumber_ = selectNumber_;
 					}
 				}
 				else {
-					selectNumber_ = -1;
+					if (!ImGui::GetIO().WantCaptureMouse){
+						selectNumber_ = -1;
+					}
 				}
 
 			}
 			else {
 				if (selectNumber_ == -1) {
-					if (ImGui::IsMouseClicked(0)) {
+					if (ImGui::IsMouseClicked(0) and !ImGui::GetIO().WantCaptureMouse) {
 						selectTexNumber_ = -1;
 						selectTexImguiNumber_ = -1;
 					}
@@ -889,6 +901,8 @@ void TextureEditor::NewTexMake(const SceneID id, std::filesystem::path path) {
 	setTex->transform.rotate_ = DegreeToRadian(newTex_->angle_degrees);
 	setTex->originalTransform = setTex->transform;
 	setTex->sprite = Sprite::Generate(TextureManager::Load(path.string().c_str()));
+	setTex->uvTransform.translate_ = setTex->sprite->GetUV().first;
+	setTex->uvTransform.scale_ = setTex->sprite->GetUV().second;
 	//setTex->blend = baseBlend_;
 	setTex->textureFullPath = path.string();
 
