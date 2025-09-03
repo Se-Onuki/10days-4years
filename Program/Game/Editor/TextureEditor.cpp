@@ -34,8 +34,7 @@ void TextureEditor::Finalize() {
 
 }
 
-void TextureEditor::Update(const SceneID id) {
-	id_ = id;
+void TextureEditor::Update() {
 
 #ifdef _DEBUG	
 	
@@ -48,13 +47,13 @@ void TextureEditor::Update(const SceneID id) {
 			newTex_->transform.translate_ = mousePos;
 		}
 	}
-	Debug(id, mousePos);
+	Debug(id_, mousePos);
 	
 	ClickPushMove(id_, mousePos);
 
 	//マウスが画像と重なっているか
 	for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
-		if (i != static_cast<size_t>(id))
+		if (i != static_cast<size_t>(id_))
 			continue;
 		for (size_t j = 0; j < texies_[i].size(); j++) {
 			uint32_t beforeColor = texColors_[i][j];
@@ -83,10 +82,10 @@ void TextureEditor::Update(const SceneID id) {
 
 }
 
-void TextureEditor::Draw(const SceneID id) {
+void TextureEditor::Draw() {
 
 	for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
-		if (i != static_cast<size_t>(id))
+		if (i != static_cast<size_t>(id_))
 			continue;
 		for (size_t j = 0; j < texies_[i].size(); j++) {
 			texies_[i][j]->sprite->SetColor(texies_[i][j]->color);

@@ -36,12 +36,12 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update(const SceneID id);
+	void Update();
 
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw(const SceneID id);
+	void Draw();
 
 	/// <summary>
 	/// 設置位置描画処理
@@ -90,7 +90,10 @@ public:
 		}
 		return texStateResult;
 	}
-
+	/// <summary>
+	/// シーンの最初に入れ、シーンごとの描画を変更
+	/// </summary>
+	/// <param name="id">SceneID::での物を入れる</param>
 	void SetSceneId(const SceneID id) {
 		id_ = id;
 	}

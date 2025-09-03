@@ -110,7 +110,7 @@ namespace SolEngine {
 
 		if (currentScene_) {
 			currentScene_->Update();
-			texEditor_->Update(SceneID::Title);
+			texEditor_->Update();
 		}
 	}
 

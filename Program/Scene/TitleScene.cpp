@@ -58,6 +58,8 @@ void TitleScene::OnEnter() {
 	systemExecuter_.AddSystem<ECS::System::Par::CalcTransMatrix>();
 	systemExecuter_.AddSystem<ECS::System::Par::ModelDrawer>();
 
+	//各シーンの最初に入れる
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Title);
 }
 
 void TitleScene::OnExit() {
@@ -132,7 +134,7 @@ void TitleScene::Draw() {
 	// スプライトの描画
 	sprite_->Draw();
 
-	TextureEditor::GetInstance()->Draw(SceneID::Title);
+	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
 
 	Fade::GetInstance()->Draw();
