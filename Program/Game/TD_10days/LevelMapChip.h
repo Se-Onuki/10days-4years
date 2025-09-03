@@ -43,6 +43,24 @@ namespace TD_10days {
 
 		};
 
+		class LevelMapChipHitBox {
+		public:
+			LevelMapChipHitBox() = default;
+			~LevelMapChipHitBox() = default;
+			friend class LevelMapChip;
+
+			bool at(const size_t y, const size_t x) const;
+
+			LevelMapChipHitBox Clip(const Vector2 &origin, const Vector2 &diff) const;
+
+			size_t GetY() const { return y_; }
+			size_t GetX() const { return x_; }
+
+		private:
+			std::vector<bool> hitBoxData_;
+			size_t y_{}, x_{};
+		};
+
 		LevelMapChip() = default;
 		LevelMapChip(const LevelMapChip &) = default;
 		LevelMapChip(const uint32_t y, const uint32_t x);
@@ -68,6 +86,8 @@ namespace TD_10days {
 		std::span<const MapChip> GetMapChips() const { return mapChips_; }
 
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
+
+		LevelMapChipHitBox CreateHitBox() const;
 
 	private:
 		/// @brief マップチップの配列

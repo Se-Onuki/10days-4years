@@ -2,6 +2,31 @@
 #include <utility>
 
 namespace TD_10days {
+
+	bool LevelMapChip::LevelMapChipHitBox::at(const size_t y, const size_t x) const {
+		if (y >= y_ || x >= x_) {
+			return false;
+		}
+		return hitBoxData_[x + y * x_];
+	}
+	LevelMapChip::LevelMapChipHitBox LevelMapChip::LevelMapChipHitBox::Clip(const Vector2 &origin, const Vector2 &diff) const
+	{
+		if (origin.x >= x_ || origin.y >= y_) {
+			return LevelMapChipHitBox();
+		}
+		if (diff.x <= 0.f || diff.y <= 0.f) {
+			return LevelMapChipHitBox();
+		}
+
+		LevelMapChipHitBox result;
+
+		result.hitBoxData_ = std::vector<bool>(static_cast<size_t>(diff.x) * static_cast<size_t>(diff.y), false);
+		result.y_ = static_cast<size_t>(diff.y);
+		result.x_ = static_cast<size_t>(diff.x);
+
+
+		return result;
+	}
 	// 通常のコンストラクタ
 	LevelMapChip::LevelMapChip(const uint32_t y, const uint32_t x) : y_(y), x_(x), mapChips_(y *x, static_cast<MapChip>(0)) {}
 
@@ -52,6 +77,18 @@ namespace TD_10days {
 
 	std::span<const LevelMapChip::MapChip> LevelMapChip::operator[](const uint32_t index) const {
 		return std::span<const MapChip>{ &mapChips_[index * x_], x_ };
+	}
+
+	LevelMapChip::LevelMapChipHitBox LevelMapChip::CreateHitBox() const
+	{
+		LevelMapChipHitBox result;
+		result.y_ = y_;
+		result.x_ = x_;
+		result.hitBoxData_.resize(y_ * x_, false);
+		std::transform(mapChips_.begin(), mapChips_.end(), result.hitBoxData_.begin(), [](const MapChip &chip) {
+			return chip != MapChip::kEmpty;
+			});
+		return result;
 	}
 
 	void LevelMapChipRenderer::Init(const LevelMapChip &levelMapChip) {

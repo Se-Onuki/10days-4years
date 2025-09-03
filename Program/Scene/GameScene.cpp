@@ -69,10 +69,14 @@ void GameScene::OnEnter() {
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChipRenderer_.Init(levelMapChip_);
+	levelMapChipHitBox_ = levelMapChip_.CreateHitBox();
 
 	camera_.Init();
+	camera_.scale_ = 0.025f;
 
 	player_.Init();
+	player_.SetPosition({ 1,1 });
+	player_.SetHitBox(&levelMapChipHitBox_);
 }
 
 void GameScene::OnExit() {
@@ -97,6 +101,8 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
 	camera_.UpdateMatrix();
 
+	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	player_.InputFunc();
 	player_.Update(deltaTime);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
