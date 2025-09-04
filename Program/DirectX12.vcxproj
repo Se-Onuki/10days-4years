@@ -245,6 +245,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\Editor\TextureEditor.cpp" />
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
+    <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
+    <ClCompile Include="Game\TD_10days\Player\Player.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
     <ClCompile Include="Header\Entity\Component\FollowCameraComp.cpp" />
@@ -411,6 +413,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\GameScene\GameRenderer.h" />
     <ClInclude Include="Game\Resource\EnemyDataTable.h" />
     <ClInclude Include="Game\Resource\GameScore.h" />
+    <ClInclude Include="Game\TD_10days\Player\Player.h" />
+    <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
     <ClInclude Include="Game\UI\ControllerUI.h" />
     <ClInclude Include="Header\Collision\Collision.h" />
     <ClInclude Include="Header\Entity\Component\Collider.h" />

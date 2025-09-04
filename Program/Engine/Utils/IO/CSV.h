@@ -92,6 +92,7 @@ namespace SoLib {
 			/// @param index 行数
 			/// @return 指定した行のデータ
 			CsvData &operator[](const size_t index);
+			const CsvData &operator[](const size_t index)const;
 
 			Map &Get() { return data_; }
 			const Map &Get() const { return data_; }

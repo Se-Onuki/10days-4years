@@ -98,6 +98,12 @@ namespace SoLib {
 			// return {this->x- 2}
 		}
 
+		inline Vector2 Reflect(Vector2 normal, const float elasticity) const {
+			return (*this) - normal * ((1.f + elasticity) * ((*this) * normal));
+
+			// return {this->x- 2}
+		}
+
 		inline bool operator==(const Vector2 vec) const {
 			return (this->x == vec.x) && (this->y == vec.y);
 		}

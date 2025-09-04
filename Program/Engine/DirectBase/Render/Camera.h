@@ -118,6 +118,9 @@ namespace SolEngine {
 		float nearZ = 0.f;
 		// 深度限界（奥側）
 		float farZ = 100.0f;
+		// 拡大率
+		float scale_ = 1.f;
+
 #pragma endregion
 
 		Matrix4x4 matView_{};
@@ -144,5 +147,8 @@ namespace SolEngine {
 
 	/// @brief 3次元カメラ
 	using Camera3D = Camera<Render::CameraType::Projecction>;
+
+	/// @brief 2次元カメラ
+	using Camera2D = Camera<Render::CameraType::Othographic>;
 
 }

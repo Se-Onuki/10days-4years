@@ -184,6 +184,12 @@
     <Filter Include="Engine\Utils\IO\HID">
       <UniqueIdentifier>{09a7d777-774a-43fd-96c5-cf54d2088e51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\TD_10days">
+      <UniqueIdentifier>{8a990cef-fdb3-4bd4-b0d3-62b3ac98a3c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\TD_10days\Player">
+      <UniqueIdentifier>{0bc0a4d3-bbf0-4bb8-9534-ed9b94c87f9e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Game\Editor">
       <UniqueIdentifier>{5690257a-822e-4822-a1bf-3f333bc963e6}</UniqueIdentifier>
     </Filter>
@@ -557,6 +563,12 @@
     </ClCompile>
     <ClCompile Include="Engine\Utils\Text\Text.cpp">
       <Filter>Engine\Utils\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\LevelMapChip.cpp">
+      <Filter>Game\TD_10days</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Player\Player.cpp">
+      <Filter>Game\TD_10days\Player</Filter>
     </ClCompile>
     <ClCompile Include="Game\Editor\TextureEditor.cpp">
       <Filter>Game\Editor</Filter>
@@ -1114,6 +1126,12 @@
     </ClInclude>
     <ClInclude Include="Engine\Utils\SoLib\SoLib_Memory.h">
       <Filter>Engine\Utils\SoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Player\Player.h">
+      <Filter>Game\TD_10days\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\LevelMapChip.h">
+      <Filter>Game\TD_10days</Filter>
     </ClInclude>
     <ClInclude Include="Game\Editor\TextureEditor.h">
       <Filter>Game\Editor</Filter>

@@ -48,6 +48,8 @@ public:
 		TextureHandle(const TextureHandle &) = default;
 		TextureHandle(uint32_t index) : index_(index) {}
 
+		bool operator==(const TextureHandle &other) const = default;
+
 		friend TextureManager;
 
 		uint32_t index_;

@@ -44,8 +44,6 @@ void GameScene::OnEnter() {
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
-	texture_ = TextureManager::Load("white2x2.png");
-
 
 	offScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
 	offScreen_->Init();
@@ -60,8 +58,26 @@ void GameScene::OnEnter() {
 	vignettingParam_ = { 16.f, 0.8f };
 
 
+	levelMapChip_.Init(10, 10);
+	levelMapChip_.SetMapChipData(
+		{
+		{},
+		{ TextureHandle{TextureManager::Load("uvChecker.png")} },
+		});
+	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
+	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChipRenderer_.Init(levelMapChip_);
+	levelMapChipHitBox_ = levelMapChip_.CreateHitBox();
 
+	camera_.Init();
+	camera_.scale_ = 0.025f;
 
+	player_.Init();
+	player_.SetPosition({ 1,1 });
+	player_.SetHitBox(&levelMapChipHitBox_);
 }
 
 void GameScene::OnExit() {
@@ -74,8 +90,6 @@ void GameScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
-	SoLib::ImGuiWidget("Texture", &texture_);
-
 	// grayScaleParam_ = 1;
 
 	ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
@@ -83,6 +97,14 @@ void GameScene::Update() {
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
 	ImGui::DragInt("Size", &gaussianParam_->second);
 
+	SoLib::ImGuiWidget("CameraPos", &camera_.translation_);
+	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
+	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
+	camera_.UpdateMatrix();
+
+	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	player_.InputFunc();
+	player_.Update(deltaTime);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
@@ -99,7 +121,12 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
 	// スプライトの描画
+	levelMapChipRenderer_.Draw();
+	player_.Draw();
+
+	Sprite::SetDefaultProjection();
 
 	Sprite::EndDraw();
 
