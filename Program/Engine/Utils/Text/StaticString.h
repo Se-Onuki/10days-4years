@@ -39,7 +39,7 @@ namespace SoLib {
 		public:
 			/// @brief 文字列のポインタを返す
 			/// @return 文字列ポインタ
-			inline static constexpr const decltype(Str)::CharType *const c_str() noexcept { return str_.buf_.data(); }
+			inline static constexpr const typename decltype(Str)::CharType *const c_str() noexcept { return str_.buf_.data(); }
 			inline constexpr friend std::ostream &operator<< (std::ostream &ost, const StaticString str) noexcept { return ost << str.c_str(); }
 		};
 	}

@@ -57,6 +57,10 @@ void GameScene::OnEnter() {
 
 	vignettingParam_ = { 16.f, 0.8f };
 
+	background_ = Sprite::Generate(TextureManager::Load("white2x2.png"));
+	background_->SetScale(Vector2{ static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight) });
+	background_->SetColor(0x5555FFFF);
+	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
 	stageEditor_ = StageEditor::GetInstance();
@@ -83,6 +87,11 @@ void GameScene::OnEnter() {
 	player_.Init();
 	player_.SetPosition({ 1,1 });
 	player_.SetHitBox(levelMapChipHitBox_);
+
+	water_ = std::make_unique<TD_10days::Water>();
+
+	player_.SetWater(water_.get());
+
 }
 
 void GameScene::OnExit() {
@@ -118,6 +127,8 @@ void GameScene::Update() {
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
 
 	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
+
+	water_->Update(deltaTime);
 }
 
 void GameScene::Draw() {
@@ -129,6 +140,8 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	background_->Draw();
+
 	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
 
 	stageEditor_->PutDraw();
@@ -136,6 +149,8 @@ void GameScene::Draw() {
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
 	player_.Draw();
+
+	water_->Draw();
 
 	Sprite::SetDefaultProjection();
 

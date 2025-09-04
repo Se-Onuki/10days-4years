@@ -38,6 +38,12 @@ namespace SoLib {
 		/// ベクトル長関数
 		/// </summary>
 		/// <returns>ベクトルの長さ</returns>
+		float LengthSQ() const;
+
+		/// <summary>
+		/// ベクトル長関数
+		/// </summary>
+		/// <returns>ベクトルの長さ</returns>
 		float Length() const;
 
 		/// <summary>
@@ -71,6 +77,11 @@ namespace SoLib {
 				return 0;
 			}
 			return atan2(y, x);
+		}
+
+		// 順ベクトル
+		inline const Vector2 &operator+() const {
+			return *this;
 		}
 
 		// 逆ベクトル

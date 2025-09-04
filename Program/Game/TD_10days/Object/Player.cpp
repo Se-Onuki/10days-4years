@@ -5,9 +5,8 @@
 namespace TD_10days {
 
 	void Player::Init() {
-		sprite_ = Sprite::Generate(TextureManager::Load("uvChecker.png"));
+		sprite_ = Sprite::Generate(TextureManager::Load(spriteName_));
 		sprite_->SetPivot(Vector2::one / 2.f);
-		sprite_->SetScale(size_);
 		sprite_->SetInvertY(true);
 
 	}
@@ -30,12 +29,6 @@ namespace TD_10days {
 		const auto input = SolEngine::Input::GetInstance();
 		const auto dInput = input->GetDirectInput();
 		const float moveSpeed = 5.f;
-		if (dInput->IsPress(DIK_W)) {
-			velocity_.y += moveSpeed;
-		}
-		if (dInput->IsPress(DIK_S)) {
-			velocity_.y -= moveSpeed;
-		}
 		if (dInput->IsPress(DIK_A)) {
 			velocity_.x -= moveSpeed;
 		}
@@ -43,10 +36,38 @@ namespace TD_10days {
 			velocity_.x += moveSpeed;
 		}
 
-		if (velocity_.x * velocity_.y != 0.f) {
-			velocity_ *= 0.7071f;
+		if (dInput->IsTrigger(DIK_SPACE)) {
+			if (isGround_ or IsInWater()) {
+				velocity_.y = 0.f;
+				acceleration_.y += 5.f;
+			}
 		}
 
+		if (dInput->IsTrigger(DIK_RETURN)) {
+			Vector2 place = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
+			pWater_->Init(place, Vector2::one, 0x0000FF55);
+		}
+
+		Vector2 nextDir = Vector2::zero;
+
+		if (dInput->IsTrigger(DIK_RIGHT)) {
+			nextDir += +Vector2::right;
+		}
+		if (dInput->IsTrigger(DIK_LEFT)) {
+			nextDir += -Vector2::right;
+		}
+		if (dInput->IsTrigger(DIK_UP)) {
+			nextDir += +Vector2::up;
+		}
+		if (dInput->IsTrigger(DIK_DOWN)) {
+			nextDir += -Vector2::up;
+		}
+
+		if (nextDir.LengthSQ() == 1.f) {
+			if (pWater_->IsPlaceAble(pHitBox_, nextDir)) {
+				pWater_->PlacementWater(nextDir);
+			}
+		}
 	}
 
 	void Player::CalcSprite() {
@@ -187,11 +208,15 @@ namespace TD_10days {
 	}
 
 	void Player::MoveUpdate(float deltaTime) {
-		//velocity_ += acceleration_ * deltaTime;
+		acceleration_ += gravity_ * deltaTime;
 
-		const Vector2 moveVec = velocity_ * deltaTime;
+		velocity_ += acceleration_;
+		std::list<Vector3> hitNormalList;
+
+		Vector2 moveVec = velocity_ * deltaTime;
 
 		const auto [progress, hitNormal] = CalcMoveProgress(moveVec);
+		hitNormalList.emplace_back(hitNormal);
 
 		// 接触するまでの移動
 		position_ += moveVec * (progress);
@@ -200,15 +225,34 @@ namespace TD_10days {
 		if (progress <= 0.f) {
 
 			// 次の移動量
-			const Vector2 nextMove = moveVec.Reflect(hitNormal.ToVec2(), 0.f) * (1.f - progress);
+			moveVec = moveVec.Reflect(hitNormal.ToVec2(), 0.f) * (1.f - progress);
 
-			const auto [nextProgress, nextHitNormal] = CalcMoveProgress(nextMove);
+			const auto [nextProgress, nextHitNormal] = CalcMoveProgress(moveVec);
+			hitNormalList.emplace_back(nextHitNormal);
 
 			// 接触した後の移動
-			position_ += nextMove * nextProgress;
+			position_ += moveVec * nextProgress;
 		}
-		velocity_ = Vector2::zero;
-		//acceleration_ = Vector2::zero;
+
+		isGround_ = false;
+
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), Vector3::up) != hitNormalList.end()) {
+
+			velocity_.y = 0.f;
+			isGround_ = true;
+		}
+
+		velocity_.x = 0.f;
+		acceleration_ = Vector2::zero;
+	}
+
+	bool Player::IsInWater() const
+	{
+		const auto waterPos = pWater_->GetWaterPosition();
+
+		const Vector2 target = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
+
+		return std::find(waterPos.begin(), waterPos.end(), target) != waterPos.cend();
 	}
 
 }

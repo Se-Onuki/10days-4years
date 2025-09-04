@@ -109,7 +109,7 @@ namespace SolEngine {
 				return *this;
 			}
 
-			UniqueHandle(const ResourceList::iterator &itr) { item_ = itr; }
+			UniqueHandle(const typename ResourceList::iterator &itr) { item_ = itr; }
 
 			~UniqueHandle()
 			{
