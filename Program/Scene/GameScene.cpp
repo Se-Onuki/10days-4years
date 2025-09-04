@@ -82,7 +82,7 @@ void GameScene::OnEnter() {
 
 	player_.Init();
 	player_.SetPosition({ 1,1 });
-	player_.SetHitBox(&levelMapChipHitBox_);
+	player_.SetHitBox(levelMapChipHitBox_);
 }
 
 void GameScene::OnExit() {

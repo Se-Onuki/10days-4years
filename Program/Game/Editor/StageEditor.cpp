@@ -1,7 +1,12 @@
 #include "StageEditor.h"
 
-StageEditor::~StageEditor(){
+StageEditor::~StageEditor() {
 
+}
+
+void StageEditor::ApplyHitBox()
+{
+	levelMapChip_.CreateHitBox();
 }
 
 void StageEditor::Initialize() {
@@ -55,18 +60,21 @@ void StageEditor::Update() {
 
 	if (isIncide_) {
 		// ---- どのマップチップか ----
-		tilePos_.first = (world.first + 20) / blockSize_;
-		tilePos_.second = (world.second + 20) / blockSize_;
+		tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
+		tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
 		newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
-	}
 
-	if (isDecideToPlace_) {
 		//左クリックしたら
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-			//マウスの位置に合わせる
-			newTex_->transform.translate_ = mousePos;
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+			levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
+			ApplyHitBox();
+		}
+		//右クリックしたら
+		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+			levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
 		}
 	}
+
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
@@ -74,7 +82,7 @@ void StageEditor::Update() {
 }
 
 void StageEditor::PutDraw() {
-	if (isIncide_){
+	if (isIncide_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
 		newTex_->sprite->SetScale(newTex_->transform.scale_);
@@ -90,6 +98,7 @@ void StageEditor::Debug(Vector2 mousePos) {
 	ImGui::DragFloat2("座標", mousePos.data(), 0.1f);
 	ImGui::DragInt("マップチップX", &tilePos_.first);
 	ImGui::DragInt("マップチップY", &tilePos_.second);
+	ImGui::SliderInt("マップの種類", &selectNumber_, 0, (int)(TD_10days::LevelMapChip::MapChip::kGoal));
 	ImGui::End();
 }
 
@@ -97,7 +106,7 @@ void StageEditor::LoadFileAll() {
 
 }
 
-void StageEditor::ClickPushMove(Vector2 mousePos){
+void StageEditor::ClickPushMove(Vector2 mousePos) {
 	mousePos;
 }
 
@@ -159,8 +168,36 @@ void StageEditor::LoadFile(const std::string& fileName) {
 
 void StageEditor::DragMove() {
 #ifdef _DEBUG
-	
+
 #endif
+}
+
+TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
+	TD_10days::LevelMapChip::MapChip map{};
+
+	if (num == 0) {
+		map = TD_10days::LevelMapChip::MapChip::kEmpty;
+	}
+	if (num == 1) {
+		map = TD_10days::LevelMapChip::MapChip::kWall;
+	}
+	if (num == 2) {
+		map = TD_10days::LevelMapChip::MapChip::kTile;
+	}
+	if (num == 3) {
+		map = TD_10days::LevelMapChip::MapChip::kFloor;
+	}
+	if (num == 4) {
+		map = TD_10days::LevelMapChip::MapChip::kWater;
+	}
+	if (num == 5) {
+		map = TD_10days::LevelMapChip::MapChip::kStart;
+	}
+	if (num == 6) {
+		map = TD_10days::LevelMapChip::MapChip::kGoal;
+	}
+
+	return map;
 }
 
 bool StageEditor::LoadChackItem(const std::string& fileName) {

@@ -2,8 +2,9 @@
 #include<TD_10days/LevelMapChip.h>
 #include<../User/AoMidori.h>
 
+
 /*マップチップのステージを制作するためのエディター*/
-class StageEditor{
+class StageEditor {
 public:
 	StageEditor() = default;
 	StageEditor(const StageEditor&) = delete;
@@ -20,6 +21,7 @@ public:
 		return &instance;
 	}
 
+	void ApplyHitBox();
 
 	/// <summary>
 	/// 初期化
@@ -51,7 +53,7 @@ public:
 	void LoadFileAll();
 
 	//設定したMapchipを返す
-	const TD_10days::LevelMapChip& GetMapChip() {
+	TD_10days::LevelMapChip& GetMapChip() {
 		return levelMapChip_;
 	}
 
@@ -59,7 +61,7 @@ public:
 	void SetCamera(const SolEngine::Camera2D& camera) {
 		camera_ = camera;
 	}
-	
+
 private:
 	/// <summary>
 	/// クリックしたときと押し続けているときの動き
@@ -71,6 +73,8 @@ private:
 	/// <param name="id">シーンのID</param>
 	/// <param name="mousePos">マウスのポジション</param>
 	void DragMove();
+	//intをマップの対応したものに変換
+	TD_10days::LevelMapChip::MapChip NumberToMap(const int32_t num);
 
 	SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
 		return SoLib::Angle::Radian(degree * (std::numbers::pi_v<float> / 180.0f));
@@ -87,6 +91,8 @@ private:
 	SolEngine::Camera2D camera_;
 	//配置場所可視化用テクスチャ
 	std::unique_ptr<Tex2DState> newTex_;
+	//保存した後に読み取れるように
+	SoLib::IO::CSV csvFile_;
 
 	const int blockSize_ = 40;
 
@@ -96,23 +102,6 @@ private:
 
 	bool isIncide_ = false;
 
-	bool isSelectFlug_ = false;
-	//設置場所を決めるためのフラグ
-	bool isDecideToPlace_ = true;
-	//選択機能
-	bool isSelecteTex_ = true;
-	//クリックにするか
-	bool isTriger_ = false;
-	//長押しにするか
-	bool isPush_ = true;
-	//アイテムをつかむ
-	bool isGrab_ = false;
-	//ショートカットキーを利用するか
-	bool isShortCuts_ = false;
-	//テクスチャの元のサイズを使うかどうか
-	bool isUseTextureBaseSize_ = true;
-	//ドラッグをしているか
-	bool isDraging_ = false;
 
 	//UIエディターを使うかどうか
 	bool isTextureEditor_ = true;
@@ -147,6 +136,7 @@ private:
 	bool OperationConfirmation();
 
 private:
+
 	//ファイル保存関連
 	//ファイルがちゃんと読み込めたかどうか
 	bool chackOnlyNumber_ = 0;

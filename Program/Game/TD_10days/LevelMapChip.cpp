@@ -79,16 +79,18 @@ namespace TD_10days {
 		return std::span<const MapChip>{ &mapChips_[index * x_], x_ };
 	}
 
-	LevelMapChip::LevelMapChipHitBox LevelMapChip::CreateHitBox() const
+	const LevelMapChip::LevelMapChipHitBox* LevelMapChip::CreateHitBox()
 	{
-		LevelMapChipHitBox result;
-		result.y_ = y_;
-		result.x_ = x_;
-		result.hitBoxData_.resize(y_ * x_, false);
-		std::transform(mapChips_.begin(), mapChips_.end(), result.hitBoxData_.begin(), [](const MapChip& chip) {
+		if (not hitBox_) {
+			hitBox_ = std::make_unique<LevelMapChipHitBox>();
+		}
+		hitBox_->y_ = y_;
+		hitBox_->x_ = x_;
+		hitBox_->hitBoxData_.resize(y_ * x_, false);
+		std::transform(mapChips_.begin(), mapChips_.end(), hitBox_->hitBoxData_.begin(), [](const MapChip& chip) {
 			return chip != MapChip::kEmpty;
 			});
-		return result;
+		return hitBox_.get();
 	}
 
 	void LevelMapChip::Resize(uint32_t y, uint32_t x)

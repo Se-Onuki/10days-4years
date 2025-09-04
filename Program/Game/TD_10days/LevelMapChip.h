@@ -90,7 +90,7 @@ namespace TD_10days {
 
 		void SetMapChipData(const std::vector<MapChipData>& mapChipData) { mapChipData_ = mapChipData; }
 
-		LevelMapChipHitBox CreateHitBox() const;
+		const LevelMapChipHitBox* CreateHitBox();
 
 		void Resize(uint32_t y, uint32_t x);
 
@@ -99,6 +99,8 @@ namespace TD_10days {
 		std::vector<MapChip> mapChips_;
 		/// @brief マップチップに対応するデータの配列
 		std::vector<MapChipData> mapChipData_;
+
+		std::unique_ptr<LevelMapChipHitBox> hitBox_;
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
