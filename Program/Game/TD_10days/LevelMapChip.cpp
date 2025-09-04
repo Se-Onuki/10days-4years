@@ -9,7 +9,7 @@ namespace TD_10days {
 		}
 		return hitBoxData_[x + y * x_];
 	}
-	LevelMapChip::LevelMapChipHitBox LevelMapChip::LevelMapChipHitBox::Clip(const Vector2 &origin, const Vector2 &diff) const
+	LevelMapChip::LevelMapChipHitBox LevelMapChip::LevelMapChipHitBox::Clip(const Vector2& origin, const Vector2& diff) const
 	{
 		if (origin.x >= x_ || origin.y >= y_) {
 			return LevelMapChipHitBox();
@@ -28,10 +28,10 @@ namespace TD_10days {
 		return result;
 	}
 	// 通常のコンストラクタ
-	LevelMapChip::LevelMapChip(const uint32_t y, const uint32_t x) : y_(y), x_(x), mapChips_(y *x, static_cast<MapChip>(0)) {}
+	LevelMapChip::LevelMapChip(const uint32_t y, const uint32_t x) : y_(y), x_(x), mapChips_(y* x, static_cast<MapChip>(0)) {}
 
 	// CSVからのコンストラクタ
-	LevelMapChip::LevelMapChip(const SoLib::IO::CSV &csv)
+	LevelMapChip::LevelMapChip(const SoLib::IO::CSV& csv)
 	{
 		// 縦横のデータを取得
 		y_ = static_cast<uint32_t>(csv.GetWidth());
@@ -54,7 +54,7 @@ namespace TD_10days {
 		x_ = x; y_ = y; mapChips_.resize(y * x, static_cast<MapChip>(0));
 	}
 
-	void LevelMapChip::Init(const SoLib::IO::CSV &csv)
+	void LevelMapChip::Init(const SoLib::IO::CSV& csv)
 	{
 		// 縦横のデータを取得
 		y_ = static_cast<uint32_t>(csv.GetWidth());
@@ -79,26 +79,43 @@ namespace TD_10days {
 		return std::span<const MapChip>{ &mapChips_[index * x_], x_ };
 	}
 
-	LevelMapChip::LevelMapChipHitBox LevelMapChip::CreateHitBox() const
+	const LevelMapChip::LevelMapChipHitBox* LevelMapChip::CreateHitBox()
 	{
-		LevelMapChipHitBox result;
-		result.y_ = y_;
-		result.x_ = x_;
-		result.hitBoxData_.resize(y_ * x_, false);
-		std::transform(mapChips_.begin(), mapChips_.end(), result.hitBoxData_.begin(), [](const MapChip &chip) {
+		if (not hitBox_) {
+			hitBox_ = std::make_unique<LevelMapChipHitBox>();
+		}
+		hitBox_->y_ = y_;
+		hitBox_->x_ = x_;
+		hitBox_->hitBoxData_.resize(y_ * x_, false);
+		std::transform(mapChips_.begin(), mapChips_.end(), hitBox_->hitBoxData_.begin(), [](const MapChip& chip) {
 			return chip != MapChip::kEmpty;
 			});
-		return result;
+		return hitBox_.get();
 	}
 
-	void LevelMapChipRenderer::Init(const LevelMapChip &levelMapChip) {
+	void LevelMapChip::Resize(uint32_t y, uint32_t x)
+	{
+		std::vector<MapChip> newData_(y * x, MapChip::kEmpty);
+		const uint32_t minX = (std::min)(x, x_);
+		const uint32_t minY = (std::min)(y, y_);
+
+		for (uint32_t yi = 0; yi < minY; ++yi) {
+			std::copy_n((*this)[yi].begin(), minX, &newData_[yi]);
+		}
+
+		y_ = y;
+		x_ = x;
+		mapChips_ = std::move(newData_);
+	}
+
+	void LevelMapChipRenderer::Init(const LevelMapChip& levelMapChip) {
 		pLevelMapChip_ = &levelMapChip;
 	}
 
 	void LevelMapChipRenderer::Draw() {
 		spriteList_.clear();
 		// マップチップの情報の取得
-		const auto &mapChips = pLevelMapChip_->GetMapChipData();
+		const auto& mapChips = pLevelMapChip_->GetMapChipData();
 
 		// マップチップのサイズの取得
 		const auto [mapChipY, mapChipX] = pLevelMapChip_->GetSize();
@@ -115,7 +132,7 @@ namespace TD_10days {
 		for (uint32_t y = 0; y < mapChipY; ++y) {
 			for (uint32_t x = 0; x < mapChipX; ++x) {
 				// マップチップの種類
-				const auto &mapChipType = *(mapChipItr++);
+				const auto& mapChipType = *(mapChipItr++);
 				// マップチップのデータ
 				//const auto &mapChipData = mapChips[static_cast<size_t>(mapChipType)];
 				// マップチップの位置
@@ -130,11 +147,11 @@ namespace TD_10days {
 		}
 
 		// 描画テーブルへの追加
-		for (const auto &[index, positions] : drawList) {
+		for (const auto& [index, positions] : drawList) {
 			// マップチップのテクスチャハンドル
 			const TextureHandle textureHandle = mapChips[index].GetTextureHandle();
 			// 座標
-			for (const auto &position : positions) {
+			for (const auto& position : positions) {
 				// スプライトの生成
 				auto sprite = spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2::one * vMapChipScale_)).get();
 				// スプライトの設定
@@ -144,7 +161,7 @@ namespace TD_10days {
 		}
 
 		// 全てに対して描画を実行
-		for (const auto &sprite : spriteList_) {
+		for (const auto& sprite : spriteList_) {
 			sprite->Draw();
 		}
 

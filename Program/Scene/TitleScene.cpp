@@ -31,8 +31,7 @@ void TitleScene::OnEnter() {
 	blockHandleRender_->Init(1024u);
 	ModelManager::GetInstance()->CreateDefaultModel();
 
-	sprite_ = Sprite::Generate(TextureManager::Load("UI/TitleECS.dds"));
-	button_ = Sprite::Generate(TextureManager::Load("UI/TD2_3week_2/Title/Start_CR.png"));
+	sprite_ = Sprite::Generate(TextureManager::Load("UI/Title/TitleECS.dds"));
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
@@ -44,7 +43,7 @@ void TitleScene::OnEnter() {
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
 
-	soundA_.Play(true, 0.5f);
+	soundA_.Play(true, 0.1f);
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
@@ -59,6 +58,8 @@ void TitleScene::OnEnter() {
 	systemExecuter_.AddSystem<ECS::System::Par::CalcTransMatrix>();
 	systemExecuter_.AddSystem<ECS::System::Par::ModelDrawer>();
 
+	//各シーンの最初に入れる
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Title);
 }
 
 void TitleScene::OnExit() {
@@ -80,13 +81,8 @@ void TitleScene::Update() {
 
 	sprite_->SetScale(Vector2{ 256,64 } *2.f);
 	sprite_->SetPivot({ 0.5f,0.5f });
-
+	
 	sprite_->SetPosition(Vector2{ WinApp::kWindowWidth * 0.5f,WinApp::kWindowHeight * (1.f / 4.f) });
-
-	button_->SetScale(Vector2{ 256,64 } *2.f);
-	button_->SetPivot({ 0.5f,0.5f });
-
-	button_->SetPosition(Vector2{ WinApp::kWindowWidth * 0.5f,WinApp::kWindowHeight * (2.f / 4.f) });
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
 		sceneManager_->ChangeScene<GameScene>(1.f);
@@ -137,7 +133,9 @@ void TitleScene::Draw() {
 
 	// スプライトの描画
 	sprite_->Draw();
-	button_->Draw();
+
+	TextureEditor::GetInstance()->Draw();
+	TextureEditor::GetInstance()->PutDraw();
 
 	Fade::GetInstance()->Draw();
 

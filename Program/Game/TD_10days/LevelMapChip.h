@@ -18,10 +18,13 @@ namespace TD_10days {
 	public:
 
 		enum class MapChipType : uint32_t {
-			kEmpty = 0,	// 何もない
-			kWall,		// 壁
-
-
+			kEmpty,	// 何もない
+			kWall,	// 壁
+			kTile,	// 床内部
+			kFloor,	// プレイヤーが触れる床
+			kWater,	// 設置するタイプの水
+			kStart,	// スタート位置
+			kGoal,	// ゴール位置
 			CountElements // 要素数
 		};
 
@@ -88,13 +91,17 @@ namespace TD_10days {
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
 		void AppendMapChipData(const MapChipData &mapChipData) { mapChipData_.emplace_back(mapChipData); }
 
-		LevelMapChipHitBox CreateHitBox() const;
+		const LevelMapChipHitBox* CreateHitBox();
+
+		void Resize(uint32_t y, uint32_t x);
 
 	private:
 		/// @brief マップチップの配列
 		std::vector<MapChip> mapChips_;
 		/// @brief マップチップに対応するデータの配列
 		std::vector<MapChipData> mapChipData_;
+
+		std::unique_ptr<LevelMapChipHitBox> hitBox_;
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};

@@ -59,6 +59,7 @@ void ResultScene::OnEnter()
 
 	timerCoron_ = Sprite::Generate(TextureManager::Load("UI/Coron.png"));
 
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Result);
 
 	const Vector2 timerPos{ WinApp::kWindowWidth / 2.f ,96.f };
 	SetTimerPos(timerPos);
@@ -124,6 +125,10 @@ void ResultScene::Draw()
 	//}
 
 	//timerCoron_->Draw();
+
+	TextureEditor::GetInstance()->Draw();
+	TextureEditor::GetInstance()->PutDraw();
+
 
 	// スプライトの描画
 	fade_->Draw();

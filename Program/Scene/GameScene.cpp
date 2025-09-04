@@ -61,9 +61,13 @@ void GameScene::OnEnter() {
 	background_->SetScale(Vector2{ static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight) });
 	background_->SetColor(0x5555FFFF);
 	background_->CalcBuffer();
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
+
+	stageEditor_ = StageEditor::GetInstance();
+	stageEditor_->Initialize();
 
 
-	levelMapChip_.Init(10, 10);
+	/*levelMapChip_.Init(10, 10);
 	levelMapChip_.SetMapChipData(
 		{
 		{},
@@ -73,16 +77,16 @@ void GameScene::OnEnter() {
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChipRenderer_.Init(levelMapChip_);
-	levelMapChipHitBox_ = levelMapChip_.CreateHitBox();
+	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;*/
+	levelMapChipRenderer_.Init(stageEditor_->GetMapChip());
+	levelMapChipHitBox_ = stageEditor_->GetMapChip().CreateHitBox();
 
 	camera_.Init();
 	camera_.scale_ = 0.025f;
 
 	player_.Init();
 	player_.SetPosition({ 1,1 });
-	player_.SetHitBox(&levelMapChipHitBox_);
+	player_.SetHitBox(levelMapChipHitBox_);
 
 	water_ = std::make_unique<TD_10days::Water>();
 
@@ -112,6 +116,9 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
 	camera_.UpdateMatrix();
 
+	stageEditor_->SetCamera(camera_);
+	stageEditor_->Update();
+
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
 	player_.InputFunc();
 	player_.Update(deltaTime);
@@ -136,6 +143,9 @@ void GameScene::Draw() {
 	background_->Draw();
 
 	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	stageEditor_->PutDraw();
+
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
 	player_.Draw();
@@ -164,6 +174,8 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	TextureEditor::GetInstance()->Draw();
+	TextureEditor::GetInstance()->PutDraw();
 
 	// スプライトの描画
 	Fade::GetInstance()->Draw();

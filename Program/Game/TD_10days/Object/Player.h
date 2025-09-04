@@ -21,7 +21,7 @@ namespace TD_10days {
 
 		void InputFunc();
 
-		void SetHitBox(LevelMapChip::LevelMapChipHitBox *const pHitBox) { pHitBox_ = pHitBox; }
+		void SetHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pHitBox_ = pHitBox; }
 
 		Vector2 &GetPosition() { return position_; }
 
@@ -52,7 +52,7 @@ namespace TD_10days {
 		// 描画スプライト
 		std::unique_ptr<Sprite> sprite_;
 		// 当たり判定
-		LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
+		const LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
 
 		// 座標
 		Vector2 position_{};
