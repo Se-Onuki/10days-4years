@@ -37,7 +37,8 @@
 #include "../Engine/DirectBase/Base/TextureManager.h"
 
 #include "../Game/TD_10days/LevelMapChip.h"
-#include "../Game/TD_10days/Player/Player.h"
+#include "../Game/TD_10days/Object/Player.h"
+#include "../Game/TD_10days/Object/Water.h"
 
 
 /// @class GameScene
@@ -127,5 +128,9 @@ private:
 	SolEngine::Camera2D camera_;
 
 	TD_10days::Player player_;
+
+	std::unique_ptr<Sprite> background_ = nullptr;
+
+	std::unique_ptr<TD_10days::Water> water_;
 
 };

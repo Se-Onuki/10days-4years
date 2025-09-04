@@ -3,6 +3,7 @@
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../../../Engine/DirectBase/Render/Camera.h"
 #include "../LevelMapChip.h"
+#include "Water.h"
 
 namespace TD_10days {
 
@@ -24,15 +25,35 @@ namespace TD_10days {
 
 		Vector2 &GetPosition() { return position_; }
 
+		void SetWater(Water *water) { pWater_ = water; }
+
 	private:
 
+		/// @brief 画像の更新処理
 		void CalcSprite();
 
+		/// @brief 移動ベクトルに対する移動可能な進行度を計算する
+		/// @param[in] velocity 移動ベクトル
+		/// @return (進行度, 衝突した法線ベクトル)
 		std::tuple<float, Vector3> CalcMoveProgress(const Vector2 &velocity);
 
+		/// @brief 移動処理
+		/// @param[in] deltaTime 前フレームからの経過時間
 		void MoveUpdate(float deltaTime);
 
+		bool IsInWater() const;
+
 	private:
+
+		Water *pWater_ = nullptr;
+
+		std::string spriteName_ = "TD_10days/Player/Player.png";
+
+		// 描画スプライト
+		std::unique_ptr<Sprite> sprite_;
+		// 当たり判定
+		LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
+
 		// 座標
 		Vector2 position_{};
 		// 移動量
@@ -42,10 +63,8 @@ namespace TD_10days {
 
 		Vector2 size_ = Vector2::one * 0.8f;
 
-		// 描画スプライト
-		std::unique_ptr<Sprite> sprite_;
+		Vector2 gravity_ = Vector2{ 0.f, -9.8f };
 
-		LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
-
+		bool isGround_ = false;
 	};
 }

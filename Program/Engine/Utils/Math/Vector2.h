@@ -73,6 +73,11 @@ namespace SoLib {
 			return atan2(y, x);
 		}
 
+		// 順ベクトル
+		inline const Vector2 &operator+() const {
+			return *this;
+		}
+
 		// 逆ベクトル
 		inline Vector2 operator-() const {
 			return *this * -1;

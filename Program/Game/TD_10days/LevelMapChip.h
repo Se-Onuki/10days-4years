@@ -86,6 +86,7 @@ namespace TD_10days {
 		std::span<const MapChip> GetMapChips() const { return mapChips_; }
 
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
+		void AppendMapChipData(const MapChipData &mapChipData) { mapChipData_.emplace_back(mapChipData); }
 
 		LevelMapChipHitBox CreateHitBox() const;
 
