@@ -30,7 +30,7 @@ class CBuffer final
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	/// @brief リソースとして保持する構造体
-	SolEngine::DxResourceBufferPoolManager<>::UniqueHandle buffer_;
+	typename SolEngine::DxResourceBufferPoolManager<>::UniqueHandle buffer_;
 
 public:
 	/// @fn ID3D12Resource *const GetResources(void) noexcept
