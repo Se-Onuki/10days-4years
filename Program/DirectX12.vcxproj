@@ -242,6 +242,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Engine\Utils\Text\Text.cpp" />
     <ClCompile Include="Engine\VFX\Particle\Particle.cpp" />
     <ClCompile Include="Game\Collider\UICollider.cpp" />
+    <ClCompile Include="Game\Editor\StageEditor.cpp" />
     <ClCompile Include="Game\Editor\TextureEditor.cpp" />
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
@@ -408,6 +409,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Engine\VFX\Particle\Particle.h" />
     <ClInclude Include="Engine\VFX\Particle\ParticleSystem.h" />
     <ClInclude Include="Game\Collider\UICollider.h" />
+    <ClInclude Include="Game\Editor\StageEditor.h" />
     <ClInclude Include="Game\Editor\TextureEditor.h" />
     <ClInclude Include="Game\GameScene\GameModel.h" />
     <ClInclude Include="Game\GameScene\GameRenderer.h" />

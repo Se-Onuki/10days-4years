@@ -33,6 +33,7 @@
 #include "../Game/Resource/EnemyDataTable.h"
 #include "../Engine/VFX/Particle/Particle.h"
 #include "../Game/UI/ControllerUI.h"
+#include <Editor/StageEditor.h>
 
 #include "../Engine/DirectBase/Base/TextureManager.h"
 
@@ -119,6 +120,8 @@ private:
 	SoLib::Color::RGB4 shadowColor_ = 0x00000055;
 	// 経験値の色
 	SoLib::Color::RGB4 expColor_ = 0x555500FF;
+
+	StageEditor* stageEditor_ = nullptr;
 
 	TD_10days::LevelMapChip levelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;

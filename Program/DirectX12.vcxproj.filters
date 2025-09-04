@@ -576,6 +576,9 @@
     <ClCompile Include="Game\Collider\UICollider.cpp">
       <Filter>Game\Collision\Collider</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Editor\StageEditor.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene\SceneManager.h">
@@ -1141,6 +1144,9 @@
     </ClInclude>
     <ClInclude Include="Game\Collider\UICollider.h">
       <Filter>Game\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Editor\StageEditor.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
