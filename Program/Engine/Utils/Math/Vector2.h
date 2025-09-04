@@ -38,6 +38,12 @@ namespace SoLib {
 		/// ベクトル長関数
 		/// </summary>
 		/// <returns>ベクトルの長さ</returns>
+		float LengthSQ() const;
+
+		/// <summary>
+		/// ベクトル長関数
+		/// </summary>
+		/// <returns>ベクトルの長さ</returns>
 		float Length() const;
 
 		/// <summary>

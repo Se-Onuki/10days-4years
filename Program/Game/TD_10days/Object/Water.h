@@ -3,8 +3,10 @@
 #include <list>
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
+#include "../LevelMapChip.h"
 
 namespace TD_10days {
+
 	class Water {
 	public:
 
@@ -64,6 +66,8 @@ namespace TD_10days {
 		void DeleteWater();
 
 		void PlacementWater(const Vector2 &direction);
+
+		bool IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2& direction) const;
 
 		void Activate();
 

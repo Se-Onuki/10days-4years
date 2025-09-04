@@ -30,8 +30,12 @@ namespace SoLib {
 		return *this * MakeRotateMatrix(theta);
 	}
 
+	float Vector2::LengthSQ() const {
+		return x * x + y * y;
+	}
+
 	float Vector2::Length() const {
-		return sqrtf(powf(x, 2) + powf(y, 2));
+		return sqrtf(LengthSQ());
 	}
 
 	Vector2 Vector2::Normalize() const {

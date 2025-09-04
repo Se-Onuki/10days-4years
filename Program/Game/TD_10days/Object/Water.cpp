@@ -49,6 +49,28 @@ namespace TD_10days {
 		chainWater_->CreateChain(position_);
 	}
 
+	bool Water::IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2 &direction) const
+	{
+		const auto waterPos = GetWaterPosition();
+
+		for (const Vector2 &pos : waterPos) {
+			// 次の移動先の座標
+			const Vector2 nextPos = pos + direction;
+			// 既存の設置座標と合致した場合､置けない
+			if (position_ == nextPos) {
+				return false;
+			}
+
+			// もし当たり判定と一致した場合は移動できない｡
+			if (nextPos.x < 0 or nextPos.y < 0 or hitBox->at(static_cast<size_t>(nextPos.y), static_cast<size_t>(nextPos.x))) {
+				return false;
+			}
+
+		}
+
+		return true;
+	}
+
 	void Water::Activate()
 	{
 		isActive_ = true;

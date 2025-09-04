@@ -38,7 +38,7 @@ namespace TD_10days {
 
 		if (dInput->IsTrigger(DIK_SPACE)) {
 			if (isGround_ or IsInWater()) {
-
+				velocity_.y = 0.f;
 				acceleration_.y += 5.f;
 			}
 		}
@@ -48,17 +48,25 @@ namespace TD_10days {
 			pWater_->Init(place, Vector2::one, 0x0000FF55);
 		}
 
+		Vector2 nextDir = Vector2::zero;
+
 		if (dInput->IsTrigger(DIK_RIGHT)) {
-			pWater_->PlacementWater(+Vector2::right);
+			nextDir += +Vector2::right;
 		}
 		if (dInput->IsTrigger(DIK_LEFT)) {
-			pWater_->PlacementWater(-Vector2::right);
+			nextDir += -Vector2::right;
 		}
 		if (dInput->IsTrigger(DIK_UP)) {
-			pWater_->PlacementWater(+Vector2::up);
+			nextDir += +Vector2::up;
 		}
 		if (dInput->IsTrigger(DIK_DOWN)) {
-			pWater_->PlacementWater(-Vector2::up);
+			nextDir += -Vector2::up;
+		}
+
+		if (nextDir.LengthSQ() == 1.f) {
+			if (pWater_->IsPlaceAble(pHitBox_, nextDir)) {
+				pWater_->PlacementWater(nextDir);
+			}
 		}
 	}
 
