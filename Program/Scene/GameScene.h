@@ -33,10 +33,13 @@
 #include "../Game/Resource/EnemyDataTable.h"
 #include "../Engine/VFX/Particle/Particle.h"
 #include "../Game/UI/ControllerUI.h"
+#include <Editor/StageEditor.h>
 
 #include "../Engine/DirectBase/Base/TextureManager.h"
 
 #include "../Game/TD_10days/LevelMapChip.h"
+#include "../Game/TD_10days/Object/Player.h"
+#include "../Game/TD_10days/Object/Water.h"
 
 
 /// @class GameScene
@@ -119,9 +122,18 @@ private:
 	// 経験値の色
 	SoLib::Color::RGB4 expColor_ = 0x555500FF;
 
+	StageEditor* stageEditor_ = nullptr;
+
 	TD_10days::LevelMapChip levelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
+	const TD_10days::LevelMapChip::LevelMapChipHitBox* levelMapChipHitBox_;
 
 	SolEngine::Camera2D camera_;
+
+	TD_10days::Player player_;
+
+	std::unique_ptr<Sprite> background_ = nullptr;
+
+	std::unique_ptr<TD_10days::Water> water_;
 
 };

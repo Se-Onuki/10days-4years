@@ -85,7 +85,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 /external:I"$(ProjectDir)externals" %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;$(ProjectDir)Game\;$(ProjectDir)Scene\;$(ProjectDir)Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalTemplatesDiagnostics>true</ExternalTemplatesDiagnostics>
@@ -116,7 +116,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 /external:I"$(ProjectDir)externals" %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;$(ProjectDir)Game\;$(ProjectDir)Scene\;$(ProjectDir)Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalTemplatesDiagnostics>true</ExternalTemplatesDiagnostics>
@@ -148,7 +148,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 /external:I"$(ProjectDir)externals" %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\hidapi\include;$(ProjectDir)externals\libcurl\include;$(ProjectDir)externals\assimp\include;$(ProjectDir)Game\;$(ProjectDir)Scene\;$(ProjectDir)Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalTemplatesDiagnostics>true</ExternalTemplatesDiagnostics>
@@ -241,9 +241,14 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Engine\Utils\SoLib\NewImGui.cpp" />
     <ClCompile Include="Engine\Utils\Text\Text.cpp" />
     <ClCompile Include="Engine\VFX\Particle\Particle.cpp" />
+    <ClCompile Include="Game\Collider\UICollider.cpp" />
+    <ClCompile Include="Game\Editor\StageEditor.cpp" />
+    <ClCompile Include="Game\Editor\TextureEditor.cpp" />
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
+    <ClCompile Include="Game\TD_10days\Object\Player.cpp" />
+    <ClCompile Include="Game\TD_10days\Object\Water.cpp" />
     <ClCompile Include="Game\TD_10days\SplashParticle.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
@@ -407,12 +412,16 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Engine\Utils\Text\Text.h" />
     <ClInclude Include="Engine\VFX\Particle\Particle.h" />
     <ClInclude Include="Engine\VFX\Particle\ParticleSystem.h" />
+    <ClInclude Include="Game\Collider\UICollider.h" />
+    <ClInclude Include="Game\Editor\StageEditor.h" />
+    <ClInclude Include="Game\Editor\TextureEditor.h" />
     <ClInclude Include="Game\GameScene\GameModel.h" />
     <ClInclude Include="Game\GameScene\GameRenderer.h" />
     <ClInclude Include="Game\Resource\EnemyDataTable.h" />
     <ClInclude Include="Game\Resource\GameScore.h" />
-    <ClInclude Include="Game\TD_10days\Player\Player.h" />
+    <ClInclude Include="Game\TD_10days\Object\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
+    <ClInclude Include="Game\TD_10days\Object\Water.h" />
     <ClInclude Include="Game\TD_10days\SplashParticle.h" />
     <ClInclude Include="Game\UI\ControllerUI.h" />
     <ClInclude Include="Header\Collision\Collision.h" />
@@ -481,6 +490,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Engine\Utils\Text\ConstString.h" />
     <ClInclude Include="Engine\Utils\Text\StaticString.h" />
     <ClInclude Include="Engine\Utils\Types\TypeID.h" />
+    <ClInclude Include="User\AoMidori.h" />
     <ClInclude Include="Game\TD_10days\WaterEffect.h" />
     <ClInclude Include="Scene\WaterDemoScene.h" />
   </ItemGroup>

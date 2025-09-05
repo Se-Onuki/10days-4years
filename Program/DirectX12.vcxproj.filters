@@ -187,8 +187,17 @@
     <Filter Include="Game\TD_10days">
       <UniqueIdentifier>{8a990cef-fdb3-4bd4-b0d3-62b3ac98a3c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\TD_10days\Player">
+    <Filter Include="Game\TD_10days\Object">
       <UniqueIdentifier>{0bc0a4d3-bbf0-4bb8-9534-ed9b94c87f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Editor">
+      <UniqueIdentifier>{5690257a-822e-4822-a1bf-3f333bc963e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{eb65c116-c14c-4a38-839b-0f8ae1c98d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Collision\Collider">
+      <UniqueIdentifier>{495e47db-904a-4742-9e7e-a7d1e8885277}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -557,6 +566,21 @@
     </ClCompile>
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp">
       <Filter>Game\TD_10days</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Object\Player.cpp">
+      <Filter>Game\TD_10days\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Object\Water.cpp">
+      <Filter>Game\TD_10days\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Editor\TextureEditor.cpp">
+      <Filter>Game\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Collider\UICollider.cpp">
+      <Filter>Game\Collision\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Editor\StageEditor.cpp">
+      <Filter>Game\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Game\TD_10days\WaterEffect.cpp">
       <Filter>ソース ファイル</Filter>
@@ -1118,11 +1142,26 @@
     <ClInclude Include="Engine\Utils\SoLib\SoLib_Memory.h">
       <Filter>Engine\Utils\SoLib</Filter>
     </ClInclude>
-    <ClInclude Include="Game\TD_10days\Player\Player.h">
-      <Filter>Game\TD_10days\Player</Filter>
+    <ClInclude Include="Game\TD_10days\Object\Player.h">
+      <Filter>Game\TD_10days\Object</Filter>
     </ClInclude>
     <ClInclude Include="Game\TD_10days\LevelMapChip.h">
       <Filter>Game\TD_10days</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Object\Water.h">
+      <Filter>Game\TD_10days\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Editor\TextureEditor.h">
+      <Filter>Game\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="User\AoMidori.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Collider\UICollider.h">
+      <Filter>Game\Collision\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Editor\StageEditor.h">
+      <Filter>Game\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Game\TD_10days\WaterEffect.h">
       <Filter>ヘッダー ファイル</Filter>

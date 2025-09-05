@@ -118,6 +118,9 @@ namespace SolEngine {
 		float nearZ = 0.f;
 		// 深度限界（奥側）
 		float farZ = 100.0f;
+		// 拡大率
+		float scale_ = 1.f;
+
 #pragma endregion
 
 		Matrix4x4 matView_{};

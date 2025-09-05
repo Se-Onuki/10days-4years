@@ -18,10 +18,13 @@ namespace TD_10days {
 	public:
 
 		enum class MapChipType : uint32_t {
-			kEmpty = 0,	// 何もない
-			kWall,		// 壁
-
-
+			kEmpty,	// 何もない
+			kWall,	// 壁
+			kTile,	// 床内部
+			kFloor,	// プレイヤーが触れる床
+			kWater,	// 設置するタイプの水
+			kStart,	// スタート位置
+			kGoal,	// ゴール位置
 			CountElements // 要素数
 		};
 
@@ -41,6 +44,24 @@ namespace TD_10days {
 		private:
 			TextureHandle textureHandle_;
 
+		};
+
+		class LevelMapChipHitBox {
+		public:
+			LevelMapChipHitBox() = default;
+			~LevelMapChipHitBox() = default;
+			friend class LevelMapChip;
+
+			bool at(const size_t y, const size_t x) const;
+
+			LevelMapChipHitBox Clip(const Vector2 &origin, const Vector2 &diff) const;
+
+			size_t GetY() const { return y_; }
+			size_t GetX() const { return x_; }
+
+		private:
+			std::vector<bool> hitBoxData_;
+			size_t y_{}, x_{};
 		};
 
 		LevelMapChip() = default;
@@ -65,11 +86,14 @@ namespace TD_10days {
 		/// @return マップチップに対応するデータの配列
 		std::span<const MapChipData> GetMapChipData() const { return mapChipData_; }
 
-		const float GetMapChipScale() const { return vMapChipScale_; }
-
 		std::span<const MapChip> GetMapChips() const { return mapChips_; }
 
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
+		void AppendMapChipData(const MapChipData &mapChipData) { mapChipData_.emplace_back(mapChipData); }
+
+		const LevelMapChipHitBox* CreateHitBox();
+
+		void Resize(uint32_t y, uint32_t x);
 
 	private:
 		/// @brief マップチップの配列
@@ -77,10 +101,10 @@ namespace TD_10days {
 		/// @brief マップチップに対応するデータの配列
 		std::vector<MapChipData> mapChipData_;
 
+		std::unique_ptr<LevelMapChipHitBox> hitBox_;
+
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
-
-		VItem(float, MapChipScale, _) = 64.f;
 	};
 
 	class LevelMapChipRenderer {
@@ -89,14 +113,17 @@ namespace TD_10days {
 		LevelMapChipRenderer() = default;
 		LevelMapChipRenderer(const LevelMapChipRenderer &) = delete;
 		void Init(const LevelMapChip &levelMapChip);
-		void Draw(const SolEngine::Camera2D& camera);
+		void Draw();
 
 	private:
 
 		std::list<std::unique_ptr<Sprite>> spriteList_;
 		const LevelMapChip *pLevelMapChip_;
 		/// @brief マップチップの位置を計算する
-		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x, const float scale) const;
+		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
+
+
+		VItem(float, MapChipScale, _) = 1.f;
 
 	};
 }

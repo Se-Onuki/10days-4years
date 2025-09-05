@@ -338,7 +338,7 @@ const AABB AABB::AddPos(const Vector3 &vec) const {
 AABB AABB::Extend(const Vector3 &vec) const {
 
 	AABB result = *this;
-	result.Swaping();
+	result.Normalize();
 
 	for (uint32_t i = 0u; i < 3u; ++i) {
 		// もし正の数なら
@@ -387,6 +387,35 @@ Vector3 AABB::GetNormal(const Vector3 &surface) const {
 	return result.Normalize();
 }
 
+std::list<Vector3> AABB::GetNormalList(const Vector3 &surface) const {
+	std::list<Vector3> result{};
+	Vector3 maxNormal{ 0.f, 0.f, 0.f };
+	// 各法線の軸
+	static const std::array<Vector3, 3u> normalArray{
+		Vector3::up,
+		Vector3::right,
+		Vector3::front,
+	};
+	// スケーリングした表面座標へのベクトル
+	const Vector3 scalingSurface = (surface - this->GetCentor()).Scaling(this->GetRadius());
+
+	for (auto &normal : normalArray) {
+		// 法線情報との内積
+		const Vector3 dot = normal * (normal * scalingSurface);
+		// dotの絶対値が既存のものより大きいなら
+		if (maxNormal.LengthSQ() < dot.LengthSQ()) {
+			maxNormal = dot;
+			result.clear();
+		}
+		// dotの絶対値が既存のものと同じなら
+		if (maxNormal.LengthSQ() == dot.LengthSQ()) {
+			result.emplace_back(dot.Normalize());
+		}
+	}
+
+	return result;
+}
+
 Vector3 AABB::GetNormal(const Vector3 &surface, const Vector3 &direction) const {
 	direction;
 	Vector3 result{};
@@ -419,7 +448,7 @@ AABB AABB::Create(const Vector3 &origin, const Vector3 &radius) {
 	AABB result{};
 	result.min = -radius;
 	result.max = radius;
-	result.Swaping();
+	result.Normalize();
 
 	return result.AddPos(origin);
 }
@@ -429,13 +458,13 @@ void AABB::ImGuiDebug(const std::string &group) {
 
 		ImGui::DragFloat3("Max", &max.x, 0.1f);
 		ImGui::DragFloat3("Min", &min.x, 0.1f);
-		Swaping();
+		Normalize();
 
 		ImGui::TreePop();
 	}
 }
 
-const AABB &AABB::Swaping() {
+const AABB &AABB::Normalize() {
 	if (min.x > max.x) {
 		std::swap(min.x, max.x);
 	}

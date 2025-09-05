@@ -9,6 +9,7 @@
 #include "../../Engine/Utils/SoLib/SoLib_Timer.h"
 #include "../Engine/DirectBase/Base/DirectXCommon.h"
 #include "../Engine/DirectBase/Base/EngineObject.h"
+#include "Editor/TextureEditor.h"
 //#include "Scene.hpp"
 
 namespace SolEngine {
@@ -31,6 +32,8 @@ namespace SolEngine {
 		static SceneManager *const sceneManager_;
 	};
 
+
+
 	class SceneManager : public SolEngine::EngineObject {
 	private:
 
@@ -49,6 +52,7 @@ namespace SolEngine {
 		/// @brief 文字列をキーとしてシーンの生成関数を保存する
 		std::unordered_map<std::string, std::unique_ptr<IScene>(*)()> sceneFactory_;
 
+		TextureEditor* texEditor_ = nullptr;
 	public:
 
 		void Init();
@@ -101,6 +105,7 @@ namespace SolEngine {
 
 		/// @brief シーンの描画
 		void Draw() const;
+
 	};
 
 	template<SoLib::IsBased<IScene> T>

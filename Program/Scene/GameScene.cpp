@@ -57,8 +57,17 @@ void GameScene::OnEnter() {
 
 	vignettingParam_ = { 16.f, 0.8f };
 
+	background_ = Sprite::Generate(TextureManager::Load("white2x2.png"));
+	background_->SetScale(Vector2{ static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight) });
+	background_->SetColor(0x5555FFFF);
+	background_->CalcBuffer();
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
-	levelMapChip_.Init(10, 10);
+	stageEditor_ = StageEditor::GetInstance();
+	stageEditor_->Initialize();
+
+
+	/*levelMapChip_.Init(10, 10);
 	levelMapChip_.SetMapChipData(
 		{
 		{},
@@ -66,12 +75,23 @@ void GameScene::OnEnter() {
 		});
 	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChipRenderer_.Init(levelMapChip_);
-
+	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;*/
+	levelMapChipRenderer_.Init(stageEditor_->GetMapChip());
+	levelMapChipHitBox_ = stageEditor_->GetMapChip().CreateHitBox();
 
 	camera_.Init();
+	camera_.scale_ = 0.025f;
+
+	player_.Init();
+	player_.SetPosition({ 1,1 });
+	player_.SetHitBox(levelMapChipHitBox_);
+
+	water_ = std::make_unique<TD_10days::Water>();
+
+	player_.SetWater(water_.get());
+
 }
 
 void GameScene::OnExit() {
@@ -91,14 +111,24 @@ void GameScene::Update() {
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
 	ImGui::DragInt("Size", &gaussianParam_->second);
 
-	camera_.UpdateMatrix();
 	SoLib::ImGuiWidget("CameraPos", &camera_.translation_);
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
+	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
+	camera_.UpdateMatrix();
+
+	stageEditor_->SetCamera(camera_);
+	stageEditor_->Update();
+
+	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	player_.InputFunc();
+	player_.Update(deltaTime);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
 
 	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
+
+	water_->Update(deltaTime);
 }
 
 void GameScene::Draw() {
@@ -110,8 +140,19 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	background_->Draw();
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	stageEditor_->PutDraw();
+
 	// スプライトの描画
-	levelMapChipRenderer_.Draw(camera_);
+	levelMapChipRenderer_.Draw();
+	player_.Draw();
+
+	water_->Draw();
+
+	Sprite::SetDefaultProjection();
 
 	Sprite::EndDraw();
 
@@ -133,6 +174,8 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
+	TextureEditor::GetInstance()->Draw();
+	TextureEditor::GetInstance()->PutDraw();
 
 	// スプライトの描画
 	Fade::GetInstance()->Draw();
