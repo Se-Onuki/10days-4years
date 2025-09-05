@@ -40,6 +40,8 @@ namespace TD_10days {
 			/// @brief テクスチャハンドルを取得する
 			/// @return テクスチャハンドル
 			const TextureHandle &GetTextureHandle() const { return textureHandle_; }
+			
+			std::function<void(const Vector2 &)> callback_;
 
 		private:
 			TextureHandle textureHandle_;
