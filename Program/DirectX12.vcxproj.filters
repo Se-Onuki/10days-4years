@@ -558,6 +558,15 @@
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp">
       <Filter>Game\TD_10days</Filter>
     </ClCompile>
+    <ClCompile Include="Game\TD_10days\WaterEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\WaterDemoScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\SplashParticle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene\SceneManager.h">
@@ -1115,6 +1124,15 @@
     <ClInclude Include="Game\TD_10days\LevelMapChip.h">
       <Filter>Game\TD_10days</Filter>
     </ClInclude>
+    <ClInclude Include="Game\TD_10days\WaterEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\WaterDemoScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\SplashParticle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\shader\Sprite.PS.hlsl">
@@ -1177,6 +1195,7 @@
     <FxCompile Include="resources\shader\SkyBox.PS.hlsl">
       <Filter>Engine\Shader</Filter>
     </FxCompile>
+    <FxCompile Include="resources\shader\WaterEffect.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shader\Object3d.hlsli">

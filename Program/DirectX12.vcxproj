@@ -244,6 +244,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
+    <ClCompile Include="Game\TD_10days\SplashParticle.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
     <ClCompile Include="Header\Entity\Component\FollowCameraComp.cpp" />
@@ -291,6 +292,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Engine\Utils\SoLib\SoLib_Json.cpp" />
     <ClCompile Include="Engine\Utils\SoLib\SoLib_Lerp.cpp" />
     <ClCompile Include="Engine\Utils\SoLib\SoLib_Timer.cpp" />
+    <ClCompile Include="Game\TD_10days\WaterEffect.cpp" />
+    <ClCompile Include="Scene\WaterDemoScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\source\repos\NetworkTest\Library\Success.h" />
@@ -410,6 +413,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\Resource\GameScore.h" />
     <ClInclude Include="Game\TD_10days\Player\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
+    <ClInclude Include="Game\TD_10days\SplashParticle.h" />
     <ClInclude Include="Game\UI\ControllerUI.h" />
     <ClInclude Include="Header\Collision\Collision.h" />
     <ClInclude Include="Header\Entity\Component\Collider.h" />
@@ -477,6 +481,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Engine\Utils\Text\ConstString.h" />
     <ClInclude Include="Engine\Utils\Text\StaticString.h" />
     <ClInclude Include="Engine\Utils\Types\TypeID.h" />
+    <ClInclude Include="Game\TD_10days\WaterEffect.h" />
+    <ClInclude Include="Scene\WaterDemoScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
@@ -689,6 +695,14 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">6.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="resources\shader\WaterEffect.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

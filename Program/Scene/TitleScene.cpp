@@ -12,6 +12,7 @@
 #include "GameScene.h"
 #include "../Engine/LevelEditor/LevelImporter.h"
 #include "../Engine/ECS/System/NewSystems.h"
+#include "WaterDemoScene.h"
 
 TitleScene::TitleScene() {
 	input_ = SolEngine::Input::GetInstance();
@@ -90,6 +91,11 @@ void TitleScene::Update() {
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
 		sceneManager_->ChangeScene<GameScene>(1.f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
+
+	if (input_->GetDirectInput()->IsTrigger(DIK_L)) {
+		sceneManager_->ChangeScene<WaterDemoScene>(1.f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
 
