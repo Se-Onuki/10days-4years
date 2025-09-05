@@ -1,0 +1,14 @@
+{
+    "UIRandom": {
+        "AngleRandomMax": 1,
+        "AngleRandomMin": -1,
+        "PosRandomMax": [
+            1.0,
+            1.0
+        ],
+        "PosRandomMin": [
+            0.0,
+            0.0
+        ]
+    }
+}
