@@ -45,14 +45,7 @@ private:
 	// 平行光源
 	std::unique_ptr<DirectionLight> light_ = nullptr;
 
-	std::unique_ptr<Sprite> sprite_;
-
 	Ground ground_{ 0.f, Vector2{100.f,100.f} };
-
-	BlockManager *blockRender_;
-	ModelHandleListManager *blockHandleRender_;
-
-	SolEngine::Camera3D camera_;
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;
