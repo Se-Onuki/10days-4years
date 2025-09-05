@@ -1,28 +1,29 @@
 #pragma once
+#include "Utils/Containers/Singleton.h"		// シングルトン用のクラス
 #include<../User/AoMidori.h>
 //セレクトで選んだステージ番号だったりの受け渡し
 
-class SelectToGame{
+class SelectToGame : public SoLib::Singleton<SelectToGame> {
 public:
 	SelectToGame() = default;
-	SelectToGame(const SelectToGame&) = delete;
-	SelectToGame(SelectToGame&&) = delete;
+	SelectToGame(const SelectToGame &) = delete;
+	SelectToGame(SelectToGame &&) = delete;
 	~SelectToGame();
 
-	SelectToGame& operator=(const SelectToGame&) = delete;
-	SelectToGame& operator=(SelectToGame&&) = delete;
+	SelectToGame &operator=(const SelectToGame &) = delete;
+	SelectToGame &operator=(SelectToGame &&) = delete;
+
+	friend SoLib::Singleton<SelectToGame>;
 public:
 
-
-	static SelectToGame* const GetInstance() {
-		static SelectToGame instance;
-		return &instance;
-	}
-
+	/// @brief ステージ番号を取得する
+	/// @return ステージ番号(int32_t型)を返す
 	const int32_t GetStageNum() const {
 		return stageNum_;
 	}
 
+	/// @brief ステージ番号を設定する
+	/// @param[in] num 設定するステージ番号
 	void SetStageNum(const int32_t num) {
 		stageNum_ = num;
 	}

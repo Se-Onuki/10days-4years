@@ -78,19 +78,25 @@ void GameScene::OnEnter() {
 	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;*/
-	levelMapChipRenderer_.Init(stageEditor_->GetMapChip());
-	levelMapChipHitBox_ = stageEditor_->GetMapChip().CreateHitBox();
+
+	pLevelMapChip_ = &(stageEditor_->GetMapChip());
+	levelMapChipRenderer_.Init(pLevelMapChip_);
+	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
 
 	camera_.Init();
 	camera_.scale_ = 0.025f;
 
 	player_.Init();
-	player_.SetPosition({ 1,1 });
 	player_.SetHitBox(levelMapChipHitBox_);
 
 	water_ = std::make_unique<TD_10days::Water>();
 
 	player_.SetWater(water_.get());
+
+	pLevelMapChip_->FindActionChips();
+	const Vector2 playerPos = pLevelMapChip_->GetStartPosition();
+	player_.SetPosition(playerPos);
+
 
 }
 
@@ -250,6 +256,12 @@ void GameScene::PostEffectEnd()
 	pDxCommon_->DefaultDrawReset(false);
 
 	fullScreen_->Draw({ L"FullScreen.PS.hlsl" }, resultTex->renderTargetTexture_.Get(), resultTex->srvHandle_.gpuHandle_);
+
+}
+
+void GameScene::StageClear()
+{
+
 
 }
 

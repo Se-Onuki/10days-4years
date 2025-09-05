@@ -8,6 +8,7 @@ StageEditor::~StageEditor() {
 void StageEditor::ApplyHitBox()
 {
 	levelMapChip_.CreateHitBox();
+	levelMapChip_.FindActionChips();
 }
 
 void StageEditor::Initialize() {
@@ -31,7 +32,7 @@ void StageEditor::Initialize() {
 		{("StageTex/red.png")},//start
 		{("StageTex/yellow.png")},//goal
 	};
-	
+
 	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
 
 	int32_t selectNum = stageNum_ + 1;
@@ -44,16 +45,16 @@ void StageEditor::Initialize() {
 	else {
 		levelMapChip_.Init(mapSize_.first, mapSize_.second);
 	}
-	
+
 	levelMapChip_.SetMapChipData(
 		{
-		{},
+		{false},
 		{TextureHandle{TextureManager::Load(texPath_[1])}},//wall
 		{TextureHandle{TextureManager::Load(texPath_[2])}},//tile
 		{TextureHandle{TextureManager::Load(texPath_[3])}},//floor
 		{TextureHandle{TextureManager::Load(texPath_[4])}},//water
-		{TextureHandle{TextureManager::Load(texPath_[5])}},//start
-		{TextureHandle{TextureManager::Load(texPath_[6])}},//goal
+		{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
+		{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
 		});
 	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
@@ -94,12 +95,12 @@ void StageEditor::Update() {
 		((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
 		((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
 
-	if (not ImGui::GetIO().WantCaptureMouse){
+	if (not ImGui::GetIO().WantCaptureMouse) {
 		if (isIncide_) {
 			// ---- どのマップチップか ----
 			tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
 			tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
-			
+
 
 			newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
 
@@ -113,14 +114,14 @@ void StageEditor::Update() {
 				levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
 				isSave_ = false;
 			}
-		
+
 		}
 		//離した時に当たり判定の更新
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) or ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
 			ApplyHitBox();
 		}
 	}
-	
+
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
@@ -150,7 +151,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::Text("%s", "編集しているステージ");
 	// 左矢印
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
-		if (guiSelectNum_ > 1){
+		if (guiSelectNum_ > 1) {
 			if (not isSave_) {
 				if (NotSaveMoveConfirmation()) {
 					guiSelectNum_--;
@@ -163,7 +164,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 				guiSelectNum_--;
 				LoadStage();
 			}
-		}		
+		}
 	}
 	ImGui::SameLine();
 	// 現在値を表示
@@ -171,9 +172,9 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::SameLine();
 	// 右矢印
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
-		if (guiSelectNum_ < kStageMax_){
-			if (not isSave_){
-				if (NotSaveMoveConfirmation()){
+		if (guiSelectNum_ < kStageMax_) {
+			if (not isSave_) {
+				if (NotSaveMoveConfirmation()) {
 					guiSelectNum_++;
 					LoadStage();
 					isSave_ = true;
@@ -184,7 +185,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 				LoadStage();
 			}
 		}
-		
+
 	}
 
 	ImGui::Text("現在のマップ上限 縦幅 ＝ %d, 横幅 ＝ %d", levelMapChip_.GetSize().first, levelMapChip_.GetSize().second);
@@ -192,25 +193,25 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::DragInt("横幅", &mapSize_.second, 1.0f, 0, 999);
 	ImGui::DragInt("縦幅", &mapSize_.first, 1.0f, 0, 300);
 
-	if (ImGui::Button("マップのサイズを上記に変更する")){
-		if (OperationConfirmation()){
+	if (ImGui::Button("マップのサイズを上記に変更する")) {
+		if (OperationConfirmation()) {
 			levelMapChip_.Resize(mapSize_.first, mapSize_.second);
 		}
 	}
 	//ImGui::DragFloat2("座標", mousePos.data(), 0.1f);
 	//ImGui::DragInt("マップチップX", &tilePos_.first);
 	//ImGui::DragInt("マップチップY", &tilePos_.second);
-	if (ImGui::Button("現在のステージを保存する")){
+	if (ImGui::Button("現在のステージを保存する")) {
 		if (OperationConfirmation()) {
 			SaveFile(kFileName_);
 			isSave_ = true;
 		}
 	}
-	
+
 	ImGui::End();
 #endif // DEBUG_
 
-	
+
 }
 
 void StageEditor::LoadFileAll() {
@@ -218,10 +219,10 @@ void StageEditor::LoadFileAll() {
 }
 
 void StageEditor::ClickPushMove([[maybe_unused]] Vector2 mousePos) {
-	
+
 }
 
-void StageEditor::SaveFile([[maybe_unused]] const std::string& fileName) {
+void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 	std::filesystem::path dir(kDirectoryPath_);
 	if (!std::filesystem::exists(dir)) {
 		std::filesystem::create_directory(dir);
@@ -265,9 +266,9 @@ void StageEditor::ChackFiles() {
 
 	std::filesystem::directory_iterator dir_it(kDirectoryPath_);
 
-	for (const std::filesystem::directory_entry& entry : dir_it) {
+	for (const std::filesystem::directory_entry &entry : dir_it) {
 		//ファイルパスを取得
-		const std::filesystem::path& filePath = entry.path();
+		const std::filesystem::path &filePath = entry.path();
 
 		//ファイル拡張子を取得
 		std::string extension = filePath.extension().string();
@@ -299,7 +300,7 @@ void StageEditor::ChackFiles() {
 	}
 }
 
-void StageEditor::LoadFile(const std::string& fileName) {
+void StageEditor::LoadFile(const std::string &fileName) {
 #ifdef _DEBUG
 	fileName;
 	std::string message = "File loading completed";
@@ -342,7 +343,7 @@ TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
 	return map;
 }
 
-int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map){
+int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
 	int32_t num{};
 
 	if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
@@ -366,11 +367,11 @@ int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map){
 	if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
 		num = 6;
 	}
-	
+
 	return num;
 }
 
-void StageEditor::LoadStage(){
+void StageEditor::LoadStage() {
 	int32_t selectNum = guiSelectNum_;
 
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
@@ -385,7 +386,7 @@ void StageEditor::LoadStage(){
 	ApplyHitBox();
 }
 
-bool StageEditor::LoadChackItem(const std::string& fileName) {
+bool StageEditor::LoadChackItem(const std::string &fileName) {
 	// 書き込むjsonファイルのフルパスを合成する
 	std::string filePath = fileName;
 	//読み込み用のファイルストリーム
@@ -429,7 +430,7 @@ bool StageEditor::OperationConfirmation() {
 	}
 }
 
-bool StageEditor::NotSaveMoveConfirmation(){
+bool StageEditor::NotSaveMoveConfirmation() {
 	int result = MessageBox(WinApp::GetInstance()->GetHWND(), L"保存をしていませんがこの操作を続けますか?", L"Confirmation", MB_YESNO | MB_ICONQUESTION);
 	if (result == IDYES) {
 		return true;

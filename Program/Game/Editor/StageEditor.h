@@ -1,25 +1,21 @@
 #pragma once
 #include<TD_10days/LevelMapChip.h>
 #include<../User/AoMidori.h>
-
+#include "Utils/Containers/Singleton.h"
 
 /*マップチップのステージを制作するためのエディター*/
-class StageEditor {
+class StageEditor : public SoLib::Singleton<StageEditor> {
 public:
 	StageEditor() = default;
-	StageEditor(const StageEditor&) = delete;
-	StageEditor(StageEditor&&) = delete;
+	StageEditor(const StageEditor &) = delete;
+	StageEditor(StageEditor &&) = delete;
 	~StageEditor();
 
-	StageEditor& operator=(const StageEditor&) = delete;
-	StageEditor& operator=(StageEditor&&) = delete;
+	StageEditor &operator=(const StageEditor &) = delete;
+	StageEditor &operator=(StageEditor &&) = delete;
+
+	friend SoLib::Singleton<StageEditor>;
 public:
-
-
-	static StageEditor* const GetInstance() {
-		static StageEditor instance;
-		return &instance;
-	}
 
 	void ApplyHitBox();
 
@@ -53,12 +49,12 @@ public:
 	void LoadFileAll();
 
 	//設定したMapchipを返す
-	TD_10days::LevelMapChip& GetMapChip() {
+	TD_10days::LevelMapChip &GetMapChip() {
 		return levelMapChip_;
 	}
 
 	//カメラの位置を外部から取得する
-	void SetCamera(const SolEngine::Camera2D& camera) {
+	void SetCamera(const SolEngine::Camera2D &camera) {
 		camera_ = camera;
 	}
 
@@ -141,17 +137,17 @@ private:
 	//メンバ関数
 	using json = nlohmann::json;
 	//ファイルに保存する
-	void SaveFile(const std::string& fileName);
+	void SaveFile(const std::string &fileName);
 	//ファイルが存在するか確認する
 	void ChackFiles();
 
 	//ファイルを読み込む
-	void LoadFile(const std::string& fileName);
+	void LoadFile(const std::string &fileName);
 
-	void LoadFiles(const std::string& fileName);
+	void LoadFiles(const std::string &fileName);
 
 	//ファイルが存在するか確認する(指定)
-	bool LoadChackItem(const std::string& fileName);
+	bool LoadChackItem(const std::string &fileName);
 
 	//imguiの操作をそのまま続けるかどうかのメッセージボックスを表示
 	bool OperationConfirmation();

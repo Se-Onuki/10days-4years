@@ -43,6 +43,8 @@ namespace TD_10days {
 			ChainWaterData *CreateChain(const Vector2 &position);
 			void MoveDirection(const Vector2 &direction);
 
+			/// @brief 水の座標を取得する
+			/// @return 水の座標のリスト
 			std::vector<Vector2> GetPositionList() const;
 
 			void Clear();
@@ -63,12 +65,20 @@ namespace TD_10days {
 		void Update(float deltaTime);
 		void Draw() const;
 
+		/// @brief 水の破棄処理
 		void DeleteWater();
 
+		/// @brief 水の設置処理
+		/// @param[in] direction 設置したい方向性
 		void PlacementWater(const Vector2 &direction);
 
+		/// @brief 水が配置できるか
+		/// @param[in] hitBox 当たり判定
+		/// @param[in] direction 移動方向
+		/// @return 設置可能ならtrue
 		bool IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2& direction) const;
 
+		/// @brief 動作開始
 		void Activate();
 
 		const std::vector<Vector2> GetWaterPosition() const;

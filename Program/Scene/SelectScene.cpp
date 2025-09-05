@@ -33,19 +33,6 @@ void SelectScene::OnEnter(){
 
 	soundA_.Play(true, 0.1f);
 
-	SolEngine::ResourceObjectManager<SolEngine::LevelData>* const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
-
-	auto levelData = levelDataManager->Load({ .fileName_ = "check.json" });
-
-	SolEngine::LevelImporter levelImporter;
-	levelImporter.Import(levelData, &world_);
-
-	levelDataManager->Destory(levelData);
-
-	systemExecuter_.AddSystem<ECS::System::Par::CalcEulerTransMatrix>();
-	systemExecuter_.AddSystem<ECS::System::Par::CalcTransMatrix>();
-	systemExecuter_.AddSystem<ECS::System::Par::ModelDrawer>();
-
 	backGround_ = std::make_unique<Tex2DState>();
 	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
 	backGround_->originalTransform.translate_ = { 640.0f,360.0f };
