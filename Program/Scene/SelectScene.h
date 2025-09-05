@@ -1,6 +1,3 @@
-/// @file TitleScene.h
-/// @brief タイトルシーン
-/// @author ONUKI seiya
 #pragma once
 #include "SceneManager.h"
 
@@ -20,10 +17,11 @@
 #include "../Header/Object/Block/BlockManager.h"
 #include "../Header/Object/Ground.h"
 
-class TitleScene : public SolEngine::IScene {
+
+class SelectScene : public SolEngine::IScene {
 public:
-	TitleScene();
-	~TitleScene();
+	SelectScene();
+	~SelectScene();
 
 	void OnEnter() override;
 	void OnExit() override;
@@ -39,11 +37,11 @@ private:
 
 private:
 	// 入力インスタンス
-	SolEngine::Input *input_ = nullptr;
+	SolEngine::Input* input_ = nullptr;
 	// 音インスタンス
-	SolEngine::Audio *audio_ = nullptr;
+	SolEngine::Audio* audio_ = nullptr;
 	// カメラマネージャー
-	SolEngine::CameraManager *cameraManager_ = nullptr;
+	SolEngine::CameraManager* cameraManager_ = nullptr;
 
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
@@ -62,4 +60,6 @@ private:
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;
+
 };
+

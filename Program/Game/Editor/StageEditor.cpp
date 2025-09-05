@@ -85,17 +85,19 @@ void StageEditor::Update() {
 	world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
 	world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
 
-
+	int blockQuater = (blockSize_ / 4);
 	// ---- マップチップの範囲内かどうか ----
 	isIncide_ =
-		((-(blockSize_ / 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockSize_ / 2))) and
-		((-(blockSize_ / 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockSize_ / 2)));
+		((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
+		((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
 
 	if (not ImGui::GetIO().WantCaptureMouse){
 		if (isIncide_) {
 			// ---- どのマップチップか ----
 			tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
 			tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
+			
+
 			newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
 
 			//左クリックしたら

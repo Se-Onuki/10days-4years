@@ -32,6 +32,10 @@ inline Vector2 ImVec2toSolVec(const ImVec2 imvec2) {
 	return result;
 }
 
+inline SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
+    return SoLib::Angle::Radian(degree * (std::numbers::pi_v<float> / 180.0f));
+}
+
 inline std::vector<std::filesystem::path> GetFilePathFormDir(
     const std::filesystem::path& directoryName,
     const std::filesystem::path& extension

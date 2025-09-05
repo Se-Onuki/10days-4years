@@ -126,10 +126,6 @@ private:
 	/// <param name="mousePos">マウスのポジション</param>
 	void DropMove(const SceneID id, Vector2 mousePos);
 
-	SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
-		return SoLib::Angle::Radian(degree * (std::numbers::pi_v<float> / 180.0f));
-	}
-
 public:
 	static const float scaleMoveSpeed;
 
