@@ -763,7 +763,7 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 
 				if (ImGui::IsMouseDown(0)) {
 					//重複がしないように
-					if (selectNumber_ == -1 and !ImGui::GetIO().WantCaptureMouse) {
+					if (selectNumber_ == -1 and not ImGui::GetIO().WantCaptureMouse) {
 						selectNumber_ = int(j);
 						selectTexNumber_ = selectNumber_;
 						selectTexImguiNumber_ = selectNumber_;
@@ -778,7 +778,7 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 			}
 			else {
 				if (selectNumber_ == -1) {
-					if (ImGui::IsMouseClicked(0) and !ImGui::GetIO().WantCaptureMouse) {
+					if (ImGui::IsMouseClicked(0) and not ImGui::GetIO().WantCaptureMouse) {
 						selectTexNumber_ = -1;
 						selectTexImguiNumber_ = -1;
 					}

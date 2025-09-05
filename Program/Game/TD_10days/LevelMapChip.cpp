@@ -57,8 +57,8 @@ namespace TD_10days {
 	void LevelMapChip::Init(const SoLib::IO::CSV& csv)
 	{
 		// 縦横のデータを取得
-		y_ = static_cast<uint32_t>(csv.GetWidth());
-		x_ = static_cast<uint32_t>(csv.GetHeight());
+		x_ = static_cast<uint32_t>(csv.GetWidth());
+		y_ = static_cast<uint32_t>(csv.GetHeight());
 
 		mapChips_.resize(y_ * x_, static_cast<MapChip>(0));
 
@@ -95,17 +95,19 @@ namespace TD_10days {
 
 	void LevelMapChip::Resize(uint32_t y, uint32_t x)
 	{
-		std::vector<MapChip> newData_(y * x, MapChip::kEmpty);
+		std::vector<MapChip> newData(y * x, MapChip::kEmpty);
 		const uint32_t minX = (std::min)(x, x_);
 		const uint32_t minY = (std::min)(y, y_);
 
 		for (uint32_t yi = 0; yi < minY; ++yi) {
-			std::copy_n((*this)[yi].begin(), minX, &newData_[yi]);
+			const MapChip* src = &mapChips_[yi * x_];  // 元の行の先頭
+			MapChip* dst = &newData[yi * x];           // 新しい行の先頭
+			std::copy_n(src, minX, dst);
 		}
 
 		y_ = y;
 		x_ = x;
-		mapChips_ = std::move(newData_);
+		mapChips_ = std::move(newData);
 	}
 
 	void LevelMapChipRenderer::Init(const LevelMapChip& levelMapChip) {
