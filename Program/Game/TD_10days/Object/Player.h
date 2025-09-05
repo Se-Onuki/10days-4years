@@ -41,6 +41,8 @@ namespace TD_10days {
 		/// @param[in] deltaTime 前フレームからの経過時間
 		void MoveUpdate(float deltaTime);
 
+		/// @brief 水の中にいるか
+		/// @return 水の中にいるならTrue
 		bool IsInWater() const;
 
 	private:

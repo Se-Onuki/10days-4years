@@ -234,24 +234,33 @@ namespace TD_10days {
 			position_ += moveVec * nextProgress;
 		}
 
+		// 一旦着地したことにする
 		isGround_ = false;
 
+		// 接地面が床であったなら
 		if (std::find(hitNormalList.begin(), hitNormalList.end(), Vector3::up) != hitNormalList.end()) {
 
+			// 落下を終わらせる
 			velocity_.y = 0.f;
+			// 設置判定をつける
 			isGround_ = true;
 		}
 
+		// 左右移動の慣性を消す
 		velocity_.x = 0.f;
+		// 加速度をリセット
 		acceleration_ = Vector2::zero;
 	}
 
 	bool Player::IsInWater() const
 	{
+		// 水の座標のリスト
 		const auto waterPos = pWater_->GetWaterPosition();
 
+		// プレイヤの座標を丸める
 		const Vector2 target = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
 
+		// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
 		return std::find(waterPos.begin(), waterPos.end(), target) != waterPos.cend();
 	}
 
