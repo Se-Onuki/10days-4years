@@ -1,4 +1,5 @@
 #include "StageEditor.h"
+#include <SelectToGame/SelectToGame.h>
 
 StageEditor::~StageEditor() {
 
@@ -31,6 +32,8 @@ void StageEditor::Initialize() {
 		{("StageTex/yellow.png")},//goal
 	};
 	
+	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
+
 	int32_t selectNum = stageNum_ + 1;
 
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {

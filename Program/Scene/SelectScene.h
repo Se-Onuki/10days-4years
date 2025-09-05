@@ -32,6 +32,8 @@ public:
 private:
 	void ApplyGlobalVariables();
 
+	void Debug();
+
 	//テクスチャの設定や移動など
 	void TextureSetting();
 
@@ -57,6 +59,8 @@ private:
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
+
+	int32_t stageNum_ = 0;
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;

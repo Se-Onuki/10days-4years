@@ -202,6 +202,9 @@
     <Filter Include="Scene\other">
       <UniqueIdentifier>{7055841a-2c87-429f-ab31-d92f99e870f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\SelectToGame">
+      <UniqueIdentifier>{b42d63a3-e251-4ca8-8090-dce69600bdda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene\SceneManager.cpp">
@@ -587,6 +590,9 @@
     </ClCompile>
     <ClCompile Include="Scene\SelectScene.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectToGame\SelectToGame.cpp">
+      <Filter>Scene\SelectToGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1162,6 +1168,9 @@
     </ClInclude>
     <ClInclude Include="Scene\SelectScene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectToGame\SelectToGame.h">
+      <Filter>Scene\SelectToGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
