@@ -76,6 +76,11 @@ private:
 	//intをマップの対応したものに変換
 	TD_10days::LevelMapChip::MapChip NumberToMap(const int32_t num);
 
+	//intをマップの対応したものに変換
+	int32_t MapToNumber(const TD_10days::LevelMapChip::MapChip map);
+
+	void LoadStage();
+
 	SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
 		return SoLib::Angle::Radian(degree * (std::numbers::pi_v<float> / 180.0f));
 	}
@@ -91,22 +96,38 @@ private:
 	SolEngine::Camera2D camera_;
 	//配置場所可視化用テクスチャ
 	std::unique_ptr<Tex2DState> newTex_;
-	//保存した後に読み取れるように
-	SoLib::IO::CSV csvFile_;
+	//テクスチャのパス
+	std::vector<std::string> texPath_;
+	//テクスチャの種類の名前
+	std::vector<std::string> texName_;
 
-	const int blockSize_ = 40;
+	//保存した後に読み取れるように
+	SoLib::IO::CSV csvData_;
+	//保存ファイル
+	SoLib::IO::File csvFile_;
+
+	int blockSize_ = 40;
 
 	std::pair<int32_t, int32_t> tilePos_;
 
 	std::pair<int32_t, int32_t> mapSize_ = { 10,50 };
 
+	//ステージの最大値
+	const int32_t kStageMax_ = 15;
+
+	//Guiで選択している数
+	int32_t guiSelectNum_ = 1;
+
+	//選択しているステージ
+	int32_t stageNum_ = 0;
+
 	bool isIncide_ = false;
 
-
+	bool isSave_ = false;
 	//UIエディターを使うかどうか
 	bool isTextureEditor_ = true;
 
-	int32_t selectNumber_ = -1;
+	int32_t selectNumber_ = 1;
 	int32_t selectTexNumber_ = -1;
 	//imgui用のナンバー
 	int32_t selectTexImguiNumber_ = -1;
@@ -135,6 +156,9 @@ private:
 	//imguiの操作をそのまま続けるかどうかのメッセージボックスを表示
 	bool OperationConfirmation();
 
+	//セーブしてないけどそのまま続けるかどうかのメッセージボックスを表示
+	bool NotSaveMoveConfirmation();
+
 private:
 
 	//ファイル保存関連
@@ -150,6 +174,9 @@ private:
 	inline static const std::string kDirectoryName_ = "Datas/StageData";
 	//名前
 	inline static const std::string kItemName_ = "Stage";
+
+	//保存するファイルの名前
+	inline static const std::string kFileName_ = "StageMap";
 
 	std::vector<std::string> fileName_;
 
