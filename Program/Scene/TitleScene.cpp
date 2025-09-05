@@ -33,12 +33,9 @@ void TitleScene::OnEnter() {
 	global->AddValue(groupName, "PosRandomMax", posMinMax_.second);
 
 	// ライトの生成
-	light_ = DirectionLight::Generate();
 	ModelManager::GetInstance()->CreateDefaultModel();
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
-
-	ground_.Init();
 
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
@@ -117,8 +114,6 @@ void TitleScene::Draw() {
 	Model::StartDraw(commandList);
 	Model::SetPipelineType(Model::PipelineType::kShadowParticle);
 
-	light_->SetLight(commandList);
-	// ground_.Draw();
 
 	Model::EndDraw();
 
