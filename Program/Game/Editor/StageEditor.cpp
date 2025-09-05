@@ -5,7 +5,7 @@ StageEditor::~StageEditor() {
 
 }
 
-void StageEditor::ApplyHitBox()
+void StageEditor::ApplyMapChips()
 {
 	levelMapChip_.CreateHitBox();
 	levelMapChip_.FindActionChips();
@@ -118,7 +118,7 @@ void StageEditor::Update() {
 		}
 		//離した時に当たり判定の更新
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) or ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-			ApplyHitBox();
+			ApplyMapChips();
 		}
 	}
 
@@ -383,7 +383,7 @@ void StageEditor::LoadStage() {
 		levelMapChip_.Init(mapSize_.first, mapSize_.second);
 	}
 
-	ApplyHitBox();
+	ApplyMapChips();
 }
 
 bool StageEditor::LoadChackItem(const std::string &fileName) {

@@ -95,6 +95,8 @@ private:
 
 private:
 
+	SoLib::DeltaTimer stageClearTimer_{ 1.f, false };
+
 	/// @brief シェーダーのリソースマネージャ
 	SolEngine::ResourceObjectManager<Shader> *pShaderManager_ = nullptr;
 	/// @brief 入力のインスタンス

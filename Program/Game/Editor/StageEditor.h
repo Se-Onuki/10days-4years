@@ -17,7 +17,7 @@ public:
 	friend SoLib::Singleton<StageEditor>;
 public:
 
-	void ApplyHitBox();
+	void ApplyMapChips();
 
 	/// <summary>
 	/// 初期化

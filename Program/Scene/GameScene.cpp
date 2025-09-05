@@ -97,7 +97,6 @@ void GameScene::OnEnter() {
 	const Vector2 playerPos = pLevelMapChip_->GetStartPosition();
 	player_.SetPosition(playerPos);
 
-
 }
 
 void GameScene::OnExit() {
@@ -109,6 +108,7 @@ void GameScene::OnExit() {
 void GameScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
+	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
 
 	// grayScaleParam_ = 1;
 
@@ -127,14 +127,14 @@ void GameScene::Update() {
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
 	player_.InputFunc();
-	player_.Update(deltaTime);
+	player_.Update(inGameDeltaTime);
 
 	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }
 
 	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
-	water_->Update(deltaTime);
+	water_->Update(inGameDeltaTime);
 }
 
 void GameScene::Draw() {

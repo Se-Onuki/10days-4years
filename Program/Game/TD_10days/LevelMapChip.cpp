@@ -140,9 +140,11 @@ namespace TD_10days {
 
 	void LevelMapChipRenderer::Init(const LevelMapChip *levelMapChip) {
 		pLevelMapChip_ = levelMapChip;
+		CalcSpriteData();
 	}
 
-	void LevelMapChipRenderer::Draw() {
+	void LevelMapChipRenderer::CalcSpriteData()
+	{
 		spriteList_.clear();
 		// マップチップの情報の取得
 		const auto &mapChips = pLevelMapChip_->GetMapChipData();
@@ -163,8 +165,6 @@ namespace TD_10days {
 			for (uint32_t x = 0; x < mapChipX; ++x) {
 				// マップチップの種類
 				const auto &mapChipType = *(mapChipItr++);
-				// マップチップのデータ
-				//const auto &mapChipData = mapChips[static_cast<size_t>(mapChipType)];
 				// マップチップの位置
 				const auto mapChipPosition = CalcMapChipPosition(y, x);
 
@@ -176,10 +176,20 @@ namespace TD_10days {
 			}
 		}
 
+
+		size_t count = 0;
+		// 描画テーブルのメモリ確保
+		for (const auto &[index, positions] : drawList) {
+			count += positions.size();
+		}
+		spriteList_.reserve(count);
+
 		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
 			// マップチップのテクスチャハンドル
 			const TextureHandle textureHandle = mapChips[index].GetTextureHandle();
+			// メモリの確保
+
 			// 座標
 			for (const auto &position : positions) {
 				// スプライトの生成
@@ -189,6 +199,10 @@ namespace TD_10days {
 				sprite->SetInvertY(true);			// UVのY軸反転
 			}
 		}
+	}
+
+	void LevelMapChipRenderer::Draw() {
+
 
 		// 全てに対して描画を実行
 		for (const auto &sprite : spriteList_) {

@@ -137,11 +137,12 @@ namespace TD_10days {
 		LevelMapChipRenderer() = default;
 		LevelMapChipRenderer(const LevelMapChipRenderer &) = delete;
 		void Init(const LevelMapChip *levelMapChip);
+		void CalcSpriteData();
 		void Draw();
 
 	private:
 
-		std::list<std::unique_ptr<Sprite>> spriteList_;
+		std::vector<std::unique_ptr<Sprite>> spriteList_;
 		const LevelMapChip *pLevelMapChip_;
 		/// @brief マップチップの位置を計算する
 		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
