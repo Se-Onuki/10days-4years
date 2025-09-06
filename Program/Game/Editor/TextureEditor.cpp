@@ -27,7 +27,7 @@ void TextureEditor::Initialize() {
 	//最初なのでタイトルに設定
 	SetSceneId(SceneID::Title);
 
-	//LoadFileAll();
+	LoadFileAll();
 }
 
 void TextureEditor::Finalize() {
@@ -40,7 +40,7 @@ void TextureEditor::Update() {
 	
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-	if (isDecideToPlace_) {
+	if (isDecideToPlace_ and isTextureEditor_) {
 		//左クリックしたら
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
 			//マウスの位置に合わせる
@@ -51,31 +51,32 @@ void TextureEditor::Update() {
 	
 	ClickPushMove(id_, mousePos);
 
-	//マウスが画像と重なっているか
-	for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
-		if (i != static_cast<size_t>(id_))
-			continue;
-		for (size_t j = 0; j < texies_[i].size(); j++) {
-			uint32_t beforeColor = texColors_[i][j];
-			if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
-				//重複がしないように
-				if (selectNumber_ == -1 || selectNumber_ == int(j)) {
-					SoLib::Color::RGB4 color4 = texies_[i][j]->color;
-					color4.a = 1.0f - 0.5f;
+	if (isTextureEditor_){
+		//マウスが画像と重なっているか
+		for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
+			if (i != static_cast<size_t>(id_))
+				continue;
+			for (size_t j = 0; j < texies_[i].size(); j++) {
+				uint32_t beforeColor = texColors_[i][j];
+				if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
+					//重複がしないように
+					if (selectNumber_ == -1 || selectNumber_ == int(j)) {
+						SoLib::Color::RGB4 color4 = texies_[i][j]->color;
+						color4.a = 1.0f - 0.5f;
 					
-					texies_[i][j]->color = color4;
+						texies_[i][j]->color = color4;
+					}
+					else {
+						texies_[i][j]->color = beforeColor;
+					}
+
 				}
 				else {
 					texies_[i][j]->color = beforeColor;
 				}
-
-			}
-			else {
-				texies_[i][j]->color = beforeColor;
 			}
 		}
 	}
-
 
 	//ShortCutMove(id_);
 #endif // _DEBUG
@@ -103,7 +104,7 @@ void TextureEditor::Draw() {
 }
 
 void TextureEditor::PutDraw() {
-	if (isDecideToPlace_) {
+	if (isDecideToPlace_ and isTextureEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
 		newTex_->sprite->SetScale(newTex_->transform.scale_);
@@ -541,8 +542,8 @@ void TextureEditor::SaveFile(const std::string& fileName) {
 	}
 
 	std::filesystem::path dir(kDirectoryPath_);
-	if (!std::filesystem::exists(kDirectoryName_)) {
-		std::filesystem::create_directory(kDirectoryName_);
+	if (!std::filesystem::exists(dir)) {
+		std::filesystem::create_directory(dir);
 	}
 	// 書き込むjsonファイルのフルパスを合成する
 	std::string filePath = kDirectoryPath_ + fileName + ".json";
@@ -953,8 +954,8 @@ bool TextureEditor::LoadChackItem(const std::string& fileName) {
 	ifs.open(filePath);
 	// ファイルオープン失敗
 	if (ifs.fail()) {
-		std::string message = "Failed open data file for write.";
-		MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
+		//std::string message = "Failed open data file for write.";
+		//MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
 		ifs.close();
 		return false;
 	}

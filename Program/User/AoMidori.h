@@ -17,8 +17,8 @@ struct Tex2DState {
 
 enum class SceneID {
 	Title,
-	StageSelect,
 	Game,
+	StageSelect,
 	Result,
 
 	kNum

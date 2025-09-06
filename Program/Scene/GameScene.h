@@ -95,6 +95,8 @@ private:
 
 	/// @brief ステージをリセットする
 	void ResetStage(bool isNext);
+	//imguiとかDebugでしか利用しないものまとめ
+	void Debug();
 private:
 
 	void Load(const GlobalVariables::Group &group);
