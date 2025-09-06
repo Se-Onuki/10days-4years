@@ -94,6 +94,9 @@ void GameScene::OnEnter() {
 	// プレイヤの位置を設定
 	player_.SetPosition(playerPos);
 
+	//各シーンの最初に入れる
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
+
 }
 
 void GameScene::OnExit() {

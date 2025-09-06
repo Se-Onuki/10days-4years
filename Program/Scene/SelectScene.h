@@ -50,7 +50,13 @@ private:
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
 
+	static const int32_t kMaxStages_ = 15;
+
 	std::unique_ptr<Tex2DState> backGround_;
+	//扉
+	std::array<Tex2DState, kMaxStages_> doors_;
+	//番号
+	std::array<Tex2DState, kMaxStages_> numbers_;
 
 	//テクスチャの情報群
 	std::vector<Tex2DState*> texDetas_;

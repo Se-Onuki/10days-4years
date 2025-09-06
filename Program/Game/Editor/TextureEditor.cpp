@@ -27,7 +27,7 @@ void TextureEditor::Initialize() {
 	//最初なのでタイトルに設定
 	SetSceneId(SceneID::Title);
 
-	//LoadFileAll();
+	LoadFileAll();
 }
 
 void TextureEditor::Finalize() {
@@ -541,8 +541,8 @@ void TextureEditor::SaveFile(const std::string& fileName) {
 	}
 
 	std::filesystem::path dir(kDirectoryPath_);
-	if (!std::filesystem::exists(kDirectoryName_)) {
-		std::filesystem::create_directory(kDirectoryName_);
+	if (!std::filesystem::exists(dir)) {
+		std::filesystem::create_directory(dir);
 	}
 	// 書き込むjsonファイルのフルパスを合成する
 	std::string filePath = kDirectoryPath_ + fileName + ".json";

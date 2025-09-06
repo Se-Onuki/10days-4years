@@ -1,0 +1,28 @@
+{
+    "UIs": {
+        "Select": [
+            {
+                "TextureFullPath": "UI\\Select\\StageSelectUI.png",
+                "TextureName": "StageSelectUI",
+                "UVScale": [
+                    820.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967167,
+                "degree": 0,
+                "scale": [
+                    820.0,
+                    128.0
+                ],
+                "translate": [
+                    640.0,
+                    85.0
+                ]
+            }
+        ]
+    }
+}
