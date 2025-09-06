@@ -45,6 +45,8 @@ public:
 	const Group &GetGroup(const std::string &groupName) const;
 	Group &GetGroup(const std::string &groupName);
 
+	bool FindGroup(const std::string &groupName) const;
+
 	Group &operator[](const std::string &groupName) { return datas_[groupName]; }
 
 	/// @brief Item自体のゲッタ
