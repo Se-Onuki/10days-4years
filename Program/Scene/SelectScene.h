@@ -49,14 +49,26 @@ private:
 
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
+	//pivotの固定値
+	const Vector2 kPivotValue_ = { 0.5f,0.5f };
+	//扉の選択時の大きさ
+	Vector2 selectScaleDoor_ = { 360.0f,360.0f };
+	//扉のそれ以外の時の大きさ
+	Vector2 defaultScaleDoor_ = { 250.0f,250.0f };
+	//数字の選択時の大きさ
+	Vector2 selectScaleNumber_ = { 240.0f,240.0f };
+	//数字のそれ以外の時の大きさ
+	Vector2 defaultScaleNumber_ = { 160.0f,160.0f };
 
 	static const int32_t kMaxStages_ = 15;
+	//ステージごとの幅
+	const int32_t kBaseMoveValue_ = 450;
 
 	std::unique_ptr<Tex2DState> backGround_;
 	//扉
-	std::array<Tex2DState, kMaxStages_> doors_;
+	std::array<std::unique_ptr<Tex2DState>, kMaxStages_> doors_;
 	//番号
-	std::array<Tex2DState, kMaxStages_> numbers_;
+	std::array<std::unique_ptr<Tex2DState>, kMaxStages_> numbers_;
 
 	//テクスチャの情報群
 	std::vector<Tex2DState*> texDetas_;
@@ -69,6 +81,9 @@ private:
 	Vector2 randPos_ = {};
 
 	int32_t stageNum_ = 0;
+
+	//中心座標
+	int32_t basePos_ = 0;
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;

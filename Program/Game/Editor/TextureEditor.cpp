@@ -953,8 +953,8 @@ bool TextureEditor::LoadChackItem(const std::string& fileName) {
 	ifs.open(filePath);
 	// ファイルオープン失敗
 	if (ifs.fail()) {
-		std::string message = "Failed open data file for write.";
-		MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
+		//std::string message = "Failed open data file for write.";
+		//MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
 		ifs.close();
 		return false;
 	}

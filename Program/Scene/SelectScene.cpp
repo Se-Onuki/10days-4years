@@ -38,6 +38,21 @@ void SelectScene::OnEnter(){
 	backGround_->originalTransform.translate_ = { 640.0f,360.0f };
 	backGround_->sprite = Sprite::Generate(TextureManager::Load("TD_10days/BackGround/BackGround.png"));
 
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i] = std::make_unique<Tex2DState>();
+		doors_[i]->originalTransform.scale_ = { 250.0f,250.0f };
+		doors_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,380.0f };
+		doors_[i]->transform.translate_ = doors_[i]->originalTransform.translate_;
+		doors_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageUI.png"));
+		numbers_[i] = std::make_unique<Tex2DState>();
+		numbers_[i]->originalTransform.scale_ = { 160.0f,160.0f };
+		numbers_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,410.0f };
+		numbers_[i]->transform.translate_ = numbers_[i]->originalTransform.translate_;
+		numbers_[i]->uvTransform.scale_ = { 240.0f,240.0f };
+		numbers_[i]->uvTransform.translate_ = { i * 240.0f,0.0f };
+		numbers_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageNumbers.png"));
+	}
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::StageSelect);
 }
@@ -58,6 +73,8 @@ void SelectScene::Update(){
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
 	ApplyGlobalVariables();
+
+	PlayerMoving();
 
 	TextureSetting();
 
@@ -81,6 +98,10 @@ void SelectScene::Draw(){
 
 
 	backGround_->sprite->Draw();
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i]->sprite->Draw();
+		numbers_[i]->sprite->Draw();
+	}
 
 	Sprite::EndDraw();
 
@@ -137,17 +158,58 @@ void SelectScene::Debug(){
 
 }
 
-void SelectScene::PlayerMoving()
-{
+void SelectScene::PlayerMoving(){
+	//右入力
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsTrigger(DIK_RIGHT)) {
+		if (stageNum_ < (kMaxStages_ - 1)) {
+			stageNum_++;
+		}
+
+		basePos_ = stageNum_ * kBaseMoveValue_;
+	}
+	//左入力
+	else if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsTrigger(DIK_LEFT)) {
+		if (stageNum_ > 0) {
+			stageNum_--;
+		}
+
+		basePos_ = stageNum_ * kBaseMoveValue_;
+	}
 }
 
 void SelectScene::TextureSetting() {
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		//選択しているステージに応じて移動
+		doors_[i]->transform.translate_.x = doors_[i]->originalTransform.translate_.x - basePos_;
+		numbers_[i]->transform.translate_.x = numbers_[i]->originalTransform.translate_.x - basePos_;
+		//選択しているものは大きく表示
+		if (i == stageNum_){
+			doors_[i]->transform.scale_ = selectScaleDoor_;
+			numbers_[i]->transform.scale_ = selectScaleNumber_;
+			numbers_[i]->transform.translate_.y = 430.0f;
+		}
+		else {
+			doors_[i]->transform.scale_ = defaultScaleDoor_;
+			numbers_[i]->transform.scale_ = defaultScaleNumber_;
+			numbers_[i]->transform.translate_.y = 410.0f;
+		}
+
+		doors_[i]->sprite->SetPosition(doors_[i]->transform.translate_);
+		doors_[i]->sprite->SetScale(doors_[i]->transform.scale_);
+		doors_[i]->sprite->SetPivot(kPivotValue_);
+
+		numbers_[i]->sprite->SetPosition(numbers_[i]->transform.translate_);
+		numbers_[i]->sprite->SetScale(numbers_[i]->transform.scale_);
+		numbers_[i]->sprite->SetTexOrigin(numbers_[i]->uvTransform.translate_);
+		numbers_[i]->sprite->SetTexDiff(numbers_[i]->uvTransform.scale_);
+		numbers_[i]->sprite->SetPivot(kPivotValue_);
+	}
+
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
-	backGround_->sprite->SetPivot({ 0.5f,0.5f });
+	backGround_->sprite->SetPivot(kPivotValue_);
+
 
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
-
-
 
 }
