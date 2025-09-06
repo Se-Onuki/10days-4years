@@ -114,6 +114,8 @@ private:
 
 	std::pair<int32_t, int32_t> mapSize_ = { 10,50 };
 
+	std::pair<int32_t, int32_t> nowMapSize_ = { 10,50 };
+
 	//ステージの最大値
 	const int32_t kStageMax_ = 15;
 
@@ -126,6 +128,8 @@ private:
 	bool isIncide_ = false;
 
 	bool isSave_ = false;
+
+	bool isNotChangeRange_ = false;
 	//UIエディターを使うかどうか
 	bool isTextureEditor_ = true;
 
@@ -156,10 +160,7 @@ private:
 	bool LoadChackItem(const std::string &fileName);
 
 	//imguiの操作をそのまま続けるかどうかのメッセージボックスを表示
-	bool OperationConfirmation();
-
-	//セーブしてないけどそのまま続けるかどうかのメッセージボックスを表示
-	bool NotSaveMoveConfirmation();
+	bool OperationConfirmation(const std::wstring text);
 
 private:
 

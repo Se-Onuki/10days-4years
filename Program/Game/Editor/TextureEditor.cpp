@@ -40,7 +40,7 @@ void TextureEditor::Update() {
 	
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-	if (isDecideToPlace_) {
+	if (isDecideToPlace_ and isTextureEditor_) {
 		//左クリックしたら
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
 			//マウスの位置に合わせる
@@ -104,7 +104,7 @@ void TextureEditor::Draw() {
 }
 
 void TextureEditor::PutDraw() {
-	if (isDecideToPlace_) {
+	if (isDecideToPlace_ and isTextureEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
 		newTex_->sprite->SetScale(newTex_->transform.scale_);

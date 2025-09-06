@@ -200,7 +200,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
 		if (guiSelectNum_ > 1) {
 			if (not isSave_) {
-				if (NotSaveMoveConfirmation()) {
+				if (OperationConfirmation(L"保存をしていませんがこの操作を続けますか?")) {
 					guiSelectNum_--;
 					LoadStage();
 					isSave_ = true;
@@ -221,7 +221,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
 		if (guiSelectNum_ < kStageMax_) {
 			if (not isSave_) {
-				if (NotSaveMoveConfirmation()) {
+				if (OperationConfirmation(L"保存をしていませんがこの操作を続けますか?")) {
 					guiSelectNum_++;
 					LoadStage();
 					isSave_ = true;
@@ -237,21 +237,34 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 
 	ImGui::Text("現在のマップ上限 縦幅 ＝ %d, 横幅 ＝ %d", levelMapChip_.GetSize().first, levelMapChip_.GetSize().second);
 
-	ImGui::DragInt("横幅", &mapSize_.second, 1.0f, 0, 999);
 	ImGui::DragInt("縦幅", &mapSize_.first, 1.0f, 0, 300);
+	ImGui::DragInt("横幅", &mapSize_.second, 1.0f, 0, 999);
+
+	if (mapSize_.first != nowMapSize_.first or mapSize_.second != nowMapSize_.second){
+		//サイズ変更してないけど上記の変更したいバーが変わっている状態
+		isNotChangeRange_ = true;
+	}
 
 	if (ImGui::Button("マップのサイズを上記に変更する")) {
-		if (OperationConfirmation()) {
+		if (OperationConfirmation(L"このステージのサイズを変更しますか?")) {
 			levelMapChip_.Resize(mapSize_.first, mapSize_.second);
+			nowMapSize_ = mapSize_;
 		}
 	}
-	//ImGui::DragFloat2("座標", mousePos.data(), 0.1f);
-	//ImGui::DragInt("マップチップX", &tilePos_.first);
-	//ImGui::DragInt("マップチップY", &tilePos_.second);
 	if (ImGui::Button("現在のステージを保存する")) {
-		if (OperationConfirmation()) {
-			SaveFile(kFileName_);
-			isSave_ = true;
+		if (OperationConfirmation(L"このステージを保存しますか?")) {
+			if (isNotChangeRange_){
+				if (OperationConfirmation(L"サイズの変更をしていませんが変更しますか？")) {
+					levelMapChip_.Resize(mapSize_.first, mapSize_.second);
+					nowMapSize_ = mapSize_;
+				}
+				SaveFile(kFileName_);
+				isSave_ = true;
+			}
+			else {
+				SaveFile(kFileName_);
+				isSave_ = true;
+			}			
 		}
 	}
 
@@ -287,10 +300,10 @@ void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 		return;
 	}
 
-	for (int32_t y = 0; y < mapSize_.first; ++y) {
-		for (int32_t x = 0; x < mapSize_.second; ++x) {
+	for (int32_t y = 0; y < nowMapSize_.first; ++y) {
+		for (int32_t x = 0; x < nowMapSize_.second; ++x) {
 			ofs << static_cast<int>(levelMapChip_[y][x]); // enum → int
-			if (x + 1 < mapSize_.second) {
+			if (x + 1 < nowMapSize_.second) {
 				ofs << ",";
 			}
 		}
@@ -420,21 +433,8 @@ bool StageEditor::LoadChackItem(const std::string &fileName) {
 	}
 }
 
-bool StageEditor::OperationConfirmation() {
-	int result = MessageBox(WinApp::GetInstance()->GetHWND(), L"この操作を続けますか?", L"Confirmation", MB_YESNO | MB_ICONQUESTION);
-	if (result == IDYES) {
-		return true;
-	}
-	else if (result == IDNO) {
-		return false;
-	}
-	else {
-		return false;
-	}
-}
-
-bool StageEditor::NotSaveMoveConfirmation() {
-	int result = MessageBox(WinApp::GetInstance()->GetHWND(), L"保存をしていませんがこの操作を続けますか?", L"Confirmation", MB_YESNO | MB_ICONQUESTION);
+bool StageEditor::OperationConfirmation(const std::wstring text){
+	int result = MessageBox(WinApp::GetInstance()->GetHWND(), text.c_str(), L"Confirmation", MB_YESNO | MB_ICONQUESTION);
 	if (result == IDYES) {
 		return true;
 	}
