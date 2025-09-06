@@ -45,7 +45,8 @@ void TitleScene::OnEnter() {
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
-
+	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	colorTimer_->Clear();
 
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
@@ -177,6 +178,18 @@ void TitleScene::TextureSetting(){
 		timer_->Clear();
 		timer_->Start(moveSpeed_);
 	}
+	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	if (not colorTimer_->IsActive()) {
+		if (buttomColor_ == 0xffffffff){
+			buttomColor_ = 0x00000000;
+		}
+		else {
+			buttomColor_ = 0xffffffff;
+		}
+
+		colorTimer_->Clear();
+		colorTimer_->Start(moveSpeedButtom_);
+	}
 
 	if (playerPotUV_.x >= kUVMaxValuePlayer_){
 		playerPotUV_.x = 0;
@@ -203,6 +216,9 @@ void TitleScene::TextureSetting(){
 		}
 		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == 500.0f) {
 			nowTex->uvTransform.translate_ = (nullPotRightUV_);
+		}
+		if (nowTex->textureName == "AButtomUI") {
+			nowTex->color = (buttomColor_);
 		}
 	}
 

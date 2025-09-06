@@ -51,31 +51,32 @@ void TextureEditor::Update() {
 	
 	ClickPushMove(id_, mousePos);
 
-	//マウスが画像と重なっているか
-	for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
-		if (i != static_cast<size_t>(id_))
-			continue;
-		for (size_t j = 0; j < texies_[i].size(); j++) {
-			uint32_t beforeColor = texColors_[i][j];
-			if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
-				//重複がしないように
-				if (selectNumber_ == -1 || selectNumber_ == int(j)) {
-					SoLib::Color::RGB4 color4 = texies_[i][j]->color;
-					color4.a = 1.0f - 0.5f;
+	if (isTextureEditor_){
+		//マウスが画像と重なっているか
+		for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
+			if (i != static_cast<size_t>(id_))
+				continue;
+			for (size_t j = 0; j < texies_[i].size(); j++) {
+				uint32_t beforeColor = texColors_[i][j];
+				if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
+					//重複がしないように
+					if (selectNumber_ == -1 || selectNumber_ == int(j)) {
+						SoLib::Color::RGB4 color4 = texies_[i][j]->color;
+						color4.a = 1.0f - 0.5f;
 					
-					texies_[i][j]->color = color4;
+						texies_[i][j]->color = color4;
+					}
+					else {
+						texies_[i][j]->color = beforeColor;
+					}
+
 				}
 				else {
 					texies_[i][j]->color = beforeColor;
 				}
-
-			}
-			else {
-				texies_[i][j]->color = beforeColor;
 			}
 		}
 	}
-
 
 	//ShortCutMove(id_);
 #endif // _DEBUG

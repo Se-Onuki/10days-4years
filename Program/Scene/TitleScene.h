@@ -71,13 +71,17 @@ private:
 	Vector2 nullPotLeftUV_ = { 300.0f, 0.0f };
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
+	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
 
 
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
 
+	uint32_t buttomColor_ = 0xffffffff;
+
 	float moveSpeed_ = 0.25f;
+	float moveSpeedButtom_ = 0.5f;
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;

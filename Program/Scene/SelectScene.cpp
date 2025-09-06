@@ -9,6 +9,8 @@
 #include "../Engine/ECS/System/NewSystems.h"
 #include <DirectBase/File/GlobalVariables.h>
 #include <GameScene.h>
+#include <TitleScene.h>
+
 #include<SelectToGame/SelectToGame.h>
 
 SelectScene::SelectScene() {
@@ -30,6 +32,10 @@ void SelectScene::OnEnter(){
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
+
+	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	colorTimer_->Clear();
+
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
@@ -43,12 +49,12 @@ void SelectScene::OnEnter(){
 	for (int32_t i = 0; i < kMaxStages_; i++){
 		doors_[i] = std::make_unique<Tex2DState>();
 		doors_[i]->originalTransform.scale_ = { 250.0f,250.0f };
-		doors_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,380.0f };
+		doors_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) , 350.0f };
 		doors_[i]->transform.translate_ = doors_[i]->originalTransform.translate_;
 		doors_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageUI.png"));
 		numbers_[i] = std::make_unique<Tex2DState>();
 		numbers_[i]->originalTransform.scale_ = { 160.0f,160.0f };
-		numbers_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,410.0f };
+		numbers_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,380.0f };
 		numbers_[i]->transform.translate_ = numbers_[i]->originalTransform.translate_;
 		numbers_[i]->uvTransform.scale_ = { 240.0f,240.0f };
 		numbers_[i]->uvTransform.translate_ = { i * 240.0f,0.0f };
@@ -72,6 +78,11 @@ void SelectScene::Update(){
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
 		SelectToGame::GetInstance()->SetStageNum(stageNum_);
 		sceneManager_->ChangeScene<GameScene>(1.f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
+
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
+		sceneManager_->ChangeScene<TitleScene>(1.f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
 	ApplyGlobalVariables();
@@ -162,6 +173,7 @@ void SelectScene::Debug(){
 
 void SelectScene::PlayerMoving(){
 	timer_->Update(ImGui::GetIO().DeltaTime);
+	colorTimer_->Update(ImGui::GetIO().DeltaTime);
 	if (timer_->IsActive()){
 		return;
 	}
@@ -203,12 +215,12 @@ void SelectScene::TextureSetting() {
 		if (i == stageNum_){
 			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, selectScaleDoor_, changeSpeed_);
 			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, selectScaleNumber_, changeSpeed_);
-			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 430.0f, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 400.0f, changeSpeed_);
 		}
 		else {
 			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, defaultScaleDoor_, changeSpeed_);
 			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, defaultScaleNumber_, changeSpeed_);
-			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 410.0f, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 380.0f, changeSpeed_);
 		}
 
 		doors_[i]->sprite->SetPosition(doors_[i]->transform.translate_);
@@ -225,8 +237,23 @@ void SelectScene::TextureSetting() {
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
 	backGround_->sprite->SetPivot(kPivotValue_);
+	
+	if (not colorTimer_->IsActive()) {
+		if (buttomColor_ == 0xffffffff) {
+			buttomColor_ = 0x00000000;
+		}
+		else {
+			buttomColor_ = 0xffffffff;
+		}
 
-
+		colorTimer_->Clear();
+		colorTimer_->Start(moveSpeedButtom_);
+	}
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
-
+	for (size_t i = 0; i < texDetas_.size(); i++) {
+		Tex2DState* nowTex = texDetas_[i];
+		if (nowTex->textureName == "AButtomUI") {
+			nowTex->color = (buttomColor_);
+		}
+	}
 }

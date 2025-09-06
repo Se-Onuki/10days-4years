@@ -89,6 +89,12 @@ private:
 	std::pair<Vector2, Vector2> posMinMax_;
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
+	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
+
+	uint32_t buttomColor_ = 0xffffffff;
+
+	float moveSpeedButtom_ = 0.5f;
+
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;
 

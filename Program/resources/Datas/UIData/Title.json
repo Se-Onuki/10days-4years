@@ -295,7 +295,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    0.0,
+                    300.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -317,7 +317,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    0.0,
+                    2100.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -339,7 +339,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    0.0,
+                    2400.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -351,6 +351,28 @@
                 "translate": [
                     -74.0,
                     470.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\AButtomUI.png",
+                "TextureName": "AButtomUI",
+                "UVScale": [
+                    68.0,
+                    68.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    68.0,
+                    68.0
+                ],
+                "translate": [
+                    842.0,
+                    461.0
                 ]
             }
         ]
