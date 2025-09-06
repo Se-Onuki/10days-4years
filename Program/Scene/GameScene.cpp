@@ -78,7 +78,8 @@ void GameScene::OnEnter() {
 	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
 
 	camera_.Init();
-	camera_.scale_ = 0.025f;
+	camera_.scale_ = 0.0125f;
+	camera_.translation_.y = 4.f;
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
@@ -141,8 +142,6 @@ void GameScene::Update() {
 		}
 	}
 
-
-
 	if (stageClearTimer_.IsActive() and stageClearTimer_.IsFinish()) {
 		(this->*stageTransitionFunc_)();
 	}
@@ -150,14 +149,16 @@ void GameScene::Update() {
 	// grayScaleParam_ = 1;
 	Debug();
 
-	ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
+	/*ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
 
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
-	ImGui::DragInt("Size", &gaussianParam_->second);
+	ImGui::DragInt("Size", &gaussianParam_->second);*/
 
-	SoLib::ImGuiWidget("CameraPos", &camera_.translation_);
+	SoLib::ImGuiWidget("CameraPos", &camera_.translation_.ToVec2());
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
+
+	camera_.translation_.x = player_.GetPosition().x;
 	camera_.UpdateMatrix();
 
 	stageEditor_->SetCamera(camera_);
@@ -168,10 +169,10 @@ void GameScene::Update() {
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
 
-	auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
-	if (material) { SoLib::ImGuiWidget("Material", *material); }
+	/*auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
+	if (material) { SoLib::ImGuiWidget("Material", *material); }*/
 
-	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
+	//SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
 	water_->Update(inGameDeltaTime);
 }
@@ -292,19 +293,19 @@ void GameScene::PostEffectEnd()
 	// ポストエフェクトの初期値
 	postEffectProcessor->Input(offScreen_->GetResource());
 
-	// ガウスぼかし
-	if (gaussianParam_->second > 1) {
-		// 処理の実行
-		postEffectProcessor->Execute(L"GaussianFilterLiner.PS.hlsl", gaussianParam_);
-		postEffectProcessor->Execute(L"GaussianFilter.PS.hlsl", gaussianParam_);
-	}
+	//// ガウスぼかし
+	//if (gaussianParam_->second > 1) {
+	//	// 処理の実行
+	//	postEffectProcessor->Execute(L"GaussianFilterLiner.PS.hlsl", gaussianParam_);
+	//	postEffectProcessor->Execute(L"GaussianFilter.PS.hlsl", gaussianParam_);
+	//}
 
-	postEffectProcessor->Execute(L"Vignetting.PS.hlsl", vignettingParam_);
+	// postEffectProcessor->Execute(L"Vignetting.PS.hlsl", vignettingParam_);
 
-	if (*grayScaleParam_.get() != 0) {
+	/*if (*grayScaleParam_.get() != 0) {
 		postEffectProcessor->Execute(L"GrayScale.PS.hlsl", grayScaleParam_);
-	}
-	postEffectProcessor->Execute(L"HsvFillter.PS.hlsl", hsvParam_);
+	}*/
+	// postEffectProcessor->Execute(L"HsvFillter.PS.hlsl", hsvParam_);
 
 	// 結果を取り出す
 	postEffectProcessor->GetResult(resultTex->renderTargetTexture_.Get());
