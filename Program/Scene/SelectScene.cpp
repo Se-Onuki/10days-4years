@@ -29,9 +29,9 @@ void SelectScene::OnEnter(){
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
+	soundA_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
-	soundA_.Play(true, 0.1f);
+	soundA_.Play(true, 0.5f);
 
 	backGround_ = std::make_unique<Tex2DState>();
 	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
