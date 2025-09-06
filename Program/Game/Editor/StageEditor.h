@@ -123,7 +123,7 @@ private:
 	int32_t guiSelectNum_ = 1;
 
 	//選択しているステージ
-	int32_t stageNum_ = 0;
+	int32_t stageNum_ = -1;
 
 	bool isIncide_ = false;
 

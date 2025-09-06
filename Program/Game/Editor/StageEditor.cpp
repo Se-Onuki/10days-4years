@@ -75,29 +75,34 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 	// 一度しか呼び出さない初期化処理(一度初期化されていた場合､内部のifで全て流される)
 	InitOnce();
 
-	// ステージ番号の取得
-	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
-	// ステージ番号の基数を1にする
-	int32_t selectNum = stageNum_ + 1;
+	//死んだときに更新しないように
+	if (stageNum_ != SelectToGame::GetInstance()->GetStageNum()){
+		// ステージ番号の取得
+		stageNum_ = SelectToGame::GetInstance()->GetStageNum();
+		// ステージ番号の基数を1にする
+		int32_t selectNum = stageNum_ + 1;
 
-	// ステージの読み込みを行う
-	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
-		// CSVが読み込めたらそれに応じた初期化を行う｡
-		csvData_ = csvFile_;
+		// ステージの読み込みを行う
+		if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
+			// CSVが読み込めたらそれに応じた初期化を行う｡
+			csvData_ = csvFile_;
 
-		levelMapChip_.Init(csvData_);
+			levelMapChip_.Init(csvData_);
+		}
+		else {
+			// ステージが読み込めなかった場合､とりあえず初期設定で作る
+			levelMapChip_.Init(mapSize_.first, mapSize_.second);
+
+			// 仮配置
+			std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
+			levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+			levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
+			levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
+			levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
+		}
 	}
-	else {
-		// ステージが読み込めなかった場合､とりあえず初期設定で作る
-		levelMapChip_.Init(mapSize_.first, mapSize_.second);
 
-		// 仮配置
-		std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
-		levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
-		levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
-		levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-		levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	}
+	
 }
 
 void StageEditor::Finalize() {
@@ -396,9 +401,9 @@ void StageEditor::LoadStage() {
 		levelMapChip_.Init(csvData_);
 	}
 	else {
-		levelMapChip_.Init(mapSize_.first, mapSize_.second);
+		levelMapChip_.Init(nowMapSize_.first, nowMapSize_.second);
 	}
-
+	pLevelMapChipRender_->CalcSpriteData();
 	ApplyMapChips();
 }
 
