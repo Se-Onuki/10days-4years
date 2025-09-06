@@ -90,8 +90,11 @@ private:
 	/// @brief ステージクリア時の処理を実行します。
 	void StageClear();
 
+	/// @brief ステージでミスした場合の処理を実行します
+	void StageDefeat();
+
 	/// @brief ステージをリセットする
-	void ResetStage();
+	void ResetStage(bool isNext);
 private:
 
 	void Load(const GlobalVariables::Group &group);
@@ -101,6 +104,9 @@ private:
 private:
 
 	SoLib::DeltaTimer stageClearTimer_{ 1.f, false };
+
+	/// @brief ステージの遷移を行う関数
+	void (GameScene:: *stageTransitionFunc_)() = (&GameScene::StageClear);
 
 	/// @brief シェーダーのリソースマネージャ
 	SolEngine::ResourceObjectManager<Shader> *pShaderManager_ = nullptr;

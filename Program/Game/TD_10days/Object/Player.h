@@ -83,6 +83,8 @@ namespace TD_10days {
 
 		Vector2 &GetPosition() { return position_; }
 
+		std::array<Vector2, 4u> GetVertex() const;
+
 		void SetWater(Water *water) { pWater_ = water; }
 
 	private:

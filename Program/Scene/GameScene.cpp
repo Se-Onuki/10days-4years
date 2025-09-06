@@ -110,20 +110,37 @@ void GameScene::Update() {
 
 
 	stageClearTimer_.Update(deltaTime);
-	// プレイヤの座標からゴールの距離を割り出す
-	const Vector2 playerPos = player_.GetPosition();
 	// もし範囲内で､タイマーが動いてないならスタート
 	if (not stageClearTimer_.IsActive()) {
+		// プレイヤの座標からゴールの距離を割り出す
+		const Vector2 playerPos = player_.GetPosition();
 		// ゴール座標からの距離で判定する
 		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				stageClearTimer_.Start();
+
+				stageTransitionFunc_ = (&GameScene::StageClear);
+				break;
+			}
+		}
+
+		const auto &playerVertex = player_.GetVertex();
+		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
+		for (const auto &vertex : playerVertex) {
+			const Vector2 roundV = Vector2{ std::roundf(vertex.x), std::roundf(vertex.y) };
+			if (needlePos.find(roundV) != needlePos.end()) {
+
+				stageClearTimer_.Start();
+				stageTransitionFunc_ = (&GameScene::StageDefeat);
+				break;
 			}
 		}
 	}
 
+
+
 	if (stageClearTimer_.IsActive() and stageClearTimer_.IsFinish()) {
-		StageClear();
+		(this->*stageTransitionFunc_)();
 	}
 
 	// grayScaleParam_ = 1;
@@ -278,18 +295,23 @@ void GameScene::PostEffectEnd()
 
 void GameScene::StageClear()
 {
-	ResetStage();
+	ResetStage(true);
 
 }
 
-void GameScene::ResetStage()
+void GameScene::StageDefeat()
+{
+	ResetStage(false);
+}
+
+void GameScene::ResetStage(bool isNext)
 {
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
 	const auto stageNum = levelSelecter->GetStageNum();
-	// ステージ番号に1加算して返す
-	levelSelecter->SetStageNum(stageNum + 1);
+	// ステージ番号を加算するかの分岐
+	levelSelecter->SetStageNum(stageNum + isNext ? 1 : 0);
 
 	sceneManager_->ChangeScene("GameScene");
 }

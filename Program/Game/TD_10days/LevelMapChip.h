@@ -18,13 +18,14 @@ namespace TD_10days {
 	public:
 
 		enum class MapChipType : uint32_t {
-			kEmpty,	// 何もない
-			kWall,	// 壁
-			kTile,	// 床内部
-			kFloor,	// プレイヤーが触れる床
-			kWater,	// 設置するタイプの水
-			kStart,	// スタート位置
-			kGoal,	// ゴール位置
+			kEmpty,		// 何もない
+			kWall,		// 壁
+			kTile,		// 床内部
+			kFloor,		// プレイヤーが触れる床
+			kWater,		// 設置するタイプの水
+			kStart,		// スタート位置
+			kGoal,		// ゴール位置
+			kNeedle,	// 針
 			CountElements // 要素数
 		};
 
@@ -51,7 +52,7 @@ namespace TD_10days {
 
 		private:
 			/// @brief テクスチャハンドル
-			TextureHandle textureHandle_;
+			TextureHandle textureHandle_{};
 			// 当たり判定があるかどうか
 			bool isHasCollision_ = true;
 		};
@@ -114,7 +115,8 @@ namespace TD_10days {
 		void Resize(uint32_t y, uint32_t x);
 
 		Vector2 GetStartPosition() const;
-		const std::vector<Vector2>& GetGoalPosition() const;
+		const std::unordered_set<Vector2> &GetGoalPosition() const;
+		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
 	private:
 		/// @brief マップチップの配列
@@ -124,8 +126,9 @@ namespace TD_10days {
 
 		std::unique_ptr<LevelMapChipHitBox> hitBox_;
 
-		Vector2 startPos_;
-		std::vector<Vector2> goalPosList_;
+		Vector2 startPos_{};
+		std::unordered_set<Vector2> goalPosList_{};
+		std::unordered_set<Vector2> needlePosList_{};
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
@@ -143,7 +146,7 @@ namespace TD_10days {
 	private:
 
 		std::vector<std::unique_ptr<Sprite>> spriteList_;
-		const LevelMapChip *pLevelMapChip_;
+		const LevelMapChip *pLevelMapChip_ = nullptr;
 		/// @brief マップチップの位置を計算する
 		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
 

@@ -126,6 +126,17 @@ namespace TD_10days {
 		playerState_->InputFunc();
 	}
 
+	std::array<Vector2, 4u> Player::GetVertex() const {
+		const Vector2 halfSize = size_ / 2;
+		return
+		{
+			position_ + Vector2{ -halfSize.x, -halfSize.y },
+			position_ + Vector2{ -halfSize.x, +halfSize.y },
+			position_ + Vector2{ +halfSize.x, -halfSize.y },
+			position_ + Vector2{ +halfSize.x, +halfSize.y },
+		};
+	}
+
 	void Player::CalcSprite() {
 		// 座標合わせ
 		sprite_->SetPosition(position_);
@@ -137,7 +148,6 @@ namespace TD_10days {
 			return { 1.f,Vector3::zero };
 		}
 		// プレイヤの中心から4点分の座標を計算
-		const Vector2 halfSize = size_ / 2;
 		const std::array<Vector2, 4> playerPoints = {
 			Vector2{-.5f, -.5f}, // 左下
 			Vector2{-.5f, +.5f}, // 左上

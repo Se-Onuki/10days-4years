@@ -24,18 +24,20 @@ void StageEditor::InitOnce() {
 			{("water")},//water
 			{("start")},//start
 			{("goal")},//goal
+			{("needle")},//needle
 		};
 	}
 	// もしテクスチャのパスがないなら
 	if (texPath_.empty()) {
 		texPath_ = {
 			{},
-			{("uvChecker.png")},//wall
-			{("StageTex/blue.png")},//tile
-			{("StageTex/green.png")},//floor
-			{("StageTex/pink.png")},//water
+			{("StageTex/block.png")},//wall
+			{("StageTex/floor2.png")},//tile
+			{("StageTex/floor.png")},//floor
+			{("StageTex/blue.png")},//water
 			{("StageTex/red.png")},//start
-			{("StageTex/yellow.png")},//goal
+			{("StageTex/goal.png")},//goal
+			{("StageTex/yellow.png")},//needle
 		};
 	}
 
@@ -51,6 +53,7 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[4])}},//water
 			{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
 			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
+			{TextureHandle{TextureManager::Load(texPath_[7])}, false},//needle
 			});
 	}
 
@@ -183,8 +186,8 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 #ifdef _DEBUG
 	ImGui::Begin("ステージエディター");
 	ImGui::Text("%s", texName_[selectNumber_].c_str());
-	ImGui::SliderInt("設置するマップの種類", &selectNumber_, 1, (int)(TD_10days::LevelMapChip::MapChip::kGoal));
-	ImTextureID textureID = TextureManager::GetInstance()->GetTexture(TextureManager::Load(texPath_[selectNumber_]))->GetTextureID();
+	ImGui::SliderInt("設置するマップの種類", &selectNumber_, 1, static_cast<int>(TD_10days::LevelMapChip::MapChip::CountElements) - 1u);
+	const ImTextureID textureID = TextureManager::GetInstance()->GetTexture(TextureManager::Load(texPath_[selectNumber_]))->GetTextureID();
 	ImGui::Image(textureID, ImVec2(128, 128));
 	ImGui::Text("%s", "編集しているステージ");
 	// 左矢印
@@ -354,57 +357,57 @@ void StageEditor::DragMove() {
 }
 
 TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
-	TD_10days::LevelMapChip::MapChip map{};
+	TD_10days::LevelMapChip::MapChip map{ static_cast<TD_10days::LevelMapChip::MapChip>(num) };
 
-	if (num == 0) {
-		map = TD_10days::LevelMapChip::MapChip::kEmpty;
-	}
-	if (num == 1) {
-		map = TD_10days::LevelMapChip::MapChip::kWall;
-	}
-	if (num == 2) {
-		map = TD_10days::LevelMapChip::MapChip::kTile;
-	}
-	if (num == 3) {
-		map = TD_10days::LevelMapChip::MapChip::kFloor;
-	}
-	if (num == 4) {
-		map = TD_10days::LevelMapChip::MapChip::kWater;
-	}
-	if (num == 5) {
-		map = TD_10days::LevelMapChip::MapChip::kStart;
-	}
-	if (num == 6) {
-		map = TD_10days::LevelMapChip::MapChip::kGoal;
-	}
+	//if (num == 0) {
+	//	map = TD_10days::LevelMapChip::MapChip::kEmpty;
+	//}
+	//if (num == 1) {
+	//	map = TD_10days::LevelMapChip::MapChip::kWall;
+	//}
+	//if (num == 2) {
+	//	map = TD_10days::LevelMapChip::MapChip::kTile;
+	//}
+	//if (num == 3) {
+	//	map = TD_10days::LevelMapChip::MapChip::kFloor;
+	//}
+	//if (num == 4) {
+	//	map = TD_10days::LevelMapChip::MapChip::kWater;
+	//}
+	//if (num == 5) {
+	//	map = TD_10days::LevelMapChip::MapChip::kStart;
+	//}
+	//if (num == 6) {
+	//	map = TD_10days::LevelMapChip::MapChip::kGoal;
+	//}
 
 	return map;
 }
 
 int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
-	int32_t num{};
+	int32_t num{ static_cast<int32_t>(map) };
 
-	if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
-		num = 0;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kWall) {
-		num = 1;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kTile) {
-		num = 2;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kFloor) {
-		num = 3;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kWater) {
-		num = 4;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kStart) {
-		num = 5;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
-		num = 6;
-	}
+	//if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
+	//	num = 0;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kWall) {
+	//	num = 1;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kTile) {
+	//	num = 2;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kFloor) {
+	//	num = 3;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kWater) {
+	//	num = 4;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kStart) {
+	//	num = 5;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
+	//	num = 6;
+	//}
 
 	return num;
 }

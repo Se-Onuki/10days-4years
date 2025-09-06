@@ -60,6 +60,7 @@ namespace TD_10days {
 
 	void LevelMapChip::FindActionChips() {
 		goalPosList_.clear();
+		needlePosList_.clear();
 
 		for (uint32_t yi = 0; yi < y_; ++yi) {
 			const auto &line = (*this)[yi];
@@ -72,7 +73,11 @@ namespace TD_10days {
 					break;
 				}
 				case MapChipType::kGoal: {
-					goalPosList_.emplace_back(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
+					goalPosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
+					break;
+				}
+				case MapChipType::kNeedle: {
+					needlePosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
 					break;
 				}
 				default: {
@@ -134,9 +139,14 @@ namespace TD_10days {
 		return startPos_;
 	}
 
-	const std::vector<Vector2> &LevelMapChip::GetGoalPosition() const
+	const std::unordered_set<Vector2> &LevelMapChip::GetGoalPosition() const
 	{
 		return goalPosList_;
+	}
+
+	const std::unordered_set<Vector2> &LevelMapChip::GetNeedlePosition() const
+	{
+		return needlePosList_;
 	}
 
 	void LevelMapChipRenderer::Init(const LevelMapChip *levelMapChip) {
