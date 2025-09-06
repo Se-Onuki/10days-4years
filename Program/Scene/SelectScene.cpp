@@ -150,6 +150,10 @@ void SelectScene::Debug(){
 
 }
 
+void SelectScene::PlayerMoving()
+{
+}
+
 void SelectScene::TextureSetting() {
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
