@@ -21,6 +21,7 @@
 GameScene::GameScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
+	stageEditor_ = StageEditor::GetInstance();
 	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
 	bufferManager->ReleaseUnusingReosurce();
 }
@@ -70,7 +71,7 @@ void GameScene::OnEnter() {
 	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
-	stageEditor_ = StageEditor::GetInstance();
+	
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
