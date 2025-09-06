@@ -63,6 +63,18 @@ private:
 	static const int32_t kMaxStages_ = 15;
 	//ステージごとの幅
 	const int32_t kBaseMoveValue_ = 450;
+	//ランダムで変化する変数
+	int32_t randAngle_ = 0;
+	Vector2 randPos_ = {};
+
+	int32_t stageNum_ = 0;
+
+	//中心座標
+	int32_t basePos_ = 0;
+
+	float changeSpeed_ = 0.3f;
+
+	float moveSpeed_ = 0.25f;
 
 	std::unique_ptr<Tex2DState> backGround_;
 	//扉
@@ -76,15 +88,7 @@ private:
 	std::pair<int32_t, int32_t> angleMinMax_;
 	std::pair<Vector2, Vector2> posMinMax_;
 
-	//ランダムで変化する変数
-	int32_t randAngle_ = 0;
-	Vector2 randPos_ = {};
-
-	int32_t stageNum_ = 0;
-
-	//中心座標
-	int32_t basePos_ = 0;
-
+	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;
 

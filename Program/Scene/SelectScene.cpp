@@ -15,7 +15,7 @@ SelectScene::SelectScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
 	cameraManager_ = SolEngine::CameraManager::GetInstance();
-
+	
 }
 
 SelectScene::~SelectScene()
@@ -28,6 +28,8 @@ void SelectScene::OnEnter(){
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
+	timer_ = std::make_unique<SoLib::DeltaTimer>();
+	timer_->Clear();
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
@@ -159,18 +161,31 @@ void SelectScene::Debug(){
 }
 
 void SelectScene::PlayerMoving(){
+	timer_->Update(ImGui::GetIO().DeltaTime);
+	if (timer_->IsActive()){
+		return;
+	}
+	else {
+		timer_->Clear();
+	}
+
 	//右入力
-	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsTrigger(DIK_RIGHT)) {
+	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT)) {
 		if (stageNum_ < (kMaxStages_ - 1)) {
 			stageNum_++;
+			// タイマーの実行
+			timer_->Start(moveSpeed_);
+
 		}
 
 		basePos_ = stageNum_ * kBaseMoveValue_;
 	}
 	//左入力
-	else if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsTrigger(DIK_LEFT)) {
+	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT)) {
 		if (stageNum_ > 0) {
 			stageNum_--;
+			// タイマーの実行
+			timer_->Start(moveSpeed_);
 		}
 
 		basePos_ = stageNum_ * kBaseMoveValue_;
@@ -179,19 +194,21 @@ void SelectScene::PlayerMoving(){
 
 void SelectScene::TextureSetting() {
 	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i]->transform.translate_.x = SoLib::Lerp(doors_[i]->transform.translate_.x, doors_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
+		numbers_[i]->transform.translate_.x = SoLib::Lerp(numbers_[i]->transform.translate_.x, numbers_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
 		//選択しているステージに応じて移動
-		doors_[i]->transform.translate_.x = doors_[i]->originalTransform.translate_.x - basePos_;
-		numbers_[i]->transform.translate_.x = numbers_[i]->originalTransform.translate_.x - basePos_;
+	/*	doors_[i]->transform.translate_.x = doors_[i]->originalTransform.translate_.x - basePos_;
+		numbers_[i]->transform.translate_.x = numbers_[i]->originalTransform.translate_.x - basePos_;*/
 		//選択しているものは大きく表示
 		if (i == stageNum_){
-			doors_[i]->transform.scale_ = selectScaleDoor_;
-			numbers_[i]->transform.scale_ = selectScaleNumber_;
-			numbers_[i]->transform.translate_.y = 430.0f;
+			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, selectScaleDoor_, changeSpeed_);
+			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, selectScaleNumber_, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 430.0f, changeSpeed_);
 		}
 		else {
-			doors_[i]->transform.scale_ = defaultScaleDoor_;
-			numbers_[i]->transform.scale_ = defaultScaleNumber_;
-			numbers_[i]->transform.translate_.y = 410.0f;
+			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, defaultScaleDoor_, changeSpeed_);
+			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, defaultScaleNumber_, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 410.0f, changeSpeed_);
 		}
 
 		doors_[i]->sprite->SetPosition(doors_[i]->transform.translate_);
