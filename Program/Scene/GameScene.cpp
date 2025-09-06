@@ -71,6 +71,9 @@ void GameScene::OnEnter() {
 	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
+	camera_.Init();
+	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
+	camera_.translation_.y = 4.f;
 	
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
@@ -78,9 +81,6 @@ void GameScene::OnEnter() {
 	levelMapChipRenderer_.Init(pLevelMapChip_);
 	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
 
-	camera_.Init();
-	camera_.scale_ = 0.0125f;
-	camera_.translation_.y = 4.f;
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
@@ -158,6 +158,8 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("CameraPos", &camera_.translation_.ToVec2());
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
+
+	SelectToGame::GetInstance()->SetCameraScale(camera_.scale_);
 
 	camera_.translation_.x = player_.GetPosition().x;
 	camera_.UpdateMatrix();

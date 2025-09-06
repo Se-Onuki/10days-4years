@@ -21,6 +21,11 @@ public:
 	const int32_t GetStageNum() const {
 		return stageNum_;
 	}
+	/// @brief ステージ番号を取得する
+	/// @return ステージ番号(int32_t型)を返す
+	const float GetCameraScale() const {
+		return cameraScale_;
+	}
 
 	/// @brief ステージ番号を設定する
 	/// @param[in] num 設定するステージ番号
@@ -28,10 +33,17 @@ public:
 		stageNum_ = num;
 	}
 
+	/// @brief ステージ番号を設定する
+	/// @param[in] num 設定するステージ番号
+	void SetCameraScale(const float num) {
+		cameraScale_ = num;
+	}
+
 
 private:
 	//ステージ番号
 	int32_t stageNum_ = 0;
-
+	//良い場所が浮かばなかったので究極的なとりあえずここに
+	float cameraScale_ = 0.0125f;
 };
 
