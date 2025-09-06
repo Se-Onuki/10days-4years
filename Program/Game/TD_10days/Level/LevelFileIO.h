@@ -1,4 +1,5 @@
 #pragma once
+#include "TD_10days/LevelMapChip.h"
 
 namespace TD_10days {
 
@@ -6,7 +7,9 @@ namespace TD_10days {
 	class LevelFileIO {
 	public:
 
+
 	private:
+
 
 
 	};

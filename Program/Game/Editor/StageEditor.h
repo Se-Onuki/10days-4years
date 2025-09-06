@@ -17,12 +17,13 @@ public:
 	friend SoLib::Singleton<StageEditor>;
 public:
 
+	/// @brief マップチップのデータの確定
 	void ApplyMapChips();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRender);
 
 	/// <summary>
 	/// 終了処理
@@ -59,6 +60,9 @@ public:
 	}
 
 private:
+	/// @brief 一度しか呼び出さない初期化処理
+	void InitOnce();
+
 	/// <summary>
 	/// クリックしたときと押し続けているときの動き
 	/// </summary>
@@ -78,7 +82,7 @@ private:
 	void LoadStage();
 
 	SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
-		return SoLib::Angle::Radian(degree * (std::numbers::pi_v<float> / 180.0f));
+		return SoLib::Angle::Radian(degree * SoLib::Angle::Dig2Rad);
 	}
 
 public:
@@ -86,6 +90,8 @@ public:
 
 
 private:
+
+	TD_10days::LevelMapChipRenderer *pLevelMapChipRender_ = nullptr;
 	//マップチップ
 	TD_10days::LevelMapChip levelMapChip_;
 	//当たり判定用のカメラ
@@ -165,9 +171,9 @@ private:
 	//選んでいるステージ名
 	std::string stageName_;
 	//アイテムのファイルパス
-	inline static const std::string kDirectoryPath_ = "Datas/StageData/";
+	inline static const std::string kDirectoryPath_ = "Resources/Datas/StageData/";
 	//アイテムのファイルパス
-	inline static const std::string kDirectoryName_ = "Datas/StageData";
+	inline static const std::string kDirectoryName_ = "Resources/Datas/StageData";
 	//名前
 	inline static const std::string kItemName_ = "Stage";
 

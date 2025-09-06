@@ -84,9 +84,14 @@ public:
 	/// @details シーンの描画処理の後に呼び出される
 	void PostEffectEnd() override;
 
+
+private:
+
 	/// @brief ステージクリア時の処理を実行します。
 	void StageClear();
 
+	/// @brief ステージをリセットする
+	void ResetStage();
 private:
 
 	void Load(const GlobalVariables::Group &group);
@@ -116,11 +121,11 @@ private:
 	/// @brief ヴィネッティングのパラメータ
 	CBuffer<std::pair<float, float>> vignettingParam_{};
 	/// @brief グレースケールのパラメータ
-	CBuffer<float> grayScaleParam_;
+	CBuffer<float> grayScaleParam_{};
 	/// @brief hsvの調整パラメータ
 	CBuffer<SoLib::Color::HSV4> hsvParam_{ {0.f, 0.5f, 0.5f, 1.f} };
 	/// @brief ガウシアンブラーのパラメータ
-	CBuffer<std::pair<float, int32_t>> gaussianParam_;
+	CBuffer<std::pair<float, int32_t>> gaussianParam_{};
 
 	// 影の色
 	SoLib::Color::RGB4 shadowColor_ = 0x00000055;
@@ -133,6 +138,7 @@ private:
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipHitBox_;
 
+	Vector2 goalPos_;
 
 	SolEngine::Camera2D camera_;
 

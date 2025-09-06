@@ -6,7 +6,7 @@ namespace TD_10days {
 
 	}
 
-	void GameManager::Update(const float deltaTime) {
+	void GameManager::Update(const float) {
 
 	}
 

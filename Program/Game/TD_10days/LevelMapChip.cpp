@@ -145,7 +145,6 @@ namespace TD_10days {
 
 	void LevelMapChipRenderer::CalcSpriteData()
 	{
-		spriteList_.clear();
 		// マップチップの情報の取得
 		const auto &mapChips = pLevelMapChip_->GetMapChipData();
 
@@ -182,8 +181,9 @@ namespace TD_10days {
 		for (const auto &[index, positions] : drawList) {
 			count += positions.size();
 		}
-		spriteList_.reserve(count);
+		spriteList_.resize(count);
 
+		size_t i = 0;
 		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
 			// マップチップのテクスチャハンドル
@@ -192,11 +192,21 @@ namespace TD_10days {
 
 			// 座標
 			for (const auto &position : positions) {
+				// もしスプライトが無かったら､そこにデータを与える
+				if (auto &sprite = spriteList_[i]; not sprite.get()) {
+					sprite = Sprite::Generate();
+				}
+
 				// スプライトの生成
-				auto sprite = spriteList_.emplace_back(Sprite::Generate(textureHandle.index_, position, Vector2::one * vMapChipScale_)).get();
+				Sprite *sprite = spriteList_[i].get();
+
+				sprite->SetTextureHaundle(textureHandle.index_);
+				sprite->SetPosition(position);
+
 				// スプライトの設定
 				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
 				sprite->SetInvertY(true);			// UVのY軸反転
+				i += 1;
 			}
 		}
 	}

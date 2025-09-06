@@ -5,71 +5,96 @@ StageEditor::~StageEditor() {
 
 }
 
-void StageEditor::ApplyMapChips()
-{
+void StageEditor::ApplyMapChips() {
 	levelMapChip_.CreateHitBox();
 	levelMapChip_.FindActionChips();
+	pLevelMapChipRender_->CalcSpriteData();
 }
 
-void StageEditor::Initialize() {
-	//ここにパスを入れる
-	texName_ = {
-		{},
-		{("wall")},//wall
-		{("tile")},//tile
-		{("floor")},//floor
-		{("water")},//water
-		{("start")},//start
-		{("goal")},//goal
-	};
+void StageEditor::InitOnce() {
 
-	texPath_ = {
-		{},
-		{("uvChecker.png")},//wall
-		{("StageTex/blue.png")},//tile
-		{("StageTex/green.png")},//floor
-		{("StageTex/pink.png")},//water
-		{("StageTex/red.png")},//start
-		{("StageTex/yellow.png")},//goal
-	};
+	// もしテクスチャの名前がないなら
+	if (texName_.empty()) {
+		//ここに名前を入れる
+		texName_ = {
+			{},
+			{("wall")},//wall
+			{("tile")},//tile
+			{("floor")},//floor
+			{("water")},//water
+			{("start")},//start
+			{("goal")},//goal
+		};
+	}
+	// もしテクスチャのパスがないなら
+	if (texPath_.empty()) {
+		texPath_ = {
+			{},
+			{("uvChecker.png")},//wall
+			{("StageTex/blue.png")},//tile
+			{("StageTex/green.png")},//floor
+			{("StageTex/pink.png")},//water
+			{("StageTex/red.png")},//start
+			{("StageTex/yellow.png")},//goal
+		};
+	}
 
+	// もし仮にテクスチャパスと個数が合わなかったら
+	if (levelMapChip_.GetMapChipData().size() != texPath_.size()) {
+		// テクスチャなどの情報を与える
+		levelMapChip_.SetMapChipData(
+			{
+			{false},	// Air
+			{TextureHandle{TextureManager::Load(texPath_[1])}},//wall
+			{TextureHandle{TextureManager::Load(texPath_[2])}},//tile
+			{TextureHandle{TextureManager::Load(texPath_[3])}},//floor
+			{TextureHandle{TextureManager::Load(texPath_[4])}},//water
+			{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
+			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
+			});
+	}
+
+	if (not newTex_) {
+		newTex_ = std::make_unique<Tex2DState>();
+		newTex_->transform.translate_ = Vector2(0, 0);
+		newTex_->transform.scale_ = { 1.f,1.f };
+		newTex_->color = 0x0000ffff;
+		//配置用のものなのでwhiteTex
+		newTex_->sprite = Sprite::Generate();
+	}
+
+}
+
+void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRender) {
+	// 描画処理の型を渡す｡(本来はオブザーバーパターンでやるべき)
+	pLevelMapChipRender_ = pLevelMapChipRender;
+
+	// 一度しか呼び出さない初期化処理(一度初期化されていた場合､内部のifで全て流される)
+	InitOnce();
+
+	// ステージ番号の取得
 	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
-
+	// ステージ番号の基数を1にする
 	int32_t selectNum = stageNum_ + 1;
 
+	// ステージの読み込みを行う
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
+		// CSVが読み込めたらそれに応じた初期化を行う｡
 		csvData_ = csvFile_;
 
 		levelMapChip_.Init(csvData_);
 	}
 	else {
+		// ステージが読み込めなかった場合､とりあえず初期設定で作る
 		levelMapChip_.Init(mapSize_.first, mapSize_.second);
+
+		// 仮配置
+		std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
+		levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	}
-
-	levelMapChip_.SetMapChipData(
-		{
-		{false},
-		{TextureHandle{TextureManager::Load(texPath_[1])}},//wall
-		{TextureHandle{TextureManager::Load(texPath_[2])}},//tile
-		{TextureHandle{TextureManager::Load(texPath_[3])}},//floor
-		{TextureHandle{TextureManager::Load(texPath_[4])}},//water
-		{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
-		{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
-		});
-	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
-	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-
-	newTex_ = std::make_unique<Tex2DState>();
-	newTex_->transform.translate_ = Vector2(0, 0);
-	newTex_->transform.scale_ = { 1.f,1.f };
-	newTex_->color = 0x0000ffff;
-	//配置用のものなのでwhiteTex
-	newTex_->sprite = Sprite::Generate(TextureManager::LoadDefaultTexture());
-
-
 }
 
 void StageEditor::Finalize() {
@@ -77,6 +102,10 @@ void StageEditor::Finalize() {
 }
 
 void StageEditor::Update() {
+
+#ifdef _DEBUG
+
+
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
 	mousePos.y *= -1; // Y反転（上が正になる）
@@ -126,9 +155,15 @@ void StageEditor::Update() {
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
 	ClickPushMove(mousePos);
+
+#endif // _DEBUG
+
 }
 
 void StageEditor::PutDraw() {
+
+#ifdef _DEBUG
+
 	if (isIncide_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
@@ -138,6 +173,9 @@ void StageEditor::PutDraw() {
 		newTex_->sprite->SetInvertY(true);
 		newTex_->sprite->Draw();
 	}
+
+#endif // _DEBUG
+
 }
 
 void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {

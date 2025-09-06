@@ -10,26 +10,33 @@
 #include "../Header/Object/Fade.h"
 #include "../../Engine/Utils/SoLib/SoLib.h"
 #include <imgui.h>
+#include <utility>
 #include "TitleScene.h"
 #include "../../Engine/Utils/Math/Angle.h"
 #include "../Engine/ResourceManager/ResourceLoader.h"
 
 #include "../Engine/DirectBase/Base/TextureManager.h"
+#include "SelectToGame/SelectToGame.h"
 
 GameScene::GameScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
+	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
+	bufferManager->ReleaseUnusingReosurce();
 }
 
 GameScene::~GameScene() {
 	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
 	// メモリフラグメンテーション対策
-	for (uint32_t i = 1; i < 16; i++) {
-		bufferManager->ReleaseUnusingReosurce(i);
-	}
+	//for (uint32_t i = 1; i < 16; i++) {
+	bufferManager->ReleaseUnusingReosurce();
+	//}
 }
 
 void GameScene::OnEnter() {
+
+	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
+	bufferManager->ReleaseUnusingReosurce();
 
 	pDxCommon_ = DirectXCommon::GetInstance();
 	pShaderManager_ = SolEngine::ResourceObjectManager<Shader, ShaderSource>::GetInstance();
@@ -64,20 +71,7 @@ void GameScene::OnEnter() {
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
 	stageEditor_ = StageEditor::GetInstance();
-	stageEditor_->Initialize();
-
-
-	/*levelMapChip_.Init(10, 10);
-	levelMapChip_.SetMapChipData(
-		{
-		{},
-		{ TextureHandle{TextureManager::Load("uvChecker.png")} },
-		});
-	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kWall);
-	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;*/
+	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
 	levelMapChipRenderer_.Init(pLevelMapChip_);
@@ -93,15 +87,19 @@ void GameScene::OnEnter() {
 
 	player_.SetWater(water_.get());
 
+	// 念の為特殊なブロックの位置を再計算
 	pLevelMapChip_->FindActionChips();
+	// プレイヤのスタート位置の調整
 	const Vector2 playerPos = pLevelMapChip_->GetStartPosition();
+	// プレイヤの位置を設定
 	player_.SetPosition(playerPos);
 
 }
 
 void GameScene::OnExit() {
 	audio_->StopAllWave();
-
+	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
+	bufferManager->ReleaseUnusingReosurce();
 
 }
 
@@ -109,6 +107,21 @@ void GameScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
+
+
+	stageClearTimer_.Update(deltaTime);
+	// プレイヤの座標からゴールの距離を割り出す
+	const Vector2 playerPos = player_.GetPosition();
+	// もし範囲内で､タイマーが動いてないならスタート
+	if ((pLevelMapChip_->GetGoalPosition() - playerPos).LengthSQ() < 1.f) {
+		if (not stageClearTimer_.IsActive()) {
+			stageClearTimer_.Start();
+		}
+	}
+
+	if (stageClearTimer_.IsActive() and stageClearTimer_.IsFinish()) {
+		StageClear();
+	}
 
 	// grayScaleParam_ = 1;
 
@@ -261,8 +274,20 @@ void GameScene::PostEffectEnd()
 
 void GameScene::StageClear()
 {
+	ResetStage();
 
+}
 
+void GameScene::ResetStage()
+{
+	// ステージ番号のマネージャ
+	const auto levelSelecter = SelectToGame::GetInstance();
+	// ステージ番号
+	const auto stageNum = levelSelecter->GetStageNum();
+	// ステージ番号に1加算して返す
+	levelSelecter->SetStageNum(stageNum + 1);
+
+	sceneManager_->ChangeScene("GameScene");
 }
 
 void GameScene::Load(const GlobalVariables::Group &)
