@@ -23,6 +23,13 @@ GlobalVariables::Group &GlobalVariables::GetGroup(const std::string &groupName) 
 	return datas_[groupName];
 }
 
+bool GlobalVariables::FindGroup(const std::string &groupName) const
+{
+	// グループ内を検索
+	const auto &itGroup = datas_.find(groupName);
+	return itGroup != datas_.end();
+}
+
 const GlobalVariables::Item &GlobalVariables::Get(const std::string &groupName, const std::string &key) const {
 
 	// グループの検索
@@ -212,7 +219,7 @@ void GlobalVariables::LoadFile(const std::string &groupName) {
 			AddValue(groupName, itemName, value);
 		}
 		else if (itItem->is_string()) {
-			const std::string& value = itItem->get<std::string>();
+			const std::string &value = itItem->get<std::string>();
 			AddValue(groupName, itemName, value);
 		}
 	}
