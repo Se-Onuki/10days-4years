@@ -365,55 +365,11 @@ void StageEditor::DragMove() {
 TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
 	TD_10days::LevelMapChip::MapChip map{ static_cast<TD_10days::LevelMapChip::MapChip>(num) };
 
-	//if (num == 0) {
-	//	map = TD_10days::LevelMapChip::MapChip::kEmpty;
-	//}
-	//if (num == 1) {
-	//	map = TD_10days::LevelMapChip::MapChip::kWall;
-	//}
-	//if (num == 2) {
-	//	map = TD_10days::LevelMapChip::MapChip::kTile;
-	//}
-	//if (num == 3) {
-	//	map = TD_10days::LevelMapChip::MapChip::kFloor;
-	//}
-	//if (num == 4) {
-	//	map = TD_10days::LevelMapChip::MapChip::kWater;
-	//}
-	//if (num == 5) {
-	//	map = TD_10days::LevelMapChip::MapChip::kStart;
-	//}
-	//if (num == 6) {
-	//	map = TD_10days::LevelMapChip::MapChip::kGoal;
-	//}
-
 	return map;
 }
 
 int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
 	int32_t num{ static_cast<int32_t>(map) };
-
-	//if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
-	//	num = 0;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kWall) {
-	//	num = 1;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kTile) {
-	//	num = 2;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kFloor) {
-	//	num = 3;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kWater) {
-	//	num = 4;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kStart) {
-	//	num = 5;
-	//}
-	//if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
-	//	num = 6;
-	//}
 
 	return num;
 }

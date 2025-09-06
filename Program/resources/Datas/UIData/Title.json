@@ -13,14 +13,344 @@
                     0.0
                 ],
                 "color": 4294967295,
-                "degree": 0,
+                "degree": -1,
                 "scale": [
                     370.0,
                     64.0
                 ],
                 "translate": [
-                    640.0,
-                    527.0
+                    850.0,
+                    538.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\TitleLogo.png",
+                "TextureName": "TitleLogo",
+                "UVScale": [
+                    710.0,
+                    380.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    2.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    528.0,
+                    255.0
+                ],
+                "translate": [
+                    842.0,
+                    216.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    1250.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    739.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    611.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    994.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    866.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    483.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    101.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    229.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    1122.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    357.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    -27.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\PlayerInCultureSolution.png",
+                "TextureName": "PlayerInCultureSolution",
+                "UVScale": [
+                    300.0,
+                    400.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    300.0,
+                    400.0
+                ],
+                "translate": [
+                    212.0,
+                    470.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\CultureSolution.png",
+                "TextureName": "CultureSolution",
+                "UVScale": [
+                    300.0,
+                    400.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    300.0,
+                    400.0
+                ],
+                "translate": [
+                    500.0,
+                    470.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\CultureSolution.png",
+                "TextureName": "CultureSolution",
+                "UVScale": [
+                    300.0,
+                    400.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    300.0,
+                    400.0
+                ],
+                "translate": [
+                    -74.0,
+                    470.0
                 ]
             }
         ]
