@@ -7,12 +7,70 @@
 
 namespace TD_10days {
 
+	class Player;
+
+	class IPlayerState {
+	public:
+		IPlayerState() = default;
+		IPlayerState(Player *const pPlayer) : pPlayer_(pPlayer) {}
+		virtual ~IPlayerState() = default;
+
+		virtual void InputFunc() = 0;
+		virtual const std::string &GetStateName() const = 0;
+		virtual void OnEnter() {}
+		virtual void OnExit() {}
+
+		Player *GetPlayer() { return pPlayer_; }
+
+	private:
+		Player *pPlayer_ = nullptr;
+	};
+
+	class PlayerMovement : public IPlayerState {
+	public:
+		PlayerMovement() = default;
+		PlayerMovement(Player *const pPlayer) : IPlayerState(pPlayer) {}
+		~PlayerMovement() = default;
+
+		void InputFunc() override;
+		const std::string &GetStateName() const override { return kStateName_; }
+
+		void OnEnter() override;
+		void OnExit() override;
+
+	private:
+
+		inline static const std::string kStateName_ = "PlayerMovement";
+
+	};
+
+	class PlayerPlacement : public IPlayerState {
+	public:
+		PlayerPlacement() = default;
+		PlayerPlacement(Player *const pPlayer) : IPlayerState(pPlayer) {}
+		~PlayerPlacement() = default;
+
+		void InputFunc() override;
+		const std::string &GetStateName() const override { return kStateName_; }
+
+		void OnEnter() override;
+		void OnExit() override;
+	private:
+
+		inline static const std::string kStateName_ = "PlayerPlacement";
+
+	};
+
 	class Player {
+		friend IPlayerState;
+		friend PlayerMovement;
+		friend PlayerPlacement;
 	public:
 
 		Player() = default;
 
 		void Init();
+		void PreUpdate(float deltaTime);
 		void Update(float deltaTime);
 
 		void Draw() const;
@@ -48,6 +106,8 @@ namespace TD_10days {
 	private:
 
 		Water *pWater_ = nullptr;
+		std::unique_ptr<IPlayerState> playerState_;
+		std::unique_ptr<IPlayerState> nextState_;
 
 		std::string spriteName_ = "TD_10days/Player/Player.png";
 

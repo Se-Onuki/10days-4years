@@ -187,8 +187,7 @@ inline CBuffer<T, IsActive>::~CBuffer()
 template <SoLib::IsNotPointer T, bool IsActive>
 inline CBuffer<T, IsActive> &CBuffer<T, IsActive>::operator=(CBuffer<T, IsActive> &&other)
 {
-
-	buffer_ = std::move(other);
+	buffer_ = std::move(other.buffer_);
 	other.buffer_ = {};
 	return *this;
 }

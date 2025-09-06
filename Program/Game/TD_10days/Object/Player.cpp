@@ -4,11 +4,108 @@
 
 namespace TD_10days {
 
+	void PlayerMovement::InputFunc() {
+		const auto player = GetPlayer();
+
+		const auto input = SolEngine::Input::GetInstance();
+		const auto dInput = input->GetDirectInput();
+		const float moveSpeed = 5.f;
+		if (dInput->IsPress(DIK_A)) {
+			player->velocity_.x -= moveSpeed;
+		}
+		if (dInput->IsPress(DIK_D)) {
+			player->velocity_.x += moveSpeed;
+		}
+
+		if (dInput->IsTrigger(DIK_SPACE)) {
+			if (player->isGround_ or player->IsInWater()) {
+				player->velocity_.y = 0.f;
+				player->acceleration_.y += 5.f;
+			}
+		}
+
+		if (dInput->IsTrigger(DIK_RETURN)) {
+			player->nextState_ = std::make_unique<PlayerPlacement>(player);
+		}
+
+	}
+
+	void PlayerMovement::OnEnter()
+	{
+	}
+
+	void PlayerMovement::OnExit()
+	{
+	}
+
+	void PlayerPlacement::InputFunc() {
+		const auto player = GetPlayer();
+
+		const auto input = SolEngine::Input::GetInstance();
+		const auto dInput = input->GetDirectInput();
+
+		// 次に設置する水の場所
+		Vector2 nextDir = Vector2::zero;
+
+		// 入力に応じて値を加算する
+		if (dInput->IsTrigger(DIK_RIGHT)) {
+			nextDir += +Vector2::right;
+		}
+		if (dInput->IsTrigger(DIK_LEFT)) {
+			nextDir += -Vector2::right;
+		}
+		if (dInput->IsTrigger(DIK_UP)) {
+			nextDir += +Vector2::up;
+		}
+		if (dInput->IsTrigger(DIK_DOWN)) {
+			nextDir += -Vector2::up;
+		}
+
+		// 水の方向がどこか一つに定まっていたら
+		if (nextDir.LengthSQ() == 1.f) {
+			// 尚且つ､水が配置できる座標ならば
+			if (player->pWater_->IsPlaceAble(player->pHitBox_, nextDir)) {
+				// 水を設置する
+				player->pWater_->PlacementWater(nextDir);
+			}
+		}
+
+
+		if (dInput->IsTrigger(DIK_RETURN)) {
+			player->nextState_ = std::make_unique<PlayerMovement>(player);
+		}
+	}
+
+	void PlayerPlacement::OnEnter()
+	{
+		const auto player = GetPlayer();
+
+		const Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
+		player->pWater_->Init(placePos, Vector2::one, 0x0000FF55);
+	}
+
+	void PlayerPlacement::OnExit()
+	{
+		const auto player = GetPlayer();
+		player->pWater_->Activate();
+	}
+
 	void Player::Init() {
 		sprite_ = Sprite::Generate(TextureManager::Load(spriteName_));
 		sprite_->SetPivot(Vector2::one / 2.f);
 		sprite_->SetInvertY(true);
+		nextState_ = std::make_unique<PlayerMovement>(this);
+	}
 
+	void Player::PreUpdate([[maybe_unused]] float deltaTime)
+	{
+		// もし次の状態があるなら､それを適用する
+		if (nextState_) {
+			// なおかつ既存のステータスがあるなら実行する
+			if (playerState_) { playerState_->OnExit(); }
+			nextState_->OnEnter();
+			playerState_ = std::move(nextState_);
+		}
 	}
 
 	void Player::Update([[maybe_unused]] const float deltaTime) {
@@ -26,48 +123,8 @@ namespace TD_10days {
 	}
 
 	void Player::InputFunc() {
-		const auto input = SolEngine::Input::GetInstance();
-		const auto dInput = input->GetDirectInput();
-		const float moveSpeed = 5.f;
-		if (dInput->IsPress(DIK_A)) {
-			velocity_.x -= moveSpeed;
-		}
-		if (dInput->IsPress(DIK_D)) {
-			velocity_.x += moveSpeed;
-		}
 
-		if (dInput->IsTrigger(DIK_SPACE)) {
-			if (isGround_ or IsInWater()) {
-				velocity_.y = 0.f;
-				acceleration_.y += 5.f;
-			}
-		}
-
-		if (dInput->IsTrigger(DIK_RETURN)) {
-			Vector2 place = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
-			pWater_->Init(place, Vector2::one, 0x0000FF55);
-		}
-
-		Vector2 nextDir = Vector2::zero;
-
-		if (dInput->IsTrigger(DIK_RIGHT)) {
-			nextDir += +Vector2::right;
-		}
-		if (dInput->IsTrigger(DIK_LEFT)) {
-			nextDir += -Vector2::right;
-		}
-		if (dInput->IsTrigger(DIK_UP)) {
-			nextDir += +Vector2::up;
-		}
-		if (dInput->IsTrigger(DIK_DOWN)) {
-			nextDir += -Vector2::up;
-		}
-
-		if (nextDir.LengthSQ() == 1.f) {
-			if (pWater_->IsPlaceAble(pHitBox_, nextDir)) {
-				pWater_->PlacementWater(nextDir);
-			}
-		}
+		playerState_->InputFunc();
 	}
 
 	void Player::CalcSprite() {
@@ -263,5 +320,6 @@ namespace TD_10days {
 		// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
 		return std::find(waterPos.begin(), waterPos.end(), target) != waterPos.cend();
 	}
+
 
 }

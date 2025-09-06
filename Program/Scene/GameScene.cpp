@@ -139,6 +139,7 @@ void GameScene::Update() {
 	stageEditor_->Update();
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
 
