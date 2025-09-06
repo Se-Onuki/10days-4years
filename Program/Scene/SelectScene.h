@@ -33,6 +33,8 @@ private:
 	void ApplyGlobalVariables();
 
 	void Debug();
+	//プレイヤーの操作など
+	void PlayerMoving();
 
 	//テクスチャの設定や移動など
 	void TextureSetting();

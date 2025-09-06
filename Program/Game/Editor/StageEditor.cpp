@@ -8,7 +8,7 @@ StageEditor::~StageEditor() {
 void StageEditor::ApplyMapChips() {
 	levelMapChip_.CreateHitBox();
 	levelMapChip_.FindActionChips();
-	pLevelMapChipRender_->CalcSpriteData();
+	
 }
 
 void StageEditor::InitOnce() {
@@ -138,13 +138,19 @@ void StageEditor::Update() {
 
 			//左クリックしたら
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-				levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
-				isSave_ = false;
+				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(selectNumber_)){
+					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
+					pLevelMapChipRender_->CalcSpriteData();
+					isSave_ = false;
+				}
 			}
 			//右クリックしたら
 			else if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-				levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
-				isSave_ = false;
+				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(0)){
+					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
+					pLevelMapChipRender_->CalcSpriteData();
+					isSave_ = false;
+				}				
 			}
 
 		}

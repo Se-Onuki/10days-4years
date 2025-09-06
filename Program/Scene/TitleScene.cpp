@@ -39,9 +39,9 @@ void TitleScene::OnEnter() {
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
+	soundA_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 
-	soundA_.Play(true, 0.1f);
+	soundA_.Play(true, 0.5f);
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
