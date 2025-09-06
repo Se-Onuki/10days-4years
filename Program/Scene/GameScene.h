@@ -138,8 +138,6 @@ private:
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipHitBox_;
 
-	Vector2 goalPos_;
-
 	SolEngine::Camera2D camera_;
 
 	TD_10days::Player player_;

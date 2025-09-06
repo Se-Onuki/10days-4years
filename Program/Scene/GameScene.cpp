@@ -113,9 +113,12 @@ void GameScene::Update() {
 	// プレイヤの座標からゴールの距離を割り出す
 	const Vector2 playerPos = player_.GetPosition();
 	// もし範囲内で､タイマーが動いてないならスタート
-	if ((pLevelMapChip_->GetGoalPosition() - playerPos).LengthSQ() < 1.f) {
-		if (not stageClearTimer_.IsActive()) {
-			stageClearTimer_.Start();
+	if (not stageClearTimer_.IsActive()) {
+		// ゴール座標からの距離で判定する
+		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
+			if ((goalPos - playerPos).LengthSQ() < 1.f) {
+				stageClearTimer_.Start();
+			}
 		}
 	}
 

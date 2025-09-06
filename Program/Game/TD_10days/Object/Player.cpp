@@ -71,21 +71,20 @@ namespace TD_10days {
 		}
 
 
-		if (dInput->IsTrigger(DIK_RETURN)) {
+		/// 地上に居る場合に遷移ができる
+		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
 			player->nextState_ = std::make_unique<PlayerMovement>(player);
 		}
 	}
 
-	void PlayerPlacement::OnEnter()
-	{
+	void PlayerPlacement::OnEnter() {
 		const auto player = GetPlayer();
 
 		const Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
 		player->pWater_->Init(placePos, Vector2::one, 0x0000FF55);
 	}
 
-	void PlayerPlacement::OnExit()
-	{
+	void PlayerPlacement::OnExit() {
 		const auto player = GetPlayer();
 		player->pWater_->Activate();
 	}

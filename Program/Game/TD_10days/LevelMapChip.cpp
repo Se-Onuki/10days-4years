@@ -59,6 +59,7 @@ namespace TD_10days {
 	}
 
 	void LevelMapChip::FindActionChips() {
+		goalPosList_.clear();
 
 		for (uint32_t yi = 0; yi < y_; ++yi) {
 			const auto &line = (*this)[yi];
@@ -71,7 +72,7 @@ namespace TD_10days {
 					break;
 				}
 				case MapChipType::kGoal: {
-					goalPos_ = Vector2{ static_cast<float>(xi), static_cast<float>(yi) };
+					goalPosList_.emplace_back(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
 					break;
 				}
 				default: {
@@ -133,9 +134,9 @@ namespace TD_10days {
 		return startPos_;
 	}
 
-	Vector2 LevelMapChip::GetGoalPosition() const
+	const std::vector<Vector2> &LevelMapChip::GetGoalPosition() const
 	{
-		return goalPos_;
+		return goalPosList_;
 	}
 
 	void LevelMapChipRenderer::Init(const LevelMapChip *levelMapChip) {

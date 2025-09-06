@@ -114,7 +114,7 @@ namespace TD_10days {
 		void Resize(uint32_t y, uint32_t x);
 
 		Vector2 GetStartPosition() const;
-		Vector2 GetGoalPosition() const;
+		const std::vector<Vector2>& GetGoalPosition() const;
 
 	private:
 		/// @brief マップチップの配列
@@ -125,7 +125,7 @@ namespace TD_10days {
 		std::unique_ptr<LevelMapChipHitBox> hitBox_;
 
 		Vector2 startPos_;
-		Vector2 goalPos_;
+		std::vector<Vector2> goalPosList_;
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
