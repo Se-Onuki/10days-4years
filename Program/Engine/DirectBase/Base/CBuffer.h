@@ -173,6 +173,9 @@ inline void CBuffer<T, IsActive>::CreateBuffer()
 
 	// Tが格納できるサイズのバッファを作成して､そのハンドルを保存
 	buffer_ = bufferManager->PushBack<T>();
+
+	// 配置newでどうにかする
+	new(&buffer_->GetAccessor<T>()[0]) T();
 }
 
 template <SoLib::IsNotPointer T, bool IsActive>
@@ -184,8 +187,7 @@ inline CBuffer<T, IsActive>::~CBuffer()
 template <SoLib::IsNotPointer T, bool IsActive>
 inline CBuffer<T, IsActive> &CBuffer<T, IsActive>::operator=(CBuffer<T, IsActive> &&other)
 {
-
-	buffer_ = std::move(other);
+	buffer_ = std::move(other.buffer_);
 	other.buffer_ = {};
 	return *this;
 }
@@ -281,7 +283,7 @@ inline CBuffer<T, false> &CBuffer<T, false>::operator=(const T &other)
 /// @class ConstantContainer
 /// @brief mapアドレスを外部に持たせたクラス
 template <SoLib::IsNotPointer T>
-class ConstantContainer 
+class ConstantContainer
 {
 public:
 	// リソースとして保持する構造体
@@ -363,8 +365,8 @@ public:
 	};
 	T *const operator<<(T *const target) { return target_ = target; };
 
-	inline operator T * const() { return target_; }
-	inline operator const T * const() const { return target_; }
+	inline operator T *const() { return target_; }
+	inline operator const T *const() const { return target_; }
 
 	inline T *const operator->() noexcept { return target_; }			  // dataのメンバへのアクセス
 	inline const T *const operator->() const noexcept { return target_; } // dataのメンバへのアクセス(const)

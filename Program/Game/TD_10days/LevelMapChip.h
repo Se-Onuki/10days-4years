@@ -18,13 +18,14 @@ namespace TD_10days {
 	public:
 
 		enum class MapChipType : uint32_t {
-			kEmpty,	// 何もない
-			kWall,	// 壁
-			kTile,	// 床内部
-			kFloor,	// プレイヤーが触れる床
-			kWater,	// 設置するタイプの水
-			kStart,	// スタート位置
-			kGoal,	// ゴール位置
+			kEmpty,		// 何もない
+			kWall,		// 壁
+			kTile,		// 床内部
+			kFloor,		// プレイヤーが触れる床
+			kWater,		// 設置するタイプの水
+			kStart,		// スタート位置
+			kGoal,		// ゴール位置
+			kNeedle,	// 針
 			CountElements // 要素数
 		};
 
@@ -32,18 +33,28 @@ namespace TD_10days {
 
 		class MapChipData {
 		public:
-			explicit operator const MapChip() const;
+			// explicit operator const MapChip() const;
+
 			MapChipData() = default;
 			MapChipData(const TextureHandle texture) : textureHandle_(texture) {}
+			MapChipData(const TextureHandle texture, bool isHasCollision) : textureHandle_(texture), isHasCollision_(isHasCollision) {}
+			MapChipData(bool isHasCollision) : isHasCollision_(isHasCollision) {}
+			//MapChipData(const TextureHandle texture, bool isVisible, const std::function<void(const Vector2 &)> &callback) : textureHandle_(texture), callback_(callback), isVisible_(isVisible) {}
 
 
 			/// @brief テクスチャハンドルを取得する
 			/// @return テクスチャハンドル
 			const TextureHandle &GetTextureHandle() const { return textureHandle_; }
 
-		private:
-			TextureHandle textureHandle_;
+			/// @brief 当たり判定があるか
+			/// @return 当たり判定があるならtrue
+			bool IsHasCollision() const { return isHasCollision_; }
 
+		private:
+			/// @brief テクスチャハンドル
+			TextureHandle textureHandle_{};
+			// 当たり判定があるかどうか
+			bool isHasCollision_ = true;
 		};
 
 		class LevelMapChipHitBox {
@@ -72,6 +83,9 @@ namespace TD_10days {
 		void Init(const uint32_t y, const uint32_t x);
 		void Init(const SoLib::IO::CSV &csv);
 
+		/// @brief 特殊効果を持つ場所を探す
+		void FindActionChips();
+
 		/// @brief インデックス演算子
 		/// @param[in] index 行のインデックス
 		/// @return 行のマップチップの配列
@@ -91,9 +105,18 @@ namespace TD_10days {
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
 		void AppendMapChipData(const MapChipData &mapChipData) { mapChipData_.emplace_back(mapChipData); }
 
-		const LevelMapChipHitBox* CreateHitBox();
+		/// @brief ヒットボックスを作成し、返します。
+		/// @return 新しく作成された LevelMapChipHitBox オブジェクトへのポインタ。
+		const LevelMapChipHitBox *CreateHitBox();
 
+		/// @brief サイズの調整
+		/// @param[in] y 更新後の高さ
+		/// @param[in] x 更新後の幅
 		void Resize(uint32_t y, uint32_t x);
+
+		Vector2 GetStartPosition() const;
+		const std::unordered_set<Vector2> &GetGoalPosition() const;
+		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
 	private:
 		/// @brief マップチップの配列
@@ -102,6 +125,10 @@ namespace TD_10days {
 		std::vector<MapChipData> mapChipData_;
 
 		std::unique_ptr<LevelMapChipHitBox> hitBox_;
+
+		Vector2 startPos_{};
+		std::unordered_set<Vector2> goalPosList_{};
+		std::unordered_set<Vector2> needlePosList_{};
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
@@ -112,13 +139,14 @@ namespace TD_10days {
 
 		LevelMapChipRenderer() = default;
 		LevelMapChipRenderer(const LevelMapChipRenderer &) = delete;
-		void Init(const LevelMapChip &levelMapChip);
+		void Init(const LevelMapChip *levelMapChip);
+		void CalcSpriteData();
 		void Draw();
 
 	private:
 
-		std::list<std::unique_ptr<Sprite>> spriteList_;
-		const LevelMapChip *pLevelMapChip_;
+		std::vector<std::unique_ptr<Sprite>> spriteList_;
+		const LevelMapChip *pLevelMapChip_ = nullptr;
 		/// @brief マップチップの位置を計算する
 		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
 

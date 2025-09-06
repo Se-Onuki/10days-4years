@@ -10,6 +10,7 @@ namespace TD_10days {
 
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
+		chainWater_->CreateChain(position);
 	}
 
 	void Water::Update(const float deltaTime) {

@@ -84,6 +84,17 @@ public:
 	/// @details シーンの描画処理の後に呼び出される
 	void PostEffectEnd() override;
 
+
+private:
+
+	/// @brief ステージクリア時の処理を実行します。
+	void StageClear();
+
+	/// @brief ステージでミスした場合の処理を実行します
+	void StageDefeat();
+
+	/// @brief ステージをリセットする
+	void ResetStage(bool isNext);
 private:
 
 	void Load(const GlobalVariables::Group &group);
@@ -91,6 +102,11 @@ private:
 	void Save(GlobalVariables::Group &group) const;
 
 private:
+
+	SoLib::DeltaTimer stageClearTimer_{ 1.f, false };
+
+	/// @brief ステージの遷移を行う関数
+	void (GameScene:: *stageTransitionFunc_)() = (&GameScene::StageClear);
 
 	/// @brief シェーダーのリソースマネージャ
 	SolEngine::ResourceObjectManager<Shader> *pShaderManager_ = nullptr;
@@ -111,22 +127,22 @@ private:
 	/// @brief ヴィネッティングのパラメータ
 	CBuffer<std::pair<float, float>> vignettingParam_{};
 	/// @brief グレースケールのパラメータ
-	CBuffer<float> grayScaleParam_;
+	CBuffer<float> grayScaleParam_{};
 	/// @brief hsvの調整パラメータ
 	CBuffer<SoLib::Color::HSV4> hsvParam_{ {0.f, 0.5f, 0.5f, 1.f} };
 	/// @brief ガウシアンブラーのパラメータ
-	CBuffer<std::pair<float, int32_t>> gaussianParam_;
+	CBuffer<std::pair<float, int32_t>> gaussianParam_{};
 
 	// 影の色
 	SoLib::Color::RGB4 shadowColor_ = 0x00000055;
 	// 経験値の色
 	SoLib::Color::RGB4 expColor_ = 0x555500FF;
 
-	StageEditor* stageEditor_ = nullptr;
+	StageEditor *stageEditor_ = nullptr;
 
-	TD_10days::LevelMapChip levelMapChip_;
+	TD_10days::LevelMapChip *pLevelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
-	const TD_10days::LevelMapChip::LevelMapChipHitBox* levelMapChipHitBox_;
+	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipHitBox_;
 
 	SolEngine::Camera2D camera_;
 

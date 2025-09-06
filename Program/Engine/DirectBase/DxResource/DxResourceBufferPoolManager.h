@@ -175,7 +175,9 @@ namespace SolEngine {
 		template <typename Itr>
 		std::vector<DxResourceBuffer<HType> *> PushBack(Itr begin, Itr end);
 
-		void ReleaseUnusingReosurce(uint32_t memSize = (std::numeric_limits<uint32_t>::max)());
+		void ReleaseUnusingReosurce(uint32_t memSize);
+
+		void ReleaseUnusingReosurce();
 
 	private:
 		// リソースのマネージャ
@@ -221,6 +223,15 @@ namespace SolEngine {
 		}
 
 		unUsingResource_.erase(itr);
+	}
+
+	template<D3D12_HEAP_TYPE HType>
+	inline void DxResourceBufferPoolManager<HType>::ReleaseUnusingReosurce()
+	{
+		auto itr = unUsingResource_.begin();
+		while (itr != unUsingResource_.end()) {
+			itr = unUsingResource_.erase(itr);
+		}
 	}
 
 	template <D3D12_HEAP_TYPE HType>
