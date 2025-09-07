@@ -156,13 +156,7 @@ void SelectScene::Draw(){
 }
 
 void SelectScene::ApplyGlobalVariables() {
-	/*GlobalVariables* global = GlobalVariables::GetInstance();
-	const char* groupName = "UIRandom";
-
-	angleMinMax_.first = global->Get<int>(groupName, "AngleRandomMin");
-	angleMinMax_.second = global->Get<int>(groupName, "AngleRandomMax");
-	posMinMax_.first = global->Get<Vector2>(groupName, "PosRandomMin");
-	posMinMax_.second = global->Get<Vector2>(groupName, "PosRandomMax");*/
+	
 }
 
 void SelectScene::Debug(){
@@ -213,11 +207,9 @@ void SelectScene::PlayerMoving(){
 
 void SelectScene::TextureSetting() {
 	for (int32_t i = 0; i < kMaxStages_; i++){
+		//選択しているステージに応じて移動
 		doors_[i]->transform.translate_.x = SoLib::Lerp(doors_[i]->transform.translate_.x, doors_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
 		numbers_[i]->transform.translate_.x = SoLib::Lerp(numbers_[i]->transform.translate_.x, numbers_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
-		//選択しているステージに応じて移動
-	/*	doors_[i]->transform.translate_.x = doors_[i]->originalTransform.translate_.x - basePos_;
-		numbers_[i]->transform.translate_.x = numbers_[i]->originalTransform.translate_.x - basePos_;*/
 		//選択しているものは大きく表示
 		if (i == stageNum_){
 			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, selectScaleDoor_, changeSpeed_);
