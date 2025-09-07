@@ -33,6 +33,7 @@ namespace TD_10days {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
+			player->countUI_->SetIsActive(false);
 		}
 
 	}
@@ -147,7 +148,9 @@ namespace TD_10days {
 
 		placementUI_->SetBasePos(position_);
 		placementUI_->Update(deltaTime);
-
+		if (auto timeOpt = pWater_->GetWaterTime()) { // optional が値を持つか確認
+			countUI_->SetTime(*timeOpt);              // 値を取り出して渡す
+		}
 		countUI_->Update(position_);
 
 		if (playerState_->GetStateName() == "PlayerMovement") {
