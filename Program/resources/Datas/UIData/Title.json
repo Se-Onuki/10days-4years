@@ -1,0 +1,28 @@
+{
+    "UIs": {
+        "Title": [
+            {
+                "TextureFullPath": "UI\\Title\\TitleStartUI.png",
+                "TextureName": "TitleStartUI",
+                "UVScale": [
+                    370.0,
+                    64.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    370.0,
+                    64.0
+                ],
+                "translate": [
+                    640.0,
+                    527.0
+                ]
+            }
+        ]
+    }
+}

@@ -246,6 +246,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\Editor\TextureEditor.cpp" />
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
+    <ClCompile Include="Game\TD_10days\GameManager.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Player.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Water.cpp" />
@@ -272,6 +273,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Scene\NT_ServerScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\SelectScene.cpp" />
+    <ClCompile Include="Scene\SelectToGame\SelectToGame.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Engine\Utils\Convert\Convert.cpp" />
     <ClCompile Include="Engine\Utils\Graphics\Color.cpp" />
@@ -419,6 +422,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\GameScene\GameRenderer.h" />
     <ClInclude Include="Game\Resource\EnemyDataTable.h" />
     <ClInclude Include="Game\Resource\GameScore.h" />
+    <ClInclude Include="Game\TD_10days\GameManager.h" />
+    <ClInclude Include="Game\TD_10days\Level\LevelFileIO.h" />
     <ClInclude Include="Game\TD_10days\Object\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
     <ClInclude Include="Game\TD_10days\Object\Water.h" />
@@ -446,6 +451,8 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Scene\NT_ServerScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\SelectScene.h" />
+    <ClInclude Include="Scene\SelectToGame\SelectToGame.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Engine\Utils\Containers\AlignasWrapper.h" />
     <ClInclude Include="Engine\Utils\Containers\Array2D.h" />

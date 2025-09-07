@@ -10,6 +10,7 @@ namespace TD_10days {
 
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
+		chainWater_->CreateChain(position);
 	}
 
 	void Water::Update(const float deltaTime) {
@@ -62,7 +63,7 @@ namespace TD_10days {
 			}
 
 			// もし当たり判定と一致した場合は移動できない｡
-			if (nextPos.x < 0 or nextPos.y < 0 or hitBox->at(static_cast<size_t>(nextPos.y), static_cast<size_t>(nextPos.x))) {
+			if (nextPos.x < 0 or nextPos.y < 0 or nextPos.x >= hitBox->GetX() or nextPos.y >= hitBox->GetY() or hitBox->at(static_cast<size_t>(nextPos.y), static_cast<size_t>(nextPos.x))) {
 				return false;
 			}
 

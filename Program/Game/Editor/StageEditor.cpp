@@ -1,71 +1,103 @@
 #include "StageEditor.h"
+#include <SelectToGame/SelectToGame.h>
 
 StageEditor::~StageEditor() {
 
 }
 
-void StageEditor::ApplyHitBox()
-{
+void StageEditor::ApplyMapChips() {
 	levelMapChip_.CreateHitBox();
+	levelMapChip_.FindActionChips();
+	
 }
 
-void StageEditor::Initialize() {
-	//ここにパスを入れる
-	texName_ = {
-		{},
-		{("wall")},//wall
-		{("tile")},//tile
-		{("floor")},//floor
-		{("water")},//water
-		{("start")},//start
-		{("goal")},//goal
-	};
+void StageEditor::InitOnce() {
 
-	texPath_ = {
-		{},
-		{("uvChecker.png")},//wall
-		{("StageTex/blue.png")},//tile
-		{("StageTex/green.png")},//floor
-		{("StageTex/pink.png")},//water
-		{("StageTex/red.png")},//start
-		{("StageTex/yellow.png")},//goal
-	};
-	
+	// もしテクスチャの名前がないなら
+	if (texName_.empty()) {
+		//ここに名前を入れる
+		texName_ = {
+			{},
+			{("wall")},//wall
+			{("tile")},//tile
+			{("floor")},//floor
+			{("water")},//water
+			{("start")},//start
+			{("goal")},//goal
+			{("needle")},//needle
+		};
+	}
+	// もしテクスチャのパスがないなら
+	if (texPath_.empty()) {
+		texPath_ = {
+			{},
+			{("StageTex/block.png")},//wall
+			{("StageTex/floor2.png")},//tile
+			{("StageTex/floor.png")},//floor
+			{("StageTex/blue.png")},//water
+			{("StageTex/red.png")},//start
+			{("StageTex/goal.png")},//goal
+			{("StageTex/yellow.png")},//needle
+		};
+	}
+
+	// もし仮にテクスチャパスと個数が合わなかったら
+	if (levelMapChip_.GetMapChipData().size() != texPath_.size()) {
+		// テクスチャなどの情報を与える
+		levelMapChip_.SetMapChipData(
+			{
+			{false},	// Air
+			{TextureHandle{TextureManager::Load(texPath_[1])}},//wall
+			{TextureHandle{TextureManager::Load(texPath_[2])}},//tile
+			{TextureHandle{TextureManager::Load(texPath_[3])}},//floor
+			{TextureHandle{TextureManager::Load(texPath_[4])}},//water
+			{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
+			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
+			{TextureHandle{TextureManager::Load(texPath_[7])}, false},//needle
+			});
+	}
+
+	if (not newTex_) {
+		newTex_ = std::make_unique<Tex2DState>();
+		newTex_->transform.translate_ = Vector2(0, 0);
+		newTex_->transform.scale_ = { 1.f,1.f };
+		newTex_->color = 0x0000ffff;
+		//配置用のものなのでwhiteTex
+		newTex_->sprite = Sprite::Generate();
+	}
+
+}
+
+void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRender) {
+	// 描画処理の型を渡す｡(本来はオブザーバーパターンでやるべき)
+	pLevelMapChipRender_ = pLevelMapChipRender;
+
+	// 一度しか呼び出さない初期化処理(一度初期化されていた場合､内部のifで全て流される)
+	InitOnce();
+
+	// ステージ番号の取得
+	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
+	// ステージ番号の基数を1にする
 	int32_t selectNum = stageNum_ + 1;
 
+	// ステージの読み込みを行う
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
+		// CSVが読み込めたらそれに応じた初期化を行う｡
 		csvData_ = csvFile_;
 
 		levelMapChip_.Init(csvData_);
 	}
 	else {
+		// ステージが読み込めなかった場合､とりあえず初期設定で作る
 		levelMapChip_.Init(mapSize_.first, mapSize_.second);
+
+		// 仮配置
+		std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
+		levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
+		levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	}
-	
-	levelMapChip_.SetMapChipData(
-		{
-		{},
-		{TextureHandle{TextureManager::Load(texPath_[1])}},//wall
-		{TextureHandle{TextureManager::Load(texPath_[2])}},//tile
-		{TextureHandle{TextureManager::Load(texPath_[3])}},//floor
-		{TextureHandle{TextureManager::Load(texPath_[4])}},//water
-		{TextureHandle{TextureManager::Load(texPath_[5])}},//start
-		{TextureHandle{TextureManager::Load(texPath_[6])}},//goal
-		});
-	std::fill(levelMapChip_[0].begin(), levelMapChip_[0].end(), TD_10days::LevelMapChip::MapChip::kFloor);
-	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[1][2] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-
-	newTex_ = std::make_unique<Tex2DState>();
-	newTex_->transform.translate_ = Vector2(0, 0);
-	newTex_->transform.scale_ = { 1.f,1.f };
-	newTex_->color = 0x0000ffff;
-	//配置用のものなのでwhiteTex
-	newTex_->sprite = Sprite::Generate(TextureManager::LoadDefaultTexture());
-
-
 }
 
 void StageEditor::Finalize() {
@@ -73,6 +105,10 @@ void StageEditor::Finalize() {
 }
 
 void StageEditor::Update() {
+
+#ifdef _DEBUG
+
+
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
 	mousePos.y *= -1; // Y反転（上が正になる）
@@ -85,44 +121,58 @@ void StageEditor::Update() {
 	world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
 	world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
 
-
+	int blockQuater = (blockSize_ / 4);
 	// ---- マップチップの範囲内かどうか ----
 	isIncide_ =
-		((-(blockSize_ / 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockSize_ / 2))) and
-		((-(blockSize_ / 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockSize_ / 2)));
+		((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
+		((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
 
-	if (not ImGui::GetIO().WantCaptureMouse){
+	if (not ImGui::GetIO().WantCaptureMouse) {
 		if (isIncide_) {
 			// ---- どのマップチップか ----
 			tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
 			tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
+
+
 			newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
 
 			//左クリックしたら
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-				levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
-				isSave_ = false;
+				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(selectNumber_)){
+					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
+					pLevelMapChipRender_->CalcSpriteData();
+					isSave_ = false;
+				}
 			}
 			//右クリックしたら
 			else if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-				levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
-				isSave_ = false;
+				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(0)){
+					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
+					pLevelMapChipRender_->CalcSpriteData();
+					isSave_ = false;
+				}				
 			}
-		
+
 		}
 		//離した時に当たり判定の更新
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) or ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-			ApplyHitBox();
+			ApplyMapChips();
 		}
 	}
-	
+
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
 	ClickPushMove(mousePos);
+
+#endif // _DEBUG
+
 }
 
 void StageEditor::PutDraw() {
+
+#ifdef _DEBUG
+
 	if (isIncide_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
@@ -132,6 +182,9 @@ void StageEditor::PutDraw() {
 		newTex_->sprite->SetInvertY(true);
 		newTex_->sprite->Draw();
 	}
+
+#endif // _DEBUG
+
 }
 
 void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
@@ -139,13 +192,13 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 #ifdef _DEBUG
 	ImGui::Begin("ステージエディター");
 	ImGui::Text("%s", texName_[selectNumber_].c_str());
-	ImGui::SliderInt("設置するマップの種類", &selectNumber_, 1, (int)(TD_10days::LevelMapChip::MapChip::kGoal));
-	ImTextureID textureID = TextureManager::GetInstance()->GetTexture(TextureManager::Load(texPath_[selectNumber_]))->GetTextureID();
+	ImGui::SliderInt("設置するマップの種類", &selectNumber_, 1, static_cast<int>(TD_10days::LevelMapChip::MapChip::CountElements) - 1u);
+	const ImTextureID textureID = TextureManager::GetInstance()->GetTexture(TextureManager::Load(texPath_[selectNumber_]))->GetTextureID();
 	ImGui::Image(textureID, ImVec2(128, 128));
 	ImGui::Text("%s", "編集しているステージ");
 	// 左矢印
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
-		if (guiSelectNum_ > 1){
+		if (guiSelectNum_ > 1) {
 			if (not isSave_) {
 				if (NotSaveMoveConfirmation()) {
 					guiSelectNum_--;
@@ -158,7 +211,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 				guiSelectNum_--;
 				LoadStage();
 			}
-		}		
+		}
 	}
 	ImGui::SameLine();
 	// 現在値を表示
@@ -166,9 +219,9 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::SameLine();
 	// 右矢印
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
-		if (guiSelectNum_ < kStageMax_){
-			if (not isSave_){
-				if (NotSaveMoveConfirmation()){
+		if (guiSelectNum_ < kStageMax_) {
+			if (not isSave_) {
+				if (NotSaveMoveConfirmation()) {
 					guiSelectNum_++;
 					LoadStage();
 					isSave_ = true;
@@ -179,7 +232,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 				LoadStage();
 			}
 		}
-		
+
 	}
 
 	ImGui::Text("現在のマップ上限 縦幅 ＝ %d, 横幅 ＝ %d", levelMapChip_.GetSize().first, levelMapChip_.GetSize().second);
@@ -187,25 +240,25 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::DragInt("横幅", &mapSize_.second, 1.0f, 0, 999);
 	ImGui::DragInt("縦幅", &mapSize_.first, 1.0f, 0, 300);
 
-	if (ImGui::Button("マップのサイズを上記に変更する")){
-		if (OperationConfirmation()){
+	if (ImGui::Button("マップのサイズを上記に変更する")) {
+		if (OperationConfirmation()) {
 			levelMapChip_.Resize(mapSize_.first, mapSize_.second);
 		}
 	}
 	//ImGui::DragFloat2("座標", mousePos.data(), 0.1f);
 	//ImGui::DragInt("マップチップX", &tilePos_.first);
 	//ImGui::DragInt("マップチップY", &tilePos_.second);
-	if (ImGui::Button("現在のステージを保存する")){
+	if (ImGui::Button("現在のステージを保存する")) {
 		if (OperationConfirmation()) {
 			SaveFile(kFileName_);
 			isSave_ = true;
 		}
 	}
-	
+
 	ImGui::End();
 #endif // DEBUG_
 
-	
+
 }
 
 void StageEditor::LoadFileAll() {
@@ -213,10 +266,10 @@ void StageEditor::LoadFileAll() {
 }
 
 void StageEditor::ClickPushMove([[maybe_unused]] Vector2 mousePos) {
-	
+
 }
 
-void StageEditor::SaveFile([[maybe_unused]] const std::string& fileName) {
+void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 	std::filesystem::path dir(kDirectoryPath_);
 	if (!std::filesystem::exists(dir)) {
 		std::filesystem::create_directory(dir);
@@ -260,9 +313,9 @@ void StageEditor::ChackFiles() {
 
 	std::filesystem::directory_iterator dir_it(kDirectoryPath_);
 
-	for (const std::filesystem::directory_entry& entry : dir_it) {
+	for (const std::filesystem::directory_entry &entry : dir_it) {
 		//ファイルパスを取得
-		const std::filesystem::path& filePath = entry.path();
+		const std::filesystem::path &filePath = entry.path();
 
 		//ファイル拡張子を取得
 		std::string extension = filePath.extension().string();
@@ -294,7 +347,7 @@ void StageEditor::ChackFiles() {
 	}
 }
 
-void StageEditor::LoadFile(const std::string& fileName) {
+void StageEditor::LoadFile(const std::string &fileName) {
 #ifdef _DEBUG
 	fileName;
 	std::string message = "File loading completed";
@@ -310,62 +363,62 @@ void StageEditor::DragMove() {
 }
 
 TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
-	TD_10days::LevelMapChip::MapChip map{};
+	TD_10days::LevelMapChip::MapChip map{ static_cast<TD_10days::LevelMapChip::MapChip>(num) };
 
-	if (num == 0) {
-		map = TD_10days::LevelMapChip::MapChip::kEmpty;
-	}
-	if (num == 1) {
-		map = TD_10days::LevelMapChip::MapChip::kWall;
-	}
-	if (num == 2) {
-		map = TD_10days::LevelMapChip::MapChip::kTile;
-	}
-	if (num == 3) {
-		map = TD_10days::LevelMapChip::MapChip::kFloor;
-	}
-	if (num == 4) {
-		map = TD_10days::LevelMapChip::MapChip::kWater;
-	}
-	if (num == 5) {
-		map = TD_10days::LevelMapChip::MapChip::kStart;
-	}
-	if (num == 6) {
-		map = TD_10days::LevelMapChip::MapChip::kGoal;
-	}
+	//if (num == 0) {
+	//	map = TD_10days::LevelMapChip::MapChip::kEmpty;
+	//}
+	//if (num == 1) {
+	//	map = TD_10days::LevelMapChip::MapChip::kWall;
+	//}
+	//if (num == 2) {
+	//	map = TD_10days::LevelMapChip::MapChip::kTile;
+	//}
+	//if (num == 3) {
+	//	map = TD_10days::LevelMapChip::MapChip::kFloor;
+	//}
+	//if (num == 4) {
+	//	map = TD_10days::LevelMapChip::MapChip::kWater;
+	//}
+	//if (num == 5) {
+	//	map = TD_10days::LevelMapChip::MapChip::kStart;
+	//}
+	//if (num == 6) {
+	//	map = TD_10days::LevelMapChip::MapChip::kGoal;
+	//}
 
 	return map;
 }
 
-int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map){
-	int32_t num{};
+int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
+	int32_t num{ static_cast<int32_t>(map) };
 
-	if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
-		num = 0;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kWall) {
-		num = 1;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kTile) {
-		num = 2;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kFloor) {
-		num = 3;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kWater) {
-		num = 4;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kStart) {
-		num = 5;
-	}
-	if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
-		num = 6;
-	}
-	
+	//if (map == TD_10days::LevelMapChip::MapChip::kEmpty) {
+	//	num = 0;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kWall) {
+	//	num = 1;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kTile) {
+	//	num = 2;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kFloor) {
+	//	num = 3;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kWater) {
+	//	num = 4;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kStart) {
+	//	num = 5;
+	//}
+	//if (map == TD_10days::LevelMapChip::MapChip::kGoal) {
+	//	num = 6;
+	//}
+
 	return num;
 }
 
-void StageEditor::LoadStage(){
+void StageEditor::LoadStage() {
 	int32_t selectNum = guiSelectNum_;
 
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
@@ -377,10 +430,10 @@ void StageEditor::LoadStage(){
 		levelMapChip_.Init(mapSize_.first, mapSize_.second);
 	}
 
-	ApplyHitBox();
+	ApplyMapChips();
 }
 
-bool StageEditor::LoadChackItem(const std::string& fileName) {
+bool StageEditor::LoadChackItem(const std::string &fileName) {
 	// 書き込むjsonファイルのフルパスを合成する
 	std::string filePath = fileName;
 	//読み込み用のファイルストリーム
@@ -424,7 +477,7 @@ bool StageEditor::OperationConfirmation() {
 	}
 }
 
-bool StageEditor::NotSaveMoveConfirmation(){
+bool StageEditor::NotSaveMoveConfirmation() {
 	int result = MessageBox(WinApp::GetInstance()->GetHWND(), L"保存をしていませんがこの操作を続けますか?", L"Confirmation", MB_YESNO | MB_ICONQUESTION);
 	if (result == IDYES) {
 		return true;

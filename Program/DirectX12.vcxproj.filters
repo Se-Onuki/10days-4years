@@ -199,6 +199,15 @@
     <Filter Include="Game\Collision\Collider">
       <UniqueIdentifier>{495e47db-904a-4742-9e7e-a7d1e8885277}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\other">
+      <UniqueIdentifier>{7055841a-2c87-429f-ab31-d92f99e870f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\SelectToGame">
+      <UniqueIdentifier>{b42d63a3-e251-4ca8-8090-dce69600bdda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\TD_10days\Level">
+      <UniqueIdentifier>{a53b88ae-455c-4352-96f1-626ca7c315bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene\SceneManager.cpp">
@@ -311,9 +320,6 @@
     </ClCompile>
     <ClCompile Include="Header\Object\Ground.cpp">
       <Filter>Game\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\CGTaskScene.cpp">
-      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\ECS\System\Systems.cpp">
       <Filter>Engine\ECS\System</Filter>
@@ -513,17 +519,11 @@
     <ClCompile Include="Engine\UI\Text\NumberRender.cpp">
       <Filter>Engine\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\NT_ServerScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Utils\Network\Socket\UdpNetwork.cpp">
       <Filter>Engine\Utils\Network</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Utils\Network\WindowsSocket\WindowsSocket.cpp">
       <Filter>Engine\Utils\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\NT_ClientScene.cpp">
-      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\VFX\Particle\Particle.cpp">
       <Filter>Engine\VFX</Filter>
@@ -552,9 +552,6 @@
     <ClCompile Include="Engine\Utils\IO\JoyCon\JoyConManager.cpp">
       <Filter>Engine\Utils\IO\JoyCon</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\BeTaskScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Utils\Network\Curl\Curl.cpp">
       <Filter>Engine\Utils\Network</Filter>
     </ClCompile>
@@ -581,6 +578,27 @@
     </ClCompile>
     <ClCompile Include="Game\Editor\StageEditor.cpp">
       <Filter>Game\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\BeTaskScene.cpp">
+      <Filter>Scene\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\CGTaskScene.cpp">
+      <Filter>Scene\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\NT_ClientScene.cpp">
+      <Filter>Scene\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\NT_ServerScene.cpp">
+      <Filter>Scene\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectToGame\SelectToGame.cpp">
+      <Filter>Scene\SelectToGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\GameManager.cpp">
+      <Filter>Game\TD_10days</Filter>
     </ClCompile>
     <ClCompile Include="Game\TD_10days\WaterEffect.cpp">
       <Filter>ソース ファイル</Filter>
@@ -748,9 +766,6 @@
     </ClInclude>
     <ClInclude Include="Header\Object\Ground.h">
       <Filter>Game\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\CGTaskScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\DirectBase\Thread\ThreadPool.h">
       <Filter>Engine\Thread</Filter>
@@ -1055,9 +1070,6 @@
     <ClInclude Include="Engine\UI\Text\NumberRender.h">
       <Filter>Engine\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\NT_ServerScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\source\repos\NetworkTest\Library\Success.h">
       <Filter>Engine\Utils</Filter>
     </ClInclude>
@@ -1081,9 +1093,6 @@
     </ClInclude>
     <ClInclude Include="Engine\Utils\Network\WindowsSocket\WindowsSocket.h">
       <Filter>Engine\Utils\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\NT_ClientScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Game\Resource\GameScore.h">
       <Filter>Game\Resource</Filter>
@@ -1120,9 +1129,6 @@
     </ClInclude>
     <ClInclude Include="Engine\Utils\IO\JoyCon\JoyConManager.h">
       <Filter>Engine\Utils\IO\JoyCon</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\BeTaskScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Utils\Network\Curl\Curl.h">
       <Filter>Engine\Utils\Network</Filter>
@@ -1162,6 +1168,30 @@
     </ClInclude>
     <ClInclude Include="Game\Editor\StageEditor.h">
       <Filter>Game\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\BeTaskScene.h">
+      <Filter>Scene\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\CGTaskScene.h">
+      <Filter>Scene\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\NT_ClientScene.h">
+      <Filter>Scene\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\NT_ServerScene.h">
+      <Filter>Scene\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectToGame\SelectToGame.h">
+      <Filter>Scene\SelectToGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\GameManager.h">
+      <Filter>Game\TD_10days</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Level\LevelFileIO.h">
+      <Filter>Game\TD_10days\Level</Filter>
     </ClInclude>
     <ClInclude Include="Game\TD_10days\WaterEffect.h">
       <Filter>ヘッダー ファイル</Filter>

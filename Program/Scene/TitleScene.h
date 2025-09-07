@@ -32,6 +32,12 @@ public:
 	void Draw() override;
 
 private:
+	void ApplyGlobalVariables();
+
+	//テクスチャの設定や移動など
+	void TextureSetting();
+
+private:
 	// 入力インスタンス
 	SolEngine::Input *input_ = nullptr;
 	// 音インスタンス
@@ -42,17 +48,17 @@ private:
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
 
-	// 平行光源
-	std::unique_ptr<DirectionLight> light_ = nullptr;
+	std::unique_ptr<Tex2DState> backGround_;
 
-	std::unique_ptr<Sprite> sprite_;
+	//テクスチャの情報群
+	std::vector<Tex2DState*> texDetas_;
 
-	Ground ground_{ 0.f, Vector2{100.f,100.f} };
+	std::pair<int32_t, int32_t> angleMinMax_;
+	std::pair<Vector2, Vector2> posMinMax_;
 
-	BlockManager *blockRender_;
-	ModelHandleListManager *blockHandleRender_;
-
-	SolEngine::Camera3D camera_;
+	//ランダムで変化する変数
+	int32_t randAngle_ = 0;
+	Vector2 randPos_ = {};
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;

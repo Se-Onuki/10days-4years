@@ -9,42 +9,40 @@
 #include "../../Engine/Utils/SoLib/SoLib.h"
 
 #include "../Header/Object/Fade.h"
-#include "GameScene.h"
 #include "../Engine/LevelEditor/LevelImporter.h"
 #include "../Engine/ECS/System/NewSystems.h"
+#include <DirectBase/File/GlobalVariables.h>
+#include <SelectScene.h>
 #include "WaterDemoScene.h"
 
 TitleScene::TitleScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
 	cameraManager_ = SolEngine::CameraManager::GetInstance();
-	blockRender_ = BlockManager::GetInstance();
 }
 
 TitleScene::~TitleScene() {
 }
 
 void TitleScene::OnEnter() {
-	// ライトの生成
-	light_ = DirectionLight::Generate();
-	blockRender_->Init(1024u);
-	blockHandleRender_ = ModelHandleListManager::GetInstance();
-	blockHandleRender_->Init(1024u);
-	ModelManager::GetInstance()->CreateDefaultModel();
+	GlobalVariables* global = GlobalVariables::GetInstance();
+	const char* groupName = "UIRandom";
+	global->CreateGroups(groupName);
+	//アイテムの追加
+	global->AddValue(groupName, "AngleRandomMin", angleMinMax_.first);
+	global->AddValue(groupName, "AngleRandomMax", angleMinMax_.second);
+	global->AddValue(groupName, "PosRandomMin", posMinMax_.first);
+	global->AddValue(groupName, "PosRandomMax", posMinMax_.second);
 
-	sprite_ = Sprite::Generate(TextureManager::Load("UI/Title/TitleECS.dds"));
+	// ライトの生成
+	ModelManager::GetInstance()->CreateDefaultModel();
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
-	ground_.Init();
-	camera_.Init();
-
-	camera_.translation_.y = 5.f;
-
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/TitleBGM.mp3");
+	soundA_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 
-	soundA_.Play(true, 0.1f);
+	soundA_.Play(true, 0.5f);
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
@@ -58,6 +56,11 @@ void TitleScene::OnEnter() {
 	systemExecuter_.AddSystem<ECS::System::Par::CalcEulerTransMatrix>();
 	systemExecuter_.AddSystem<ECS::System::Par::CalcTransMatrix>();
 	systemExecuter_.AddSystem<ECS::System::Par::ModelDrawer>();
+
+	backGround_ = std::make_unique<Tex2DState>();
+	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
+	backGround_->originalTransform.translate_ = { 640.0f,360.0f };
+	backGround_->sprite = Sprite::Generate(TextureManager::Load("TD_10days/BackGround/BackGround.png"));
 
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Title);
@@ -74,21 +77,13 @@ void TitleScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
-	blockRender_->clear();
-	blockHandleRender_->clear();
-
-	camera_.rotation_ *= SoLib::MakeQuaternion(SoLib::Euler{ 0.f, 11.25_deg * deltaTime, 0.f });
-	camera_.UpdateMatrix();
-
-	sprite_->SetScale(Vector2{ 256,64 } *2.f);
-	sprite_->SetPivot({ 0.5f,0.5f });
-	
-	sprite_->SetPosition(Vector2{ WinApp::kWindowWidth * 0.5f,WinApp::kWindowHeight * (1.f / 4.f) });
-
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		sceneManager_->ChangeScene<GameScene>(1.f);
+		sceneManager_->ChangeScene<SelectScene>(1.f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
+	ApplyGlobalVariables();
+
+	TextureSetting();
 
 	if (input_->GetDirectInput()->IsTrigger(DIK_L)) {
 		sceneManager_->ChangeScene<WaterDemoScene>(1.f);
@@ -111,6 +106,9 @@ void TitleScene::Draw() {
 
 	// スプライトの描画
 
+
+	backGround_->sprite->Draw();
+
 	Sprite::EndDraw();
 
 #pragma endregion
@@ -123,11 +121,6 @@ void TitleScene::Draw() {
 	Model::StartDraw(commandList);
 	Model::SetPipelineType(Model::PipelineType::kShadowParticle);
 
-	light_->SetLight(commandList);
-	// ground_.Draw();
-
-	blockRender_->Draw(camera_);
-	blockHandleRender_->Draw(camera_);
 
 	Model::EndDraw();
 
@@ -137,8 +130,6 @@ void TitleScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
-	// スプライトの描画
-	sprite_->Draw();
 
 	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
@@ -148,5 +139,37 @@ void TitleScene::Draw() {
 	Sprite::EndDraw();
 
 #pragma endregion
+
+}
+
+void TitleScene::ApplyGlobalVariables(){
+	GlobalVariables* global = GlobalVariables::GetInstance();
+	const char* groupName = "UIRandom";
+
+	angleMinMax_.first = global->Get<int>(groupName, "AngleRandomMin");
+	angleMinMax_.second = global->Get<int>(groupName, "AngleRandomMax");
+	posMinMax_.first = global->Get<Vector2>(groupName, "PosRandomMin");
+	posMinMax_.second = global->Get<Vector2>(groupName, "PosRandomMax");
+}
+
+void TitleScene::TextureSetting(){
+	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
+	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
+	backGround_->sprite->SetPivot({ 0.5f,0.5f });
+
+	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
+	
+	randAngle_ = SoLib::Random::GetRandom(angleMinMax_.first, angleMinMax_.second);
+	randPos_ = SoLib::Random::GetRandom(posMinMax_.first, posMinMax_.second);
+
+	for (size_t i = 0; i < texDetas_.size(); i++) {
+		Tex2DState* nowTex = texDetas_[i];
+		if (nowTex->textureName == "TitleStartUI") {
+			nowTex->angle_degrees = randAngle_;
+			nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
+			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
+		}
+	}
+
 
 }
