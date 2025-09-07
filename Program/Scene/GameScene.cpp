@@ -183,13 +183,16 @@ void GameScene::Update() {
 void GameScene::Debug() {
 #ifdef _DEBUG
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.MouseWheel > 0.0f) {
-		// ホイール上スクロール
-		camera_.scale_ -= 0.01f;
-	}
-	if (io.MouseWheel < 0.0f) {
-		// ホイール下スクロール
-		camera_.scale_ += 0.01f;
+	if (not ImGui::GetIO().WantCaptureMouse){
+
+		if (io.MouseWheel > 0.0f) {
+			// ホイール上スクロール
+			camera_.scale_ -= 0.01f;
+		}
+		if (io.MouseWheel < 0.0f) {
+			// ホイール下スクロール
+			camera_.scale_ += 0.01f;
+		}
 	}
 	
 

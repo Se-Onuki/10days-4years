@@ -49,9 +49,9 @@ void TitleScene::OnEnter() {
 	colorTimer_->Clear();
 
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
+	TitleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 
-	soundA_.Play(true, 0.5f);
+	TitleBGM_.Play(true, 0.5f);
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
