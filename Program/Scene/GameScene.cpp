@@ -57,7 +57,7 @@ void GameScene::OnEnter() {
 	offScreen_->Init();
 
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
-	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl" });
+	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl" });
 
 
 	gaussianParam_->first = 32.f;
@@ -71,12 +71,17 @@ void GameScene::OnEnter() {
 	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
-	
+	camera_.Init();
+	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
+	camera_.translation_.y = 4.f;
+
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
 	levelMapChipRenderer_.Init(pLevelMapChip_);
-	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
+	pLevelMapChip_->CreateHitBox();
+	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
+	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
 	camera_.Init();
 	camera_.scale_ = 0.0125f;
@@ -88,6 +93,7 @@ void GameScene::OnEnter() {
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
+	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
 	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
 	waterParticleManager_->Init();
@@ -125,7 +131,7 @@ void GameScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
 
-	
+
 
 	stageClearTimer_.Update(deltaTime);
 	// もし範囲内で､タイマーが動いてないならスタート
@@ -221,14 +227,14 @@ void GameScene::Update() {
 	//SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
 	water_->Update(inGameDeltaTime);
-	waterParticleManager_->Update(levelMapChipHitBox_, 1.0f, deltaTime);
+	waterParticleManager_->Update(levelMapChipWaterHitBox_, 1.0f, deltaTime);
 
 	particleManager_->Update(deltaTime);
 }
 
 void GameScene::Debug() {
 #ifdef _DEBUG
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	if (io.MouseWheel > 0.0f) {
 		// ホイール上スクロール
 		camera_.scale_ -= 0.01f;
@@ -237,7 +243,7 @@ void GameScene::Debug() {
 		// ホイール下スクロール
 		camera_.scale_ += 0.01f;
 	}
-	
+
 
 
 #endif // _DEBUG
@@ -261,11 +267,12 @@ void GameScene::Draw() {
 
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
-	player_.Draw();
 
 	water_->Draw();
 
-	waterParticleManager_->Draw();
+	DrawWater();
+
+	player_.Draw();
 
 	particleManager_->Draw();
 
@@ -368,7 +375,56 @@ void GameScene::PostEffectEnd()
 
 	pDxCommon_->DefaultDrawReset(false);
 
-	fullScreen_->Draw({ L"FullScreen.PS.hlsl" }, resultTex->renderTargetTexture_.Get(), resultTex->srvHandle_.gpuHandle_);
+	fullScreen_->Draw({ L"FullScreen.PS.hlsl" }, **resultTex);
+
+}
+
+void GameScene::DrawWater()
+{
+
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+
+	auto resultTex = texStrage_->Allocate();
+
+	// 描画先のRTVとDSVを設定する
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = pDxCommon_->GetDsvDescHeap()->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = resultTex->rtvHandle_.cpuHandle_;
+
+#pragma region ViewportとScissor(シザー)
+
+	// ビューポート
+	D3D12_VIEWPORT viewport;
+	// シザー短形
+	D3D12_RECT scissorRect{};
+
+	Sprite::EndDraw();
+
+	pDxCommon_->SetFullscreenViewPort(&viewport, &scissorRect);
+
+#pragma endregion
+
+	pDxCommon_->DrawTargetReset(&rtvHandle, resultTex->clearColor_, &dsvHandle, viewport, scissorRect);
+
+
+	Sprite::StartDraw(commandList);
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	waterParticleManager_->Draw();
+
+	Sprite::EndDraw();
+
+	rtvHandle = offScreen_->GetRtvDescHeap()->GetHeap()->GetCPUDescriptorHandleForHeapStart();
+
+	pDxCommon_->DrawTargetReset(&rtvHandle, offScreen_->GetClearColor(), &dsvHandle, viewport, scissorRect, false);
+
+	fullScreen_->Draw({ L"WaterEffect.PS.hlsl" }, **resultTex);
+
+	Sprite::StartDraw(commandList);
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
 
 }
 

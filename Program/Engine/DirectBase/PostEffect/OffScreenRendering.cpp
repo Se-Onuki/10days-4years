@@ -209,7 +209,7 @@ namespace PostEffect {
 		sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
 
 		SolEngine::ResourceSource<RootSignature> rootSignatureSource{ .sampler_ = sampler, .item_ = { "t0PS,b0PS" } };
-		
+
 		rootSignature_ = SolEngine::ResourceCreater<RootSignature>{}.CreateObject(rootSignatureSource);
 
 		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
@@ -243,6 +243,17 @@ namespace PostEffect {
 
 		// 全ての色要素を書き込む
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+		blendDesc.RenderTarget[0].BlendEnable = true;						// ブレンドモードを有効にするか
+		// RGB値の操作
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;				// レンダーターゲットへの論理操作
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;			// シェーダから得たデータの受け取り方
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	// レンダーターゲットからの受け取り方
+		// α値の操作
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;		// レンダーターゲットへの論理操作
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;			// シェーダから得たデータの受け取り方
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;		// レンダーターゲットからの受け取り方
+
 		graphicsPipelineStateDesc.BlendState = blendDesc;
 
 		HRESULT hr = S_FALSE;
@@ -295,7 +306,6 @@ namespace PostEffect {
 		command->SetGraphicsRootSignature(GetRootSignature());
 		command->SetPipelineState(GetPipeLine(key));
 		command->SetGraphicsRootDescriptorTable(0, gpuHandle);
-		//command->SetGraphicsRootConstantBufferView(accesser_.GetIndex<CBuffer<ValuePair>>(), param_.GetGPUVirtualAddress());
 
 		command->DrawInstanced(3, 1, 0, 0);
 
@@ -319,5 +329,9 @@ namespace PostEffect {
 
 #pragma endregion
 
+	}
+	void FullScreenRenderer::Draw(const std::wstring &key, SolEngine::FullScreenTexture &fullscreenTexture)
+	{
+		Draw(key, fullscreenTexture.renderTargetTexture_.Get(), fullscreenTexture.srvHandle_.gpuHandle_);
 	}
 }

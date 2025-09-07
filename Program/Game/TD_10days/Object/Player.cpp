@@ -71,7 +71,7 @@ namespace TD_10days {
 		// 水の方向がどこか一つに定まっていたら
 		if (nextDir.LengthSQ() == 1.f) {
 			// 尚且つ､水が配置できる座標ならば
-			if (player->pWater_->IsPlaceAble(player->pHitBox_, nextDir)) {
+			if (player->pWater_->IsPlaceAble(player->pWaterHitBox_, nextDir)) {
 				// 水を設置する
 				player->pWater_->PlacementWater(nextDir);
 			}

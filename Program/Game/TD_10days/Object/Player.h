@@ -86,6 +86,7 @@ namespace TD_10days {
 		void InputFunc();
 
 		void SetHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pHitBox_ = pHitBox; }
+		void SetWaterHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pWaterHitBox_ = pHitBox; }
 
 		Vector2 &GetPosition() { return position_; }
 
@@ -134,6 +135,7 @@ namespace TD_10days {
 		std::unique_ptr<Sprite> sprite_;
 		// 当たり判定
 		const LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
+		const LevelMapChip::LevelMapChipHitBox *pWaterHitBox_ = nullptr;
 		// 水ブロック操作UI
 		std::unique_ptr<PlacementUI> placementUI_;
 		ParticleManager* particleManager_;

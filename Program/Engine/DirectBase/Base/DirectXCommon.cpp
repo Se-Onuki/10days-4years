@@ -128,13 +128,13 @@ void DirectXCommon::SetFullscreenViewPort(D3D12_VIEWPORT *viewport, D3D12_RECT *
 	scissorRect->bottom = WinApp::kWindowHeight;
 }
 
-void DirectXCommon::DrawTargetReset(D3D12_CPU_DESCRIPTOR_HANDLE *rtvHandle, const SoLib::Color::RGB4 &clearColor, D3D12_CPU_DESCRIPTOR_HANDLE *dsvHandle, const D3D12_VIEWPORT &vp, const D3D12_RECT &scissorRect)
+void DirectXCommon::DrawTargetReset(D3D12_CPU_DESCRIPTOR_HANDLE *rtvHandle, const SoLib::Color::RGB4 &clearColor, D3D12_CPU_DESCRIPTOR_HANDLE *dsvHandle, const D3D12_VIEWPORT &vp, const D3D12_RECT &scissorRect, bool isRtvReset)
 {
 	commandList_->OMSetRenderTargets(1, rtvHandle, false, dsvHandle);
 	if (dsvHandle) {
 		commandList_->ClearDepthStencilView(*dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
 	}
-	if (rtvHandle) {
+	if (rtvHandle and isRtvReset) {
 		commandList_->ClearRenderTargetView(*rtvHandle, clearColor, 0, nullptr);
 	}
 	commandList_->RSSetViewports(1, &vp);       // Viewportを設定

@@ -3,6 +3,7 @@
 #undef min
 #undef max
 #include <algorithm>
+#include <Utils/SoLib/SoLib_Easing.h>
 
 namespace TD_10days
 {
@@ -11,7 +12,7 @@ namespace TD_10days
 		sprite_ = Sprite::Generate(TextureManager::Load("output1.png"));
 		sprite_->SetScale(Vector2{ initialScale_, initialScale_ });
 		sprite_->SetPivot(Vector2{ 0.5f, 0.5f });
-		sprite_->SetColor(/*0x0080FFFF*/0x0000FFFF);
+		sprite_->SetColor(/*0x0080FFFF*/0xFFFFFF99);
 		position_ = position;
 		startPosition_ = position;
 		sprite_->SetPosition(position_);
@@ -24,11 +25,11 @@ namespace TD_10days
 			lifeTime_ -= deltaTime;
 
 			// 残り寿命の割合を計算 (0.0f ～ 1.0f)
-			float t = std::max(lifeTime_ / survivalTime_, 0.0f);
+			const float invT = std::max(lifeTime_ / survivalTime_, 0.0f);
 
-			// 線形補間でスケールを小さく
-			float scale = SoLib::Lerp(initialScale_, 0.0f, 1.0f - t);
-			sprite_->SetScale(Vector2{ scale, scale });
+			// 線形補間で当たり判定を小さく
+			sprite_->SetColor({ 1.f,1.f,1.f,(invT) * (99.f / 0xFF) });
+			radius_ = defaultRadius_ * invT;
 
 			// 寿命が尽きたら非アクティブ化
 			if (lifeTime_ <= 0.0f) {
@@ -80,10 +81,12 @@ namespace TD_10days
 	{
 		const float radius = 0.5f;
 
-		for (int y = 0; y < 8; y++) {
-			for (int x = 0; x < 8; x++) {
+		const size_t kCount = 6;
+
+		for (int y = 0; y < kCount; y++) {
+			for (int x = 0; x < kCount; x++) {
 				std::unique_ptr<WaterParticle> particle = std::make_unique<WaterParticle>();
-				particle->Init(Vector2{ position.x - 0.5f + x * 0.125f, position.y - 0.5f + y * 0.125f }, Rect{ position.x - radius, position.x + radius, position.y - radius, position.y + radius });
+				particle->Init(Vector2{ position.x - 0.5f + x * (1.f / kCount), position.y - 0.5f + y * (1.f / kCount) }, Rect{ position.x - radius, position.x + radius, position.y - radius, position.y + radius });
 				particles_.emplace_back(std::move(particle));
 			}
 		}

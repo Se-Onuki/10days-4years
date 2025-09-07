@@ -91,6 +91,8 @@ public:
 
 private:
 
+	void DrawWater();
+
 	/// @brief ステージクリア時の処理を実行します。
 	void StageClear();
 
@@ -149,6 +151,7 @@ private:
 	TD_10days::LevelMapChip *pLevelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipHitBox_;
+	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
 	Vector2 startLine_{7.5f, 4.0f};
