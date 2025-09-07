@@ -65,13 +65,13 @@ void WaterDemoScene::OnEnter() {
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChipRenderer_.Init(levelMapChip_);
+	//levelMapChipRenderer_.Init(levelMapChip_);
 
 
 	camera_.Init();
 
-	waterEffect_ = std::make_unique<TD_10days::WaterEffect>();
-	waterEffect_->Init();
+	//waterEffect_ = std::make_unique<TD_10days::WaterEffect>();
+	//waterEffect_->Init();
 
 	waterOffScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
 	waterOffScreen_->Init();
@@ -103,7 +103,7 @@ void WaterDemoScene::Update() {
 
 	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
-	waterEffect_->Update(/*deltaTime*/);
+	//waterEffect_->Update(/*deltaTime*/);
 }
 
 void WaterDemoScene::Draw() {
@@ -139,7 +139,7 @@ void WaterDemoScene::Draw() {
 	Sprite::StartDraw(commandList);
 	Sprite::SetBlendMode(Sprite::BlendMode::kNormal);
 
-	waterEffect_->Draw();
+	//waterEffect_->Draw();
 	// スプライトの描画
 	Fade::GetInstance()->Draw();
 

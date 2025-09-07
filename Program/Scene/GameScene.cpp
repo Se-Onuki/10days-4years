@@ -83,9 +83,17 @@ void GameScene::OnEnter() {
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
 
+	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
+	waterParticleManager_->Init();
+
+	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
+	particleManager_->Init();
+
 	water_ = std::make_unique<TD_10days::Water>();
+	water_->SetWtarerParticleManager(waterParticleManager_.get());
 
 	player_.SetWater(water_.get());
+	player_.SetParticleManager(particleManager_.get());
 
 	// 念の為特殊なブロックの位置を再計算
 	pLevelMapChip_->FindActionChips();
@@ -169,6 +177,9 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
 	water_->Update(inGameDeltaTime);
+	waterParticleManager_->Update(levelMapChipHitBox_, 1.0f, deltaTime);
+
+	particleManager_->Update(deltaTime);
 }
 
 void GameScene::Draw() {
@@ -191,6 +202,12 @@ void GameScene::Draw() {
 	player_.Draw();
 
 	water_->Draw();
+
+	waterParticleManager_->Draw();
+
+	particleManager_->Draw();
+
+	player_.DrawUI();
 
 	Sprite::SetDefaultProjection();
 

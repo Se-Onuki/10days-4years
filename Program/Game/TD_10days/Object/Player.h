@@ -4,6 +4,8 @@
 #include "../../../Engine/DirectBase/Render/Camera.h"
 #include "../LevelMapChip.h"
 #include "Water.h"
+#include "../Game/UI/PlacementUI.h"
+#include "../Game/TD_10days/Particle/ParticleManager.h"
 
 namespace TD_10days {
 
@@ -75,6 +77,8 @@ namespace TD_10days {
 
 		void Draw() const;
 
+		void DrawUI() const;
+
 		void SetPosition(const Vector2 &position) { position_ = position; }
 
 		void InputFunc();
@@ -86,6 +90,10 @@ namespace TD_10days {
 		std::array<Vector2, 4u> GetVertex() const;
 
 		void SetWater(Water *water) { pWater_ = water; }
+
+		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
+
+		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
 
 	private:
 
@@ -117,6 +125,9 @@ namespace TD_10days {
 		std::unique_ptr<Sprite> sprite_;
 		// 当たり判定
 		const LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
+		// 水ブロック操作UI
+		std::unique_ptr<PlacementUI> placementUI_;
+		ParticleManager* particleManager_;
 
 		// 座標
 		Vector2 position_{};
@@ -130,5 +141,7 @@ namespace TD_10days {
 		Vector2 gravity_ = Vector2{ 0.f, -9.8f };
 
 		bool isGround_ = false;
+
+		bool wasInWater_ = false;
 	};
 }
