@@ -225,9 +225,9 @@ private:
 	//選んでいるステージ名
 	std::string stageName_;
 	//アイテムのファイルパス
-	inline static const std::string kDirectoryPath_ = "Datas/UIData/";
+	inline static const std::string kDirectoryPath_ = "resources/Datas/UIData/";
 	//アイテムのファイルパス
-	inline static const std::string kDirectoryName_ = "Datas/UIData";
+	inline static const std::string kDirectoryName_ = "resources/Datas/UIData";
 	//名前
 	inline static const std::string kItemName_ = "UIs";
 

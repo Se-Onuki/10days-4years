@@ -32,7 +32,7 @@ void ImGuiManager::StaticInit(const HWND &hwnd, ID3D12Device *const device, uint
 	// ドッキング機能の有効化
 	imGuiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	imGuiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	//imGuiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX12_Init(device,

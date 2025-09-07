@@ -4,6 +4,7 @@
 #include "../../../Engine/DirectBase/Render/Camera.h"
 #include "../LevelMapChip.h"
 #include "Water.h"
+#include <DirectBase/File/GlobalVariables.h>
 #include "../Game/UI/PlacementUI.h"
 #include "../Game/TD_10days/Particle/ParticleManager.h"
 
@@ -91,11 +92,18 @@ namespace TD_10days {
 
 		void SetWater(Water *water) { pWater_ = water; }
 
+		void Load();
+
+		void Save() const;
+
 		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
 
 		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
 
 	private:
+
+		inline static const std::string kPlayerGroup_ = "PlayerParameter";
+
 
 		/// @brief 画像の更新処理
 		void CalcSprite();
@@ -139,6 +147,13 @@ namespace TD_10days {
 		Vector2 size_ = Vector2::one * 0.8f;
 
 		Vector2 gravity_ = Vector2{ 0.f, -9.8f };
+
+		VItem(float, AirSpeed, _) { 5.f };
+		VItem(float, WaterSpeed, _) { 3.5f };
+		VItem(float, AirGravity, _) { -9.8f };
+		VItem(float, WaterGravity, _) { -4.9f };
+		VItem(float, WaterJumpPower, _) { 2.5f };
+		VItem(float, WaterLifeTime, _) { 3.f };
 
 		bool isGround_ = false;
 

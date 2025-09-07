@@ -9,22 +9,27 @@ namespace TD_10days {
 
 		const auto input = SolEngine::Input::GetInstance();
 		const auto dInput = input->GetDirectInput();
-		const float moveSpeed = 5.f;
+
+		const bool isInWater = player->IsInWater();
+		const float moveSpeed = isInWater ? player->vWaterSpeed_ : player->vAirSpeed_;
+		float velocityPower = 0;
+
 		if (dInput->IsPress(DIK_A)) {
-			player->velocity_.x -= moveSpeed;
+			velocityPower -= 1.f;
 		}
 		if (dInput->IsPress(DIK_D)) {
-			player->velocity_.x += moveSpeed;
+			velocityPower += 1.f;
 		}
+		player->velocity_.x += velocityPower * moveSpeed;
 
 		if (dInput->IsTrigger(DIK_SPACE)) {
-			if (player->isGround_ or player->IsInWater()) {
+			if (isInWater) {
 				player->velocity_.y = 0.f;
-				player->acceleration_.y += 5.f;
+				player->acceleration_.y += player->vWaterJumpPower_;
 			}
 		}
 
-		if (dInput->IsTrigger(DIK_RETURN)) {
+		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
@@ -50,16 +55,16 @@ namespace TD_10days {
 		Vector2 nextDir = Vector2::zero;
 
 		// 入力に応じて値を加算する
-		if (dInput->IsTrigger(DIK_RIGHT)) {
+		if (dInput->IsTrigger(DIK_D)) {
 			nextDir += +Vector2::right;
 		}
-		if (dInput->IsTrigger(DIK_LEFT)) {
+		if (dInput->IsTrigger(DIK_A)) {
 			nextDir += -Vector2::right;
 		}
-		if (dInput->IsTrigger(DIK_UP)) {
+		if (dInput->IsTrigger(DIK_W)) {
 			nextDir += +Vector2::up;
 		}
-		if (dInput->IsTrigger(DIK_DOWN)) {
+		if (dInput->IsTrigger(DIK_S)) {
 			nextDir += -Vector2::up;
 		}
 
@@ -90,10 +95,14 @@ namespace TD_10days {
 
 	void PlayerPlacement::OnExit() {
 		const auto player = GetPlayer();
-		player->pWater_->Activate();
+		player->pWater_->Activate(player->vWaterLifeTime_);
 	}
 
 	void Player::Init() {
+
+		Load();
+		Save();
+
 		sprite_ = Sprite::Generate(TextureManager::Load(spriteName_));
 		sprite_->SetPivot(Vector2::one / 2.f);
 		sprite_->SetInvertY(true);
@@ -104,6 +113,11 @@ namespace TD_10days {
 
 	void Player::PreUpdate([[maybe_unused]] float deltaTime)
 	{
+#ifdef _DEBUG
+		Load();
+#endif // _DEBUG
+
+
 		// もし次の状態があるなら､それを適用する
 		if (nextState_) {
 			// なおかつ既存のステータスがあるなら実行する
@@ -170,7 +184,37 @@ namespace TD_10days {
 		sprite_->SetPosition(position_);
 	}
 
-	std::tuple<float, Vector3>  Player::CalcMoveProgress(const Vector2 &velocity)
+
+	void Player::Load()
+	{
+		const auto *const gVariable = GlobalVariables::GetInstance();
+		//// 見つからなかったら何もしない
+		//if (not gVariable->FindGroup(kPlayerGroup_)) { return; }
+		auto &group = gVariable->GetGroup(kPlayerGroup_);
+		group >> vAirSpeed_;
+		group >> vWaterSpeed_;
+		group >> vAirGravity_;
+		group >> vWaterGravity_;
+		group >> vWaterJumpPower_;
+		group >> vWaterLifeTime_;
+
+	}
+
+	void Player::Save() const
+	{
+		const auto gVariable = GlobalVariables::GetInstance();
+		auto &group = gVariable->GetGroup(kPlayerGroup_);
+		group << vAirSpeed_;
+		group << vWaterSpeed_;
+		group << vAirGravity_;
+		group << vWaterGravity_;
+		group << vWaterJumpPower_;
+		group << vWaterLifeTime_;
+
+	}
+
+
+	std::tuple<float, Vector3> Player::CalcMoveProgress(const Vector2 &velocity)
 	{
 		if (velocity == Vector2::zero) {
 			return { 1.f,Vector3::zero };
@@ -302,7 +346,8 @@ namespace TD_10days {
 	}
 
 	void Player::MoveUpdate(float deltaTime) {
-		acceleration_ += gravity_ * deltaTime;
+		const bool isInWater = IsInWater();
+		acceleration_.y += (isInWater ? vWaterGravity_ : vAirGravity_) * deltaTime;
 
 		velocity_ += acceleration_;
 		std::list<Vector3> hitNormalList;
@@ -338,6 +383,8 @@ namespace TD_10days {
 			velocity_.y = 0.f;
 			// 設置判定をつける
 			isGround_ = true;
+			// 着地したのなら､高さを丸める｡
+			position_.y = std::roundf(position_.y) - (0.5f - size_.y / 2) - 0.01f;
 		}
 
 		// 左右移動の慣性を消す
@@ -355,7 +402,7 @@ namespace TD_10days {
 		const Vector2 target = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
 
 		// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
-		return std::find(waterPos.begin(), waterPos.end(), target) != waterPos.cend();
+		return waterPos.find(target) != waterPos.cend();
 	}
 
 

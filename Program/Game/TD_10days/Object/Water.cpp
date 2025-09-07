@@ -75,13 +75,14 @@ namespace TD_10days {
 		return true;
 	}
 
-	void Water::Activate()
+	void Water::Activate(float maxTime)
 	{
 		isActive_ = true;
-		lifeTime_ = maxLifeTime_;
+		lifeTime_ = maxTime;
 	}
 
-	const std::vector<Vector2> Water::GetWaterPosition() const
+
+	const std::unordered_set<Vector2> Water::GetWaterPosition() const
 	{
 		if (not chainWater_) { return {}; }
 
@@ -111,13 +112,13 @@ namespace TD_10days {
 		}
 	}
 
-	std::vector<Vector2> Water::ChainWater::GetPositionList() const
+	std::unordered_set<Vector2> Water::ChainWater::GetPositionList() const
 	{
-		std::vector<Vector2> result;
+		std::unordered_set<Vector2> result;
 		// 個数を合わせる
-		result.resize(chainWaterList_.size());
+		result.reserve(chainWaterList_.size());
 		// 水の座標を抽出
-		std::transform(chainWaterList_.begin(), chainWaterList_.end(), result.begin(), [](const std::unique_ptr<ChainWaterData> &water) {return water->position_; });
+		std::transform(chainWaterList_.begin(), chainWaterList_.end(), std::inserter(result, result.end()), [](const std::unique_ptr<ChainWaterData> &water) { return water->position_; });
 		return result;
 	}
 

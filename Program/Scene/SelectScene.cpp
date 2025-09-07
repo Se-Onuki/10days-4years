@@ -9,13 +9,15 @@
 #include "../Engine/ECS/System/NewSystems.h"
 #include <DirectBase/File/GlobalVariables.h>
 #include <GameScene.h>
+#include <TitleScene.h>
+
 #include<SelectToGame/SelectToGame.h>
 
 SelectScene::SelectScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
 	cameraManager_ = SolEngine::CameraManager::GetInstance();
-
+	
 }
 
 SelectScene::~SelectScene()
@@ -28,6 +30,12 @@ void SelectScene::OnEnter(){
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
+	timer_ = std::make_unique<SoLib::DeltaTimer>();
+	timer_->Clear();
+
+	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	colorTimer_->Clear();
+
 	// bgmのロード
 	soundA_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
@@ -37,6 +45,21 @@ void SelectScene::OnEnter(){
 	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
 	backGround_->originalTransform.translate_ = { 640.0f,360.0f };
 	backGround_->sprite = Sprite::Generate(TextureManager::Load("TD_10days/BackGround/BackGround.png"));
+
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i] = std::make_unique<Tex2DState>();
+		doors_[i]->originalTransform.scale_ = { 250.0f,250.0f };
+		doors_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) , 350.0f };
+		doors_[i]->transform.translate_ = doors_[i]->originalTransform.translate_;
+		doors_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageUI.png"));
+		numbers_[i] = std::make_unique<Tex2DState>();
+		numbers_[i]->originalTransform.scale_ = { 160.0f,160.0f };
+		numbers_[i]->originalTransform.translate_ = { 640.0f + (kBaseMoveValue_ * i) ,380.0f };
+		numbers_[i]->transform.translate_ = numbers_[i]->originalTransform.translate_;
+		numbers_[i]->uvTransform.scale_ = { 240.0f,240.0f };
+		numbers_[i]->uvTransform.translate_ = { i * 240.0f,0.0f };
+		numbers_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageNumbers.png"));
+	}
 
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::StageSelect);
@@ -57,7 +80,14 @@ void SelectScene::Update(){
 		sceneManager_->ChangeScene<GameScene>(1.f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
+
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
+		sceneManager_->ChangeScene<TitleScene>(1.f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
 	ApplyGlobalVariables();
+
+	PlayerMoving();
 
 	TextureSetting();
 
@@ -81,6 +111,10 @@ void SelectScene::Draw(){
 
 
 	backGround_->sprite->Draw();
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i]->sprite->Draw();
+		numbers_[i]->sprite->Draw();
+	}
 
 	Sprite::EndDraw();
 
@@ -137,17 +171,89 @@ void SelectScene::Debug(){
 
 }
 
-void SelectScene::PlayerMoving()
-{
+void SelectScene::PlayerMoving(){
+	timer_->Update(ImGui::GetIO().DeltaTime);
+	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	if (timer_->IsActive()){
+		return;
+	}
+	else {
+		timer_->Clear();
+	}
+
+	//右入力
+	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT)) {
+		if (stageNum_ < (kMaxStages_ - 1)) {
+			stageNum_++;
+			// タイマーの実行
+			timer_->Start(moveSpeed_);
+
+		}
+
+		basePos_ = stageNum_ * kBaseMoveValue_;
+	}
+	//左入力
+	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT)) {
+		if (stageNum_ > 0) {
+			stageNum_--;
+			// タイマーの実行
+			timer_->Start(moveSpeed_);
+		}
+
+		basePos_ = stageNum_ * kBaseMoveValue_;
+	}
 }
 
 void SelectScene::TextureSetting() {
+	for (int32_t i = 0; i < kMaxStages_; i++){
+		doors_[i]->transform.translate_.x = SoLib::Lerp(doors_[i]->transform.translate_.x, doors_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
+		numbers_[i]->transform.translate_.x = SoLib::Lerp(numbers_[i]->transform.translate_.x, numbers_[i]->originalTransform.translate_.x - basePos_, changeSpeed_);
+		//選択しているステージに応じて移動
+	/*	doors_[i]->transform.translate_.x = doors_[i]->originalTransform.translate_.x - basePos_;
+		numbers_[i]->transform.translate_.x = numbers_[i]->originalTransform.translate_.x - basePos_;*/
+		//選択しているものは大きく表示
+		if (i == stageNum_){
+			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, selectScaleDoor_, changeSpeed_);
+			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, selectScaleNumber_, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 400.0f, changeSpeed_);
+		}
+		else {
+			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, defaultScaleDoor_, changeSpeed_);
+			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, defaultScaleNumber_, changeSpeed_);
+			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 380.0f, changeSpeed_);
+		}
+
+		doors_[i]->sprite->SetPosition(doors_[i]->transform.translate_);
+		doors_[i]->sprite->SetScale(doors_[i]->transform.scale_);
+		doors_[i]->sprite->SetPivot(kPivotValue_);
+
+		numbers_[i]->sprite->SetPosition(numbers_[i]->transform.translate_);
+		numbers_[i]->sprite->SetScale(numbers_[i]->transform.scale_);
+		numbers_[i]->sprite->SetTexOrigin(numbers_[i]->uvTransform.translate_);
+		numbers_[i]->sprite->SetTexDiff(numbers_[i]->uvTransform.scale_);
+		numbers_[i]->sprite->SetPivot(kPivotValue_);
+	}
+
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
-	backGround_->sprite->SetPivot({ 0.5f,0.5f });
+	backGround_->sprite->SetPivot(kPivotValue_);
+	
+	if (not colorTimer_->IsActive()) {
+		if (buttomColor_ == 0xffffffff) {
+			buttomColor_ = 0x00000000;
+		}
+		else {
+			buttomColor_ = 0xffffffff;
+		}
 
+		colorTimer_->Clear();
+		colorTimer_->Start(moveSpeedButtom_);
+	}
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
-
-
-
+	for (size_t i = 0; i < texDetas_.size(); i++) {
+		Tex2DState* nowTex = texDetas_[i];
+		if (nowTex->textureName == "AButtomUI") {
+			nowTex->color = (buttomColor_);
+		}
+	}
 }

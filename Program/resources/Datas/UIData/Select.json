@@ -1,0 +1,72 @@
+{
+    "UIs": {
+        "Select": [
+            {
+                "TextureFullPath": "UI\\Select\\StageSelectUI.png",
+                "TextureName": "StageSelectUI",
+                "UVScale": [
+                    820.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967167,
+                "degree": 0,
+                "scale": [
+                    820.0,
+                    128.0
+                ],
+                "translate": [
+                    640.0,
+                    85.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Select\\EnterTheStageUI.png",
+                "TextureName": "EnterTheStageUI",
+                "UVScale": [
+                    246.0,
+                    62.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    246.0,
+                    62.0
+                ],
+                "translate": [
+                    640.0,
+                    657.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\AButtomUI.png",
+                "TextureName": "AButtomUI",
+                "UVScale": [
+                    68.0,
+                    68.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    68.0,
+                    68.0
+                ],
+                "translate": [
+                    640.0,
+                    585.0
+                ]
+            }
+        ]
+    }
+}
