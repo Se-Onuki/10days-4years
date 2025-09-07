@@ -28,7 +28,7 @@ namespace TD_10days
 			const float invT = std::max(lifeTime_ / survivalTime_, 0.0f);
 
 			// 線形補間で当たり判定を小さく
-			sprite_->SetScale(Vector2::one * (initialScale_ * SoLib::easeOutCirc(invT)));
+			sprite_->SetColor({ 1.f,1.f,1.f,(invT) * (99.f / 0xFF) });
 			radius_ = defaultRadius_ * invT;
 
 			// 寿命が尽きたら非アクティブ化
@@ -81,10 +81,12 @@ namespace TD_10days
 	{
 		const float radius = 0.5f;
 
-		for (int y = 0; y < 8; y++) {
-			for (int x = 0; x < 8; x++) {
+		const size_t kCount = 6;
+
+		for (int y = 0; y < kCount; y++) {
+			for (int x = 0; x < kCount; x++) {
 				std::unique_ptr<WaterParticle> particle = std::make_unique<WaterParticle>();
-				particle->Init(Vector2{ position.x - 0.5f + x * 0.125f, position.y - 0.5f + y * 0.125f }, Rect{ position.x - radius, position.x + radius, position.y - radius, position.y + radius });
+				particle->Init(Vector2{ position.x - 0.5f + x * (1.f / kCount), position.y - 0.5f + y * (1.f / kCount) }, Rect{ position.x - radius, position.x + radius, position.y - radius, position.y + radius });
 				particles_.emplace_back(std::move(particle));
 			}
 		}
