@@ -9,7 +9,7 @@ namespace TD_10days {
 		CountUI() = default;
 		~CountUI() = default;
 		void Init();
-		void Update(float deltaTime, const Vector2& position);
+		void Update(const Vector2& position);
 		void Draw();
 
 		void SetIsActive(bool isActive) { isActive_ = isActive; }
