@@ -103,6 +103,8 @@ private:
 
 	std::pair<int32_t, int32_t> nowMapSize_ = { 10,50 };
 
+	std::pair<int32_t, int32_t> world{};
+
 	//ステージの最大値
 	const int32_t kStageMax_ = 15;
 
@@ -115,6 +117,8 @@ private:
 	bool isIncide_ = false;
 
 	bool isSave_ = false;
+
+	bool isUseEditor_ = true;
 
 	bool isNotChangeRange_ = false;
 	//UIエディターを使うかどうか
