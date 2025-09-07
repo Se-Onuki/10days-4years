@@ -86,6 +86,7 @@ namespace TD_10days {
 			player->countUI_->SetIsActive(true);
 			player->countUI_->SetPostion(player->GetPosition());
 			player->countUI_->SetTime(player->vWaterLifeTime_);
+			player->pWater_->GetWaterPartilceManager()->Fixed();
 		}
 	}
 

@@ -95,8 +95,10 @@ namespace TD_10days
 	void WaterParticleManager::MoveDirection(const Vector2 &direction)
 	{
 		for (const auto &particle : particles_) {
-			particle->SetPosition(particle->GetPosition() + direction);
-			particle->SetBounds(Rect{ particle->GetBounds().left + direction.x, particle->GetBounds().right + direction.x, particle->GetBounds().top + direction.y, particle->GetBounds().bottom + direction.y });
+			if (particle->GetIsMovable()) {
+				particle->SetPosition(particle->GetPosition() + direction);
+				particle->SetBounds(Rect{ particle->GetBounds().left + direction.x, particle->GetBounds().right + direction.x, particle->GetBounds().top + direction.y, particle->GetBounds().bottom + direction.y });
+			}
 		}
 	}
 
@@ -104,6 +106,13 @@ namespace TD_10days
 	{
 		for (const auto &particle : particles_) {
 			particle->SetInBoundary(false);
+		}
+	}
+
+	void WaterParticleManager::Fixed()
+	{
+		for (const auto& partilce : particles_) {
+			partilce->SetIsMovable(false);
 		}
 	}
 
