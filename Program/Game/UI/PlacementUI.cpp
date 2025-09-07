@@ -6,27 +6,6 @@ void TD_10days::PlacementUI::Init(const Vector2& basePos)
 {
 
 	for (int i = 0; i < 4; ++i) {
-		//std::unique_ptr<Sprite> sprite = Sprite::Generate(TextureManager::Load("SetArrow.png"));
-		//sprite->SetPivot({ 0.5f, 0.5f });
-		//sprite->SetRotate(SoLib::Angle::Dig2Rad * (90.0f * i));
-		//sprite->SetScale(arrowSize_);
-		//sprite->SetTexOrigin(Vector2{0.0f, 0.0f});
-		//sprite->SetTexDiff(Vector2{ texSize_.x, texSize_.y });
-		//Vector2 pos = basePos + Vector2{ 0.0f, uiOffset_ };
-		//switch (i) {
-		//case 0: pos.x += offset_ + 0.25f; // 右
-		//	break;
-		//case 1: pos.y += offset_; // 上
-		//	break;
-		//case 2: pos.x -= offset_ + 0.25f; // 左
-		//	break;
-		//case 3: pos.y -= offset_; // 下
-		//	break;
-
-		//}
-		//sprite->SetPosition(pos);
-
-		//arrowSprites_.emplace_back(std::move(sprite));
 
 		Arrow arrow;
 		arrow.state_ = ArrowState::kNone;
@@ -142,26 +121,26 @@ void TD_10days::PlacementUI::Update(float deltaTime)
 	const auto dInput = input->GetDirectInput();
 
 	// 入力に応じて値を加算する
-	if (dInput->IsTrigger(DIK_RIGHT)) {
+	if (dInput->IsTrigger(DIK_D)) {
 		if (arrows_[0].state_ != ArrowState::kIncapable) {
 			arrows_[0].state_ = ArrowState::kTrigger;
 			arrows_[0].pressTimer = arrows_[0].pressDuration;
 		}
 		
 	}
-	if (dInput->IsTrigger(DIK_UP)) {
+	if (dInput->IsTrigger(DIK_W)) {
 		if (arrows_[1].state_ != ArrowState::kIncapable) {
 			arrows_[1].state_ = ArrowState::kTrigger;
 			arrows_[1].pressTimer = arrows_[1].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_LEFT)) {
+	if (dInput->IsTrigger(DIK_A)) {
 		if (arrows_[2].state_ != ArrowState::kIncapable) {
 			arrows_[2].state_ = ArrowState::kTrigger;
 			arrows_[2].pressTimer = arrows_[2].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_DOWN)) {
+	if (dInput->IsTrigger(DIK_S)) {
 		if (arrows_[3].state_ != ArrowState::kIncapable) {
 			arrows_[3].state_ = ArrowState::kTrigger;
 			arrows_[3].pressTimer = arrows_[3].pressDuration;

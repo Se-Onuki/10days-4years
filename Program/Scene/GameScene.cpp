@@ -80,7 +80,11 @@ void GameScene::OnEnter() {
 
 	camera_.Init();
 	camera_.scale_ = 0.0125f;
-	camera_.translation_.y = 4.f;
+	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
+
+	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
+	endLine_.x = static_cast<float>(mapWidth - 1) - startLine_.x;
+	endLine_.y = static_cast<float>(mapHeight - 1) - 3.0f;
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
@@ -167,7 +171,40 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
 
-	camera_.translation_.x = player_.GetPosition().x;
+	// カメラ追従処理
+	if (player_.GetPosition().x > startLine_.x and player_.GetPosition().x < endLine_.x) { // x方向
+		camera_.translation_.x = player_.GetPosition().x;
+	}
+	else {
+		// 範囲外 → 近い方のラインに固定
+		float distToStart = std::abs(player_.GetPosition().x - startLine_.x);
+		float distToEnd = std::abs(player_.GetPosition().x - endLine_.x);
+
+		if (distToStart < distToEnd) {
+			camera_.translation_.x = startLine_.x;
+		}
+		else {
+			camera_.translation_.x = endLine_.x;
+		}
+	}
+	if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
+		camera_.translation_.y = player_.GetPosition().y;
+	}
+	else { 
+		// 範囲外 → 近い方のラインに固定
+		float distToStart = std::abs(player_.GetPosition().y - startLine_.y);
+		float distToEnd = std::abs(player_.GetPosition().y - endLine_.y);
+
+		if (distToStart < distToEnd) {
+			camera_.translation_.y = startLine_.y;
+		}
+		else {
+ 			camera_.translation_.y = endLine_.y;
+		}
+	}
+
+	/*camera_.translation_.x = player_.GetPosition().x;
+	camera_.translation_.y = player_.GetPosition().y;*/
 	camera_.UpdateMatrix();
 
 	stageEditor_->SetCamera(camera_);

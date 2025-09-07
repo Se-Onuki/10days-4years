@@ -83,6 +83,9 @@ namespace TD_10days {
 			player->nextState_ = std::make_unique<PlayerMovement>(player);
 			player->placementUI_->Disappear();
 			player->placementUI_->SetActive(false);
+			player->countUI_->SetIsActive(true);
+			player->countUI_->SetPostion(player->GetPosition());
+			player->countUI_->SetTime(player->vWaterLifeTime_);
 		}
 	}
 
@@ -109,6 +112,8 @@ namespace TD_10days {
 		nextState_ = std::make_unique<PlayerMovement>(this);
 		placementUI_ = std::make_unique<PlacementUI>();
 		placementUI_->Init(position_);
+		countUI_ = std::make_unique<CountUI>();
+		countUI_->Init();
 	}
 
 	void Player::PreUpdate([[maybe_unused]] float deltaTime)
@@ -139,6 +144,8 @@ namespace TD_10days {
 		placementUI_->SetBasePos(position_);
 		placementUI_->Update(deltaTime);
 
+		countUI_->Update(deltaTime, position_);
+
 		if (playerState_->GetStateName() == "PlayerMovement") {
 			// --- 水しぶき処理 ---
 			const bool isNowInWater = IsInWater();
@@ -161,6 +168,7 @@ namespace TD_10days {
 	void Player::DrawUI() const
 	{
 		placementUI_->Draw();
+		countUI_->Draw();
 	}
 
 	void Player::InputFunc() {

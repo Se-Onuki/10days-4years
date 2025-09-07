@@ -7,6 +7,7 @@
 #include <DirectBase/File/GlobalVariables.h>
 #include "../Game/UI/PlacementUI.h"
 #include "../Game/TD_10days/Particle/ParticleManager.h"
+#include "../Game/TD_10days/CountUI.h"
 
 namespace TD_10days {
 
@@ -136,6 +137,8 @@ namespace TD_10days {
 		// 水ブロック操作UI
 		std::unique_ptr<PlacementUI> placementUI_;
 		ParticleManager* particleManager_;
+
+		std::unique_ptr<CountUI> countUI_;
 
 		// 座標
 		Vector2 position_{};
