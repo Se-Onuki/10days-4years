@@ -182,7 +182,7 @@ void SelectScene::PlayerMoving(){
 	}
 
 	//右入力
-	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT)) {
+	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
 		if (stageNum_ < (kMaxStages_ - 1)) {
 			stageNum_++;
 			// タイマーの実行
@@ -193,7 +193,7 @@ void SelectScene::PlayerMoving(){
 		basePos_ = stageNum_ * kBaseMoveValue_;
 	}
 	//左入力
-	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT)) {
+	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
 		if (stageNum_ > 0) {
 			stageNum_--;
 			// タイマーの実行
