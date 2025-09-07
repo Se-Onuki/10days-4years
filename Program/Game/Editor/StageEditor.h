@@ -44,11 +44,6 @@ public:
 	/// Imguiの情報
 	/// </summary>
 	void Debug(Vector2 mousePos);
-
-
-	//全てのファイルを読み込む
-	void LoadFileAll();
-
 	//設定したMapchipを返す
 	TD_10days::LevelMapChip &GetMapChip() {
 		return levelMapChip_;
@@ -63,16 +58,6 @@ private:
 	/// @brief 一度しか呼び出さない初期化処理
 	void InitOnce();
 
-	/// <summary>
-	/// クリックしたときと押し続けているときの動き
-	/// </summary>
-	void ClickPushMove(Vector2 mousePos);
-	/// <summary>
-	/// ドラッグしたときの挙動
-	/// </summary>
-	/// <param name="id">シーンのID</param>
-	/// <param name="mousePos">マウスのポジション</param>
-	void DragMove();
 	//intをマップの対応したものに変換
 	TD_10days::LevelMapChip::MapChip NumberToMap(const int32_t num);
 
@@ -150,13 +135,6 @@ private:
 	using json = nlohmann::json;
 	//ファイルに保存する
 	void SaveFile(const std::string &fileName);
-	//ファイルが存在するか確認する
-	void ChackFiles();
-
-	//ファイルを読み込む
-	void LoadFile(const std::string &fileName);
-
-	void LoadFiles(const std::string &fileName);
 
 	//ファイルが存在するか確認する(指定)
 	bool LoadChackItem(const std::string &fileName);

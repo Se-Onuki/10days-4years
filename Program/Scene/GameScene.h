@@ -154,7 +154,7 @@ private:
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
-	Vector2 startLine_{7.5f, 4.0f};
+	Vector2 startLine_{7.5f, 5.0f};
 	Vector2 endLine_{};
 	Vector2 halfWindowSize_{640.0f, 360.0f};
 
@@ -166,5 +166,9 @@ private:
 
 	std::unique_ptr<TD_10days::WaterParticleManager> waterParticleManager_ = nullptr;
 	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
+
+	// bgm
+	SolEngine::Audio::SoundHandle gameBGM_;
+	SolEngine::Audio::SoundHandle goalSE_;
 
 };
