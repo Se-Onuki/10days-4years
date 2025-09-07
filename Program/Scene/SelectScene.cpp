@@ -80,10 +80,13 @@ void SelectScene::Update(){
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		stageSelectSE_.Play(false, 0.5f);
-		SelectToGame::GetInstance()->SetStageNum(stageNum_);
-		sceneManager_->ChangeScene<GameScene>(1.f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+			stageSelectSE_.Play(false, 0.5f);
+		
+			SelectToGame::GetInstance()->SetStageNum(stageNum_);
+			sceneManager_->ChangeScene<GameScene>(1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {

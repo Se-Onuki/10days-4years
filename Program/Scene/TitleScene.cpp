@@ -89,9 +89,13 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		decisionSE_.Play(false, 0.5f);
-		sceneManager_->ChangeScene<SelectScene>(1.f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		if (not Fade::GetInstance()->GetTimer()->IsActive()){
+			decisionSE_.Play(false, 0.5f);
+			sceneManager_->ChangeScene<SelectScene>(1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}	
+		
+		
 	}
 	ApplyGlobalVariables();
 
