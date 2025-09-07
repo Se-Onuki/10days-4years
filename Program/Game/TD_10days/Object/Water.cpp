@@ -8,6 +8,8 @@ namespace TD_10days {
 		size_ = size;
 		color_ = color;
 
+		DeleteWater();
+
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
 		chainWater_->CreateChain(position);
