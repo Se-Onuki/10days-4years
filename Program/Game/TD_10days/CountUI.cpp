@@ -30,10 +30,9 @@ namespace TD_10days {
         isActive_ = false;
     }
 
-    void CountUI::Update(float deltaTime, const Vector2& position) {
+    void CountUI::Update(const Vector2& position) {
         if (!isActive_) { return; };
 
-        time_ -= deltaTime;
         if (time_ < 0.0f) {
             time_ = 0.0f;
             isActive_ = false; // カウント終了

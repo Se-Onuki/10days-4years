@@ -145,7 +145,7 @@ namespace TD_10days {
 		placementUI_->SetBasePos(position_);
 		placementUI_->Update(deltaTime);
 
-		countUI_->Update(deltaTime, position_);
+		countUI_->Update(position_);
 
 		if (playerState_->GetStateName() == "PlayerMovement") {
 			// --- 水しぶき処理 ---
