@@ -120,58 +120,60 @@ void StageEditor::Finalize() {
 void StageEditor::Update() {
 
 #ifdef _DEBUG
+	if (isUseEditor_) {
 
 
-	//マウスの座標をアプリと合わせる
-	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-	mousePos.y *= -1; // Y反転（上が正になる）
-	mousePos += Vector2{ -640, 360 };
-	//カメラの距離に合わせてサイズを変更
-	blockSize_ = (int)(1.0f / camera_.scale_);
 
-	//カメラを考慮した座標に変換
-	std::pair<int32_t, int32_t> world{};
-	world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
-	world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
+		//マウスの座標をアプリと合わせる
+		Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+		mousePos.y *= -1; // Y反転（上が正になる）
+		mousePos += Vector2{ -640, 360 };
+		//カメラの距離に合わせてサイズを変更
+		blockSize_ = (int)(1.0f / camera_.scale_);
 
-	int blockQuater = (blockSize_ / 4);
-	// ---- マップチップの範囲内かどうか ----
-	isIncide_ =
-		((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
-		((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
+		//カメラを考慮した座標に変換
+		
+		world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
+		world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
 
-	if (not ImGui::GetIO().WantCaptureMouse) {
-		if (isIncide_) {
-			// ---- どのマップチップか ----
-			tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
-			tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
+		int blockQuater = (blockSize_ / 4);
+		// ---- マップチップの範囲内かどうか ----
+		isIncide_ =
+			((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
+			((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
 
-			newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
+		if (not ImGui::GetIO().WantCaptureMouse) {
+			if (isIncide_) {
+				// ---- どのマップチップか ----
+				tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
+				tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
 
-			//左クリックしたら
-			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(selectNumber_)){
-					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
-					pLevelMapChipRender_->CalcSpriteData();
-					isSave_ = false;
+				newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
+
+				//左クリックしたら
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+					if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(selectNumber_)) {
+						levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(selectNumber_);
+						pLevelMapChipRender_->CalcSpriteData();
+						isSave_ = false;
+					}
 				}
-			}
-			//右クリックしたら
-			else if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-				if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(0)){
-					levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
-					pLevelMapChipRender_->CalcSpriteData();
-					isSave_ = false;
-				}				
-			}
+				//右クリックしたら
+				else if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+					if (levelMapChip_[tilePos_.second][tilePos_.first] != NumberToMap(0)) {
+						levelMapChip_[tilePos_.second][tilePos_.first] = NumberToMap(0);
+						pLevelMapChipRender_->CalcSpriteData();
+						isSave_ = false;
+					}
+				}
 
-		}
-		//離した時に当たり判定の更新
-		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) or ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-			ApplyMapChips();
+			}
+			//離した時に当たり判定の更新
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) or ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+				ApplyMapChips();
+			}
 		}
 	}
-
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
@@ -183,7 +185,7 @@ void StageEditor::PutDraw() {
 
 #ifdef _DEBUG
 
-	if (isIncide_) {
+	if (isIncide_ or isUseEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
 		newTex_->sprite->SetScale(newTex_->transform.scale_);
@@ -279,6 +281,10 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	}
 	SwapStage();
 
+	ImGui::End();
+
+	ImGui::Begin("Stageエディター使用状況");
+	ImGui::Checkbox("Stageエディターを利用しているか", &isUseEditor_);
 	ImGui::End();
 #endif // DEBUG_
 
