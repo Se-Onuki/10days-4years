@@ -92,7 +92,7 @@ void GameScene::OnEnter() {
 	particleManager_->Init();
 
 	water_ = std::make_unique<TD_10days::Water>();
-	water_->SetWtarerParticleManager(waterParticleManager_.get());
+	water_->SetWaterParticleManager(waterParticleManager_.get());
 
 	player_.SetWater(water_.get());
 	player_.SetParticleManager(particleManager_.get());

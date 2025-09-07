@@ -6,7 +6,7 @@
 
 namespace TD_10days
 {
-	void WaterParticle::Init(const Vector2& position, const Rect& bounds)
+	void WaterParticle::Init(const Vector2 &position, const Rect &bounds)
 	{
 		sprite_ = Sprite::Generate(TextureManager::Load("output1.png"));
 		sprite_->SetScale(Vector2{ initialScale_, initialScale_ });
@@ -19,7 +19,7 @@ namespace TD_10days
 	}
 	void WaterParticle::Update(float deltaTime)
 	{
-		if(/*onGround_*/not inBoundary_) {
+		if (/*onGround_*/not inBoundary_) {
 			// 寿命を減らす
 			lifeTime_ -= deltaTime;
 
@@ -46,7 +46,7 @@ namespace TD_10days
 	{
 		sprite_->Draw();
 
-		for(const auto& sprite : boundsSprites_) {
+		for (const auto &sprite : boundsSprites_) {
 			sprite->Draw();
 		}
 	}
@@ -56,40 +56,42 @@ namespace TD_10days
 		particles_.clear();
 	}
 
-	void WaterParticleManager::Update(const LevelMapChip::LevelMapChipHitBox* hitBox, float chipSize, float deltaTime)
+	void WaterParticleManager::Update(const LevelMapChip::LevelMapChipHitBox *hitBox, float chipSize, float deltaTime)
 	{
-		for (const auto& particle : particles_) {
+		for (const auto &particle : particles_) {
 			particle->Update(deltaTime);
 		}
 
-		particles_.remove_if([](const std::unique_ptr<WaterParticle>& particle) {
+		particles_.remove_if([](const std::unique_ptr<WaterParticle> &particle) {
 			return !particle->GetActive();
-		});
+			});
 
 		Collider(hitBox, chipSize);
 	}
 
 	void WaterParticleManager::Draw()
 	{
-		for (const auto& particle : particles_) {
+		for (const auto &particle : particles_) {
 			particle->Draw();
 		}
 	}
 
 	void WaterParticleManager::SpawnParticle(Vector2 position)
 	{
+		const float radius = 0.5f;
+
 		for (int y = 0; y < 8; y++) {
 			for (int x = 0; x < 8; x++) {
 				std::unique_ptr<WaterParticle> particle = std::make_unique<WaterParticle>();
-				particle->Init(Vector2{ position.x - 0.5f + x * 0.125f, position.y - 0.5f + y * 0.125f }, Rect{ position.x - 0.5f, position.x + 0.5f, position.y - 0.5f, position.y + 0.5f });
+				particle->Init(Vector2{ position.x - 0.5f + x * 0.125f, position.y - 0.5f + y * 0.125f }, Rect{ position.x - radius, position.x + radius, position.y - radius, position.y + radius });
 				particles_.emplace_back(std::move(particle));
 			}
 		}
 	}
 
-	void WaterParticleManager::MoveDirection(const Vector2& direction)
+	void WaterParticleManager::MoveDirection(const Vector2 &direction)
 	{
-		for (const auto& particle : particles_) {
+		for (const auto &particle : particles_) {
 			particle->SetPosition(particle->GetPosition() + direction);
 			particle->SetBounds(Rect{ particle->GetBounds().left + direction.x, particle->GetBounds().right + direction.x, particle->GetBounds().top + direction.y, particle->GetBounds().bottom + direction.y });
 		}
@@ -97,12 +99,12 @@ namespace TD_10days
 
 	void WaterParticleManager::Collapse()
 	{
-		for (const auto& particle : particles_) {
+		for (const auto &particle : particles_) {
 			particle->SetInBoundary(false);
 		}
 	}
 
-	void WaterParticleManager::Collider(const LevelMapChip::LevelMapChipHitBox* hitBox, float chipSize)
+	void WaterParticleManager::Collider(const LevelMapChip::LevelMapChipHitBox *hitBox, float chipSize)
 	{
 		// --- 粒子同士の衝突 ---
 		for (auto it1 = particles_.begin(); it1 != particles_.end(); ++it1) {
@@ -113,7 +115,9 @@ namespace TD_10days
 			}
 		}
 
-		for (auto& p : particles_) {
+		const float kBoxRadius = 0.6f;
+
+		for (auto &p : particles_) {
 			if (p->GetInBoundary()) { /// --- 境界との衝突 ---
 				CircleBounds(p.get(), p->GetBounds(), 0.8f);
 			}
@@ -132,10 +136,10 @@ namespace TD_10days
 							if (hitBox->at(ny, nx)) {
 								// チップをRectに変換
 								Rect rect;
-								rect.left = nx - 0.5f;
-								rect.right = nx + 0.5f;
-								rect.top = ny - 0.5f;
-								rect.bottom = ny + 0.5f;
+								rect.left = nx - kBoxRadius;
+								rect.right = nx + kBoxRadius;
+								rect.top = ny - kBoxRadius;
+								rect.bottom = ny + kBoxRadius;
 
 								CircleAABB(p.get(), rect, 0.5f);
 							}
@@ -144,13 +148,13 @@ namespace TD_10days
 				}
 			}
 
-			
-			
+
+
 		}
 
 	}
 
-	void WaterParticleManager::CircleCircle(WaterParticle* p1, WaterParticle* p2, float restitution)
+	void WaterParticleManager::CircleCircle(WaterParticle *p1, WaterParticle *p2, float restitution)
 	{
 		if (!p1->GetActive() || !p2->GetActive()) {
 			return;
@@ -210,7 +214,7 @@ namespace TD_10days
 
 		return;
 	}
-	void WaterParticleManager::CircleAABB(WaterParticle* p, const Rect& rect, float restitution)
+	void WaterParticleManager::CircleAABB(WaterParticle *p, const Rect &rect, float restitution)
 	{
 		if (!p->GetActive()) {
 			return;
@@ -270,9 +274,9 @@ namespace TD_10days
 		}
 
 		p->SetVelocity(p->GetVelocity().Reflect(Vector2{ dx, dy }.Normalize()) * restitution);
-		return ;
+		return;
 	}
-	void WaterParticleManager::CircleBounds(WaterParticle* p, const Rect& rect, float restitution)
+	void WaterParticleManager::CircleBounds(WaterParticle *p, const Rect &rect, float restitution)
 	{
 		if (not p->GetActive()) {
 			return;

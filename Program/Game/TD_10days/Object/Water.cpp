@@ -23,7 +23,6 @@ namespace TD_10days {
 			if (chainWater_) {
 				chainWater_->CalcUpdate();
 			}
-			waterParticleManager_->Collapse();
 		}
 		else {
 			lifeTime_ -= deltaTime;
@@ -37,6 +36,8 @@ namespace TD_10days {
 
 	void Water::DeleteWater() {
 		if (not chainWater_) { return; }
+
+		waterParticleManager_->Collapse();
 		chainWater_->Clear();
 	}
 
@@ -50,7 +51,7 @@ namespace TD_10days {
 		chainWater_->MoveDirection(direction);
 		waterParticleManager_->MoveDirection(direction);
 		chainWater_->CreateChain(position_);
-		waterParticleManager_->SpawnParticle(position_ + Vector2{1.0f, 0.0f});
+		waterParticleManager_->SpawnParticle(position_);
 	}
 
 	bool Water::IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2 &direction) const
