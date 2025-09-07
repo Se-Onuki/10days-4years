@@ -43,6 +43,7 @@
 #include "../Game/TD_10days/WaterEffect.h"
 #include "../Game/UI/PlacementUI.h"
 #include "../Game/TD_10days/Particle/ParticleManager.h"
+#include "../Game/TD_10days/CountUI.h"
 
 
 /// @class GameScene
@@ -153,6 +154,9 @@ private:
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
+	Vector2 startLine_{7.5f, 4.0f};
+	Vector2 endLine_{};
+	Vector2 halfWindowSize_{640.0f, 360.0f};
 
 	TD_10days::Player player_;
 
@@ -162,4 +166,5 @@ private:
 
 	std::unique_ptr<TD_10days::WaterParticleManager> waterParticleManager_ = nullptr;
 	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
+
 };

@@ -47,7 +47,7 @@ namespace TD_10days {
 		bool isActive_ = true;
 
 		float age_ = 0.0f;
-		float lifeTime_ = 0.1f; // 0.1秒で消える
+		float lifeTime_ = 0.5f; // 0.1秒で消える
 		float startScale_ = 1.0f;
 		Vector4 startColor_{ 0.0f, 0.5f, 1.0f, 1.0f }; // 水色
 		Vector4 endColor_{ 1.0f, 1.0f, 1.0f, 0.0f };   // 白 + 透明
