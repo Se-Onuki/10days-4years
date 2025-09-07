@@ -104,6 +104,10 @@ namespace TD_10days {
 
 	private:
 
+		void SetPosInStage();
+
+	private:
+
 		inline static const std::string kPlayerGroup_ = "PlayerParameter";
 
 

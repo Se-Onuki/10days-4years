@@ -127,6 +127,7 @@ namespace TD_10days {
 		Load();
 #endif // _DEBUG
 
+		SetPosInStage();
 
 		// もし次の状態があるなら､それを適用する
 		if (nextState_) {
@@ -140,8 +141,6 @@ namespace TD_10days {
 	void Player::Update([[maybe_unused]] const float deltaTime) {
 		// 移動処理
 		MoveUpdate(deltaTime);
-
-
 
 		// スプライトの計算
 		CalcSprite();
@@ -226,6 +225,22 @@ namespace TD_10days {
 		group << vWaterJumpPower_;
 		group << vWaterLifeTime_;
 
+	}
+
+	void Player::SetPosInStage()
+	{
+		if (position_.x < 0) {
+			position_.x = 0;
+		}
+		if (position_.x >= static_cast<float>(pHitBox_->GetX() - 1)) {
+			position_.x = static_cast<float>(pHitBox_->GetX() - 1);
+		}
+		if (position_.y < 0) {
+			position_.y = 0;
+		}
+		if (position_.y >= static_cast<float>(pHitBox_->GetY() - 1)) {
+			position_.y = static_cast<float>(pHitBox_->GetY() - 1);
+		}
 	}
 
 
