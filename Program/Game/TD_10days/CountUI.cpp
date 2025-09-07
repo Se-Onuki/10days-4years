@@ -31,7 +31,7 @@ namespace TD_10days {
     }
 
     void CountUI::Update(const Vector2& position) {
-        if (!isActive_) { return; };
+        if (not isActive_) { return; };
 
         if (time_ < 0.0f) {
             time_ = 0.0f;
@@ -41,7 +41,7 @@ namespace TD_10days {
     }
 
     void CountUI::Draw() {
-        if (!isActive_) { return; };
+        if (not isActive_) { return; };
 
         //// 残り時間を整数にして表示
         int displayNumber = static_cast<int>(std::ceil(time_));

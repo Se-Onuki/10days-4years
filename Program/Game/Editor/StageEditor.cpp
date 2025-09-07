@@ -287,7 +287,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 
 void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 	std::filesystem::path dir(kDirectoryPath_);
-	if (!std::filesystem::exists(dir)) {
+	if (not std::filesystem::exists(dir)) {
 		std::filesystem::create_directory(dir);
 	}
 	// 書き込むcsvファイルのフルパスを合成する

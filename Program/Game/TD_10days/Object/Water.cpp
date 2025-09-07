@@ -8,11 +8,14 @@ namespace TD_10days {
 		size_ = size;
 		color_ = color;
 
+		isActive_ = false;
+
 		DeleteWater();
 
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
 		chainWater_->CreateChain(position);
+		waterParticleManager_->SpawnParticle(position);
 	}
 
 	void Water::Update(const float deltaTime) {
@@ -92,6 +95,13 @@ namespace TD_10days {
 		return chainWater_->GetPositionList();
 	}
 
+	std::optional<float> Water::GetWaterTime() const
+	{
+		std::optional<float> result;
+		if (isActive_) { result = lifeTime_; }
+		return result;
+	}
+
 	void Water::ChainWater::Init(const Vector2 &size, const uint32_t color)
 	{
 		size_ = size;
@@ -102,9 +112,9 @@ namespace TD_10days {
 	void Water::ChainWater::CalcUpdate()
 	{
 
-		for (auto &water : chainWaterList_) {
-			water->sprite_->CalcBuffer();
-		}
+		//for (auto &water : chainWaterList_) {
+		//	water->sprite_->CalcBuffer();
+		//}
 	}
 
 	void Water::ChainWater::MoveDirection(const Vector2 &direction)
@@ -131,20 +141,20 @@ namespace TD_10days {
 	}
 
 	void Water::ChainWater::Draw() const {
-		for (const auto &water : chainWaterList_) {
+		/*for (const auto &water : chainWaterList_) {
 			water->sprite_->Draw();
-		}
+		}*/
 	}
 
-	std::unique_ptr<Water::ChainWater::ChainWaterData> Water::ChainWater::ChainWaterData::Generate(uint32_t color) {
+	std::unique_ptr<Water::ChainWater::ChainWaterData> Water::ChainWater::ChainWaterData::Generate(uint32_t) {
 		auto newChain = std::make_unique<ChainWaterData>();
 
-		newChain->sprite_ = Sprite::Generate(TextureManager::LoadDefaultTexture());
-		newChain->sprite_->SetColor(color);
-		newChain->sprite_->SetPivot(Vector2::one * 0.5f);
-		newChain->sprite_->SetInvertY(true);
+		//newChain->sprite_ = Sprite::Generate(TextureManager::LoadDefaultTexture());
+		//newChain->sprite_->SetColor(color);
+		//newChain->sprite_->SetPivot(Vector2::one * 0.5f);
+		//newChain->sprite_->SetInvertY(true);
 
-		newChain->sprite_->CalcBuffer();
+		//newChain->sprite_->CalcBuffer();
 
 		newChain->position_ = Vector2::zero;
 
@@ -161,10 +171,10 @@ namespace TD_10days {
 
 	void Water::ChainWater::ChainWaterData::SetPosition(const Vector2 &position) {
 		position_ = position;
-		if (sprite_) {
+		/*if (sprite_) {
 			sprite_->SetPosition(position_);
 			sprite_->CalcBuffer();
-		}
+		}*/
 	}
 
 }
