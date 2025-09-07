@@ -83,6 +83,8 @@ namespace TD_10days {
 		void Activate(float maxTime);
 
 		const std::unordered_set<Vector2> GetWaterPosition() const;
+
+		WaterParticleManager* GetWaterPartilceManager() { return waterParticleManager_; }
 		void SetWaterParticleManager(WaterParticleManager* manager) { waterParticleManager_ = manager; }
 
 		

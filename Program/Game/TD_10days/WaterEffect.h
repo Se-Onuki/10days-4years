@@ -40,6 +40,7 @@ namespace TD_10days {
 		Vector2 GetVelocity() const { return velocity_; }
 		Rect GetBounds() const { return bounds_; }
 		bool GetInBoundary() const { return inBoundary_; }
+		bool GetIsMovable() const { return isMovable_; }
 
 		void SetActive(bool isActive) { isActive_ = isActive; }
 		void SetSize(const Vector2& size) { sprite_->SetScale(size); }
@@ -49,6 +50,7 @@ namespace TD_10days {
 		void SetBounds(const Rect& bounds) { bounds_ = bounds; }
 		void SetInBoundary(bool inBoundary) { inBoundary_ = inBoundary; }
 		void SetOnGround(bool onGround) { onGround_ = onGround; }
+		void SetIsMovable(bool isMovable) { isMovable_ = isMovable; }
 
 
 	private:
@@ -58,6 +60,7 @@ namespace TD_10days {
 		bool isActive_ = true;
 		bool inBoundary_ = true;
 		bool onGround_ = false;
+		bool isMovable_ = true;
 
 		float gravity_ = -0.05f;
 		float radius_ = 0.1f;
@@ -85,7 +88,7 @@ namespace TD_10days {
 		void SpawnParticle(Vector2 position);
 		void MoveDirection(const Vector2& direction);
 		void Collapse();
-
+		void Fixed();
 	private:
 		void Collider(const LevelMapChip::LevelMapChipHitBox* hitBox, float chipSize);
 		void CircleCircle(WaterParticle* p1, WaterParticle* p2, float restitution/*, bool activeFloor*/);
