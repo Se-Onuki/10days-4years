@@ -477,7 +477,7 @@ void GameScene::ResetStage(bool isNext)
 	// ステージ番号
 	const auto stageNum = levelSelecter->GetStageNum();
 	// ステージ番号を加算するかの分岐
-	levelSelecter->SetStageNum(stageNum + isNext ? 1 : 0);
+	levelSelecter->SetStageNum(stageNum + (isNext ? 1 : 0));
 
 	sceneManager_->ChangeScene("GameScene");
 }
