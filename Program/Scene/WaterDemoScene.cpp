@@ -55,7 +55,7 @@ void WaterDemoScene::OnEnter() {
 	vignettingParam_ = { 16.f, 0.8f };
 
 
-	levelMapChip_.Init(10, 10);
+	/*levelMapChip_.Init(10, 10);
 	levelMapChip_.SetMapChipData(
 		{
 		{},
@@ -65,7 +65,7 @@ void WaterDemoScene::OnEnter() {
 	levelMapChip_[1][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 	levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
-	levelMapChipRenderer_.Init(levelMapChip_);
+	levelMapChipRenderer_.Init(&levelMapChip_);*/
 
 
 	camera_.Init();
@@ -108,8 +108,8 @@ void WaterDemoScene::Update() {
 
 void WaterDemoScene::Draw() {
 
-	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
 
 #pragma region 背面スプライト
 
@@ -174,7 +174,7 @@ void WaterDemoScene::PostEffectSetup()
 void WaterDemoScene::PostEffectEnd()
 {
 
-	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 
 #pragma region ViewportとScissor(シザー)
 
@@ -218,12 +218,12 @@ void WaterDemoScene::PostEffectEnd()
 
 }
 
-void WaterDemoScene::Load(const GlobalVariables::Group&)
+void WaterDemoScene::Load(const GlobalVariables::Group &)
 {
 
 }
 
-void WaterDemoScene::Save(GlobalVariables::Group&) const
+void WaterDemoScene::Save(GlobalVariables::Group &) const
 {
 
 }

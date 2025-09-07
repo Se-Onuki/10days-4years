@@ -3,6 +3,9 @@
 /// @author ONUKI seiya
 #pragma once
 #include <cmath>
+#include <functional>
+#include <cstdint>
+#include <unordered_set>
 
 namespace SoLib {
 	struct Matrix2x2;
@@ -33,6 +36,12 @@ namespace SoLib {
 		/// ゼロベクトル
 		/// </summary>
 		void Reset();
+
+		/// <summary>
+		/// ベクトル長関数
+		/// </summary>
+		/// <returns>ベクトルの長さ</returns>
+		float LengthSQ() const;
 
 		/// <summary>
 		/// ベクトル長関数
@@ -73,6 +82,11 @@ namespace SoLib {
 			return atan2(y, x);
 		}
 
+		// 順ベクトル
+		inline const Vector2 &operator+() const {
+			return *this;
+		}
+
 		// 逆ベクトル
 		inline Vector2 operator-() const {
 			return *this * -1;
@@ -94,6 +108,12 @@ namespace SoLib {
 
 		inline Vector2 Reflect(Vector2 normal) const {
 			return (*this) - normal * 2 * ((*this) * normal);
+
+			// return {this->x- 2}
+		}
+
+		inline Vector2 Reflect(Vector2 normal, const float elasticity) const {
+			return (*this) - normal * ((1.f + elasticity) * ((*this) * normal));
 
 			// return {this->x- 2}
 		}
@@ -163,4 +183,16 @@ namespace SoLib {
 
 	constexpr Vector2 TopOverCentor = { (float)(ScreenSize.x * 0.5), (float)(-ScreenSize.y / 2) };
 	constexpr Vector2 DownOverCentor = { (float)(ScreenSize.x * 0.5), (float)(ScreenSize.y * 1.5) };
+}
+
+namespace std {
+	template<>
+	struct hash<SoLib::Vector2> {
+	public:
+		size_t operator()(const SoLib::Vector2 &v) const {
+			size_t tmp;
+			std::memcpy(&tmp, &v, sizeof(size_t));
+			return tmp;
+		}
+	};
 }

@@ -116,15 +116,15 @@ namespace ECS {
 		{
 			static constexpr uint32_t kCompCount_ = static_cast<uint32_t>(sizeof...(Ts));
 			using ComponentList = GetComponentHelper<Ts...>;
-			ComponentList::ConstComponents onlyRead_;
+			typename ComponentList::ConstComponents onlyRead_;
 			static constexpr bool kIsConst_ = true;
 			OnlyRead() = default;
 			OnlyRead(const OnlyRead &) = default;
 			OnlyRead(OnlyRead &&) = default;
-			OnlyRead(const ComponentList::Components &arg) : onlyRead_(arg) {};
-			OnlyRead(ComponentList::Components &&arg) : onlyRead_(std::move(arg)) {};
-			OnlyRead(const ComponentList::ConstComponents &arg) : onlyRead_(arg) {};
-			OnlyRead(ComponentList::ConstComponents &&arg) : onlyRead_(std::move(arg)) {};
+			OnlyRead(const typename ComponentList::Components &arg) : onlyRead_(arg) {};
+			OnlyRead(typename ComponentList::Components &&arg) : onlyRead_(std::move(arg)) {};
+			OnlyRead(const typename ComponentList::ConstComponents &arg) : onlyRead_(arg) {};
+			OnlyRead(typename ComponentList::ConstComponents &&arg) : onlyRead_(std::move(arg)) {};
 		};
 
 		/// @brief 書き込み限定のアクセッサ
@@ -134,10 +134,10 @@ namespace ECS {
 		{
 			static constexpr uint32_t kCompCount_ = static_cast<uint32_t>(sizeof...(Ts));
 			using ComponentList = GetComponentHelper<Ts...>;
-			ComponentList::Components onlyWrite_;
+			typename ComponentList::Components onlyWrite_;
 			static constexpr bool kIsConst_ = false;
 			OnlyWrite() = default;
-			OnlyWrite(const ComponentList::Components &arg) : onlyWrite_(arg) {};
+			OnlyWrite(const typename ComponentList::Components &arg) : onlyWrite_(arg) {};
 		};
 
 		/// @brief 読み書き可能のアクセッサ
@@ -147,10 +147,10 @@ namespace ECS {
 		{
 			static constexpr uint32_t kCompCount_ = static_cast<uint32_t>(sizeof...(Ts));
 			using ComponentList = GetComponentHelper<Ts...>;
-			ComponentList::Components readAndWrite_;
+			typename ComponentList::Components readAndWrite_;
 			static constexpr bool kIsConst_ = false;
 			ReadAndWrite() = default;
-			ReadAndWrite(const ComponentList::Components &arg) : readAndWrite_(arg) {};
+			ReadAndWrite(const typename ComponentList::Components &arg) : readAndWrite_(arg) {};
 		};
 
 		/// @brief 除外設定

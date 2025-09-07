@@ -1,0 +1,95 @@
+#pragma once
+#include <cstdint>
+#include <list>
+#include "../../../Engine/Utils/Math/Math.hpp"
+#include "../../../Engine/DirectBase/2D/Sprite.h"
+#include "../LevelMapChip.h"
+
+namespace TD_10days {
+
+	class Water {
+	public:
+
+		class ChainWater {
+		public:
+
+			struct ChainWaterData {
+
+				/// @brief 画像データ
+				std::unique_ptr<Sprite> sprite_;
+
+				/// @brief 位置
+				Vector2 position_{};
+
+				ChainWaterData *next_ = nullptr;
+
+
+				static std::unique_ptr<ChainWaterData> Generate(const uint32_t color);
+				/// @brief 位置の設定
+				/// @param[in] position 位置
+				void SetPosition(const Vector2 &position);
+			};
+
+			ChainWater() = default;
+			~ChainWater() = default;
+
+			void Init(const Vector2 &size, const uint32_t color);
+
+			void Update(float deltaTime);
+			void Draw() const;
+
+			void CalcUpdate();
+
+			ChainWaterData *CreateChain(const Vector2 &position);
+			void MoveDirection(const Vector2 &direction);
+
+			/// @brief 水の座標を取得する
+			/// @return 水の座標のリスト
+			std::unordered_set<Vector2> GetPositionList() const;
+
+			/// @brief 水のリストを破棄する
+			void Clear();
+
+		private:
+
+
+			std::list<std::unique_ptr<ChainWaterData>> chainWaterList_;
+
+			Vector2 size_{};
+			uint32_t color_ = 0x0000FF55;
+
+		};
+
+		Water() = default;
+		~Water() = default;
+		void Init(const Vector2 &position, const Vector2 &size, const uint32_t color);
+		void Update(float deltaTime);
+		void Draw() const;
+
+		/// @brief 水の破棄処理
+		void DeleteWater();
+
+		/// @brief 水の設置処理
+		/// @param[in] direction 設置したい方向性
+		void PlacementWater(const Vector2 &direction);
+
+		/// @brief 水が配置できるか
+		/// @param[in] hitBox 当たり判定
+		/// @param[in] direction 移動方向
+		/// @return 設置可能ならtrue
+		bool IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2 &direction) const;
+
+		/// @brief 動作開始
+		void Activate(float maxTime);
+
+		const std::unordered_set<Vector2> GetWaterPosition() const;
+	private:
+		std::unique_ptr<ChainWater> chainWater_;
+		Vector2 position_{};
+		Vector2 size_{};
+		uint32_t color_ = 0x0000FF55;
+		float lifeTime_ = 0.f;
+
+		bool isActive_ = false;
+	};
+}

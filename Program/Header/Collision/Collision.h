@@ -107,7 +107,8 @@ struct Triangle : public IShape
 	Triangle() {}
 	/// @param LocalVertices 頂点リスト(時計回り)
 	Triangle(const Vector3 &Vertice0, const Vector3 &Vertice1, const Vector3 &Vertice2)
-		: vertices_{Vertice0, Vertice1, Vertice2} {}
+		: vertices_{ Vertice0, Vertice1, Vertice2 } {
+	}
 
 	Triangle(const Triangle &) = default;
 	~Triangle() = default;
@@ -174,7 +175,7 @@ struct LineBase final : public IShape
 private:
 	/// @brief 線と点の距離が最小の進行度
 	[[nodiscard]] float ClosestProgress(const Vector3 &point) const;
-	inline static std::array<const char *const, 3u> typeList = {"Line", "Ray", "Segment"};
+	inline static std::array<const char *const, 3u> typeList = { "Line", "Ray", "Segment" };
 };
 
 struct AABB : public IShape
@@ -185,6 +186,7 @@ struct AABB : public IShape
 	/// @brief AABBを移動する
 	const AABB AddPos(const Vector3 &vec) const;
 	/// @brief AABBを拡大する
+	/// @param[in] vec 拡大するベクトル
 	AABB Extend(const Vector3 &vec) const;
 
 	///	@brief 中心座標を取得
@@ -193,6 +195,7 @@ struct AABB : public IShape
 	Vector3 GetRadius() const;
 	/// @brief 衝突点の法線を取得
 	Vector3 GetNormal(const Vector3 &surface) const;
+	std::list<Vector3> GetNormalList(const Vector3 &surface) const;
 	Vector3 GetNormal(const Vector3 &surface, const Vector3 &direction) const;
 
 	/// @brief Transform行列の生成
@@ -207,7 +210,7 @@ struct AABB : public IShape
 
 	void ImGuiDebug(const std::string &group);
 	/// @brief 頂点情報を入れ替え
-	const AABB &Swaping();
+	const AABB &Normalize();
 
 	/// @brief 全ての頂点情報を取得する
 	/// @return 各種頂点 [ 下面4つ , 上面4つ]
@@ -262,7 +265,7 @@ struct ConicalPendulum
 
 struct Capsule : public IShape
 {
-	LineBase segment{.lineType = LineBase::LineType::Segment};
+	LineBase segment{ .lineType = LineBase::LineType::Segment };
 	float radius;
 	/// @brief 衝突した座標
 	Vector3 GetHitPoint(const Plane &plane) const;
@@ -276,7 +279,7 @@ using VariantShapes = std::variant<std::byte, AABB, OBB, Sphere, Capsule /*, Cyl
 
 template <typename T>
 concept IsShapeType = requires(const T shape) {
-	{ VariantShapes{shape} } -> std::same_as<VariantShapes>;
+	{ VariantShapes{ shape } } -> std::same_as<VariantShapes>;
 };
 
 class ShapesList

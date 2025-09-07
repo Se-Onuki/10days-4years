@@ -5,6 +5,7 @@
 #include "../../Engine/Utils/Containers/Singleton.h"
 #include "../../Engine/Utils/Graphics/Color.h"
 #include "../../ResourceObject/ResourceObjectManager.h"
+#include "../../Engine/DirectBase/Texture/FullScreenTextureStrage.h"
 #include "../Base/CBuffer.h"
 #include "../Base/DirectXCommon.h"
 #include "../Base/EngineObject.h"
@@ -102,6 +103,9 @@ namespace PostEffect {
 		/// @param[in] args シェーダーに渡す引数
 		template <SoLib::IsRealType... Ts>
 		void Execute(const std::wstring &psName, const CBuffer<Ts> &...args);
+
+		template <SoLib::IsRealType... Ts>
+		void Execute(const std::wstring &psName, SolEngine::FullScreenTexture *const source, const CBuffer<Ts>&...args);
 
 	private:
 		std::array<ComPtr<ID3D12Resource>, kTextureCount_> fullScreenTexture_;

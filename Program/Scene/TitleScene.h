@@ -32,6 +32,12 @@ public:
 	void Draw() override;
 
 private:
+	void ApplyGlobalVariables();
+
+	//テクスチャの設定や移動など
+	void TextureSetting();
+
+private:
 	// 入力インスタンス
 	SolEngine::Input *input_ = nullptr;
 	// 音インスタンス
@@ -42,18 +48,40 @@ private:
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
 
-	// 平行光源
-	std::unique_ptr<DirectionLight> light_ = nullptr;
+	std::unique_ptr<Tex2DState> backGround_;
 
-	std::unique_ptr<Sprite> sprite_;
-	std::unique_ptr<Sprite> button_;
+	//テクスチャの情報群
+	std::vector<Tex2DState*> texDetas_;
 
-	Ground ground_{ 0.f, Vector2{100.f,100.f} };
+	std::pair<int32_t, int32_t> angleMinMax_;
+	std::pair<Vector2, Vector2> posMinMax_;
 
-	BlockManager *blockRender_;
-	ModelHandleListManager *blockHandleRender_;
+	//培養ポットのUV動かす値
+	const float kUVMoveValue_ = 300.0f;
+	//UVの最大値
+	const float kUVMaxValue_ = 2700.0f;
 
-	SolEngine::Camera3D camera_;
+	//UVの最大値
+	const float kUVMaxValuePlayer_ = 3600.0f;
+	//右のからのポット
+	Vector2 nullPotRightUV_ = { 0.0f, 0.0f };
+	//ふぐが入ったポット
+	Vector2 playerPotUV_ = { 0.0f, 0.0f };
+	//初期値が違うもの
+	Vector2 nullPotLeftUV_ = { 300.0f, 0.0f };
+
+	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
+	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
+
+
+	//ランダムで変化する変数
+	int32_t randAngle_ = 0;
+	Vector2 randPos_ = {};
+
+	uint32_t buttomColor_ = 0xffffffff;
+
+	float moveSpeed_ = 0.25f;
+	float moveSpeedButtom_ = 0.5f;
 
 	// bgm
 	SolEngine::Audio::SoundHandle soundA_;

@@ -59,6 +59,7 @@ void ResultScene::OnEnter()
 
 	timerCoron_ = Sprite::Generate(TextureManager::Load("UI/Coron.png"));
 
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Result);
 
 	const Vector2 timerPos{ WinApp::kWindowWidth / 2.f ,96.f };
 	SetTimerPos(timerPos);
@@ -88,7 +89,7 @@ void ResultScene::Update()
 	blockHandleRender_->clear();
 
 	if (input_->GetDirectInput()->IsTrigger(DIK_SPACE) or input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A)) {
-		sceneManager_->ChangeScene("TitleScene", 0.5f);
+		sceneManager_->ChangeScene("SelectScene", 0.5f);
 		fade_->Start(Vector2{}, 0x000000FF, 0.5f);
 	}
 
@@ -124,6 +125,10 @@ void ResultScene::Draw()
 	//}
 
 	//timerCoron_->Draw();
+
+	TextureEditor::GetInstance()->Draw();
+	TextureEditor::GetInstance()->PutDraw();
+
 
 	// スプライトの描画
 	fade_->Draw();
