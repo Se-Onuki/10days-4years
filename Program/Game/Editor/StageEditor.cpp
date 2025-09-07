@@ -297,7 +297,7 @@ void StageEditor::ClickPushMove([[maybe_unused]] Vector2 mousePos) {
 
 void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 	std::filesystem::path dir(kDirectoryPath_);
-	if (!std::filesystem::exists(dir)) {
+	if (not std::filesystem::exists(dir)) {
 		std::filesystem::create_directory(dir);
 	}
 	// 書き込むcsvファイルのフルパスを合成する
@@ -331,7 +331,7 @@ void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 }
 
 void StageEditor::ChackFiles() {
-	if (!std::filesystem::exists(kDirectoryName_)) {
+	if (not std::filesystem::exists(kDirectoryName_)) {
 		std::wstring message = L"Failed open data file for write.";
 		MessageBoxW(WinApp::GetInstance()->GetHWND(), message.c_str(), L"ディレクトリないよぉ！", 0);
 		return;

@@ -93,7 +93,10 @@ namespace TD_10days {
 	void PlayerPlacement::OnEnter() {
 		const auto player = GetPlayer();
 
-		const Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
+		Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
+		if (not player->pHitBox_->at(static_cast<size_t>(placePos.y - 1), static_cast<size_t>(placePos.x))) {
+			placePos.x += std::copysign(1.f, player->position_.x - placePos.x);
+		}
 		player->pWater_->Init(placePos, Vector2::one, 0x0000FF55);
 	}
 
@@ -150,11 +153,11 @@ namespace TD_10days {
 		if (playerState_->GetStateName() == "PlayerMovement") {
 			// --- 水しぶき処理 ---
 			const bool isNowInWater = IsInWater();
-			if (!wasInWater_ && isNowInWater) {
+			if (not wasInWater_ && isNowInWater) {
 				// 入った瞬間
 				particleManager_->SpawnSplash(position_, velocity_ * -1.0f);
 			}
-			else if (wasInWater_ && !isNowInWater) {
+			else if (wasInWater_ && not isNowInWater) {
 				// 出た瞬間
 				particleManager_->SpawnSplash(position_, velocity_ * 1.0f);
 			}

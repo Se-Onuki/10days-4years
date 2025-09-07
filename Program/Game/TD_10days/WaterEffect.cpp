@@ -64,7 +64,7 @@ namespace TD_10days
 		}
 
 		particles_.remove_if([](const std::unique_ptr<WaterParticle> &particle) {
-			return !particle->GetActive();
+			return not particle->GetActive();
 			});
 
 		Collider(hitBox, chipSize);
@@ -168,7 +168,7 @@ namespace TD_10days
 
 	void WaterParticleManager::CircleCircle(WaterParticle *p1, WaterParticle *p2, float restitution)
 	{
-		if (!p1->GetActive() || !p2->GetActive()) {
+		if (not p1->GetActive() || not p2->GetActive()) {
 			return;
 		}
 
@@ -228,7 +228,7 @@ namespace TD_10days
 	}
 	void WaterParticleManager::CircleAABB(WaterParticle *p, const Rect &rect, float restitution)
 	{
-		if (!p->GetActive()) {
+		if (not p->GetActive()) {
 			return;
 		}
 

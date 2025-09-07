@@ -54,7 +54,7 @@ inline std::vector<std::filesystem::path> GetFilePathFormDir(
     for (const auto& entry : directory) {
         const auto& path = entry.path();
         // サブディレクトリを探索
-        if (!path.has_extension()) {
+        if (not path.has_extension()) {
             auto files = GetFilePathFormDir(path, extension);
             result.insert(result.end(), files.begin(), files.end());
         }
@@ -81,7 +81,7 @@ inline std::vector<std::filesystem::path> GetFilePathFormDirOrigin(
     for (const auto& entry : directory) { 
         const auto& path = entry.path(); 
          // もし拡張子がなかったら
-        if (!path.has_extension()) { 
+        if (not path.has_extension()) { 
             std::vector<std::filesystem::path> files; 
             // その中にあるファイルをすべて探索(再帰的に探す) 
             files = GetFilePathFormDirOrigin(path, extension);

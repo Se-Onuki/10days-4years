@@ -87,6 +87,10 @@ namespace TD_10days {
 		WaterParticleManager* GetWaterPartilceManager() { return waterParticleManager_; }
 		void SetWaterParticleManager(WaterParticleManager* manager) { waterParticleManager_ = manager; }
 
+		/// @brief タイマーの時間を返す
+		/// @return nulloptの場合は､タイマーが動作してない
+		std::optional<float> GetWaterTime() const;
+
 		
 	private:
 		std::unique_ptr<ChainWater> chainWater_;

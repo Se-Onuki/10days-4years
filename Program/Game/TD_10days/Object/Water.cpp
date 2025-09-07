@@ -8,11 +8,14 @@ namespace TD_10days {
 		size_ = size;
 		color_ = color;
 
+		isActive_ = false;
+
 		DeleteWater();
 
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
 		chainWater_->CreateChain(position);
+		waterParticleManager_->SpawnParticle(position);
 	}
 
 	void Water::Update(const float deltaTime) {
@@ -90,6 +93,13 @@ namespace TD_10days {
 		if (not chainWater_) { return {}; }
 
 		return chainWater_->GetPositionList();
+	}
+
+	std::optional<float> Water::GetWaterTime() const
+	{
+		std::optional<float> result;
+		if (isActive_) { result = lifeTime_; }
+		return result;
 	}
 
 	void Water::ChainWater::Init(const Vector2 &size, const uint32_t color)
