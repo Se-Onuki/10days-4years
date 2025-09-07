@@ -104,6 +104,7 @@ void TextureEditor::Draw() {
 }
 
 void TextureEditor::PutDraw() {
+#ifdef _DEBUG
 	if (isDecideToPlace_ and isTextureEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
@@ -113,6 +114,7 @@ void TextureEditor::PutDraw() {
 
 		newTex_->sprite->Draw();
 	}
+#endif // _DEBUG
 }
 
 void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Vector2 mousePos) {

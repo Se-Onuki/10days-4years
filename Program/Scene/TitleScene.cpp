@@ -49,9 +49,11 @@ void TitleScene::OnEnter() {
 	colorTimer_->Clear();
 
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
+	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
+	titleBGM_.Play(true, 0.5f);
 
-	soundA_.Play(true, 0.5f);
+	decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
+	
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
@@ -87,8 +89,13 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		sceneManager_->ChangeScene<SelectScene>(1.f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		if (not Fade::GetInstance()->GetTimer()->IsActive()){
+			decisionSE_.Play(false, 0.5f);
+			sceneManager_->ChangeScene<SelectScene>(1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}	
+		
+		
 	}
 	ApplyGlobalVariables();
 

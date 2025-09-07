@@ -410,11 +410,18 @@ namespace TD_10days {
 		// 水の座標のリスト
 		const auto waterPos = pWater_->GetWaterPosition();
 
-		// プレイヤの座標を丸める
-		const Vector2 target = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
 
-		// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
-		return waterPos.find(target) != waterPos.cend();
+		for (const auto &verPos : GetVertex()) {
+			// プレイヤの座標を丸める
+			const Vector2 target = Vector2{ std::roundf(verPos.x), std::roundf(verPos.y) };
+
+
+			// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
+			if (waterPos.find(target) != waterPos.cend()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

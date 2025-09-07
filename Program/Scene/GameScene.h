@@ -167,4 +167,8 @@ private:
 	std::unique_ptr<TD_10days::WaterParticleManager> waterParticleManager_ = nullptr;
 	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
 
+	// bgm
+	SolEngine::Audio::SoundHandle gameBGM_;
+	SolEngine::Audio::SoundHandle goalSE_;
+
 };

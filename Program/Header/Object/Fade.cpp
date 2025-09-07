@@ -36,6 +36,7 @@ void Fade::Start(const Vector2 targetPos, const SoLib::Color::RGB4 &targetColor,
 	originalColor_ = sprite_->GetColor();
 
 	// タイマーの実行
+	timer_->Clear();
 	timer_->Start(goalTime);
 }
 
@@ -51,6 +52,10 @@ void Fade::Update(float deltaTime) {
 
 		// colorを変更
 		sprite_->SetColor(SoLib::Lerp(originalColor_, targetColor_, t));
+
+		if (t >= 0.9500000f) {
+			sprite_->SetColor(targetColor_);
+		}
 
 		if (timer_->IsFinish()) {	// ゴール到達時にのみ走る
 			sprite_->SetPosition(targetPos_);			// 画像位置を設定

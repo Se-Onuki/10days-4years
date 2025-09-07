@@ -59,6 +59,13 @@ void GameScene::OnEnter() {
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
 	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl", L"WhiteWaterEffect.PS.hlsl", L"Discard.PS.hlsl"});
 
+	// bgmのロード
+	gameBGM_ = audio_->LoadMP3("resources/Audio/BGM/Game.mp3");
+
+	gameBGM_.Play(true, 0.5f);
+
+	goalSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Clear.mp3");
+
 
 	gaussianParam_->first = 32.f;
 	gaussianParam_->second = 8;
@@ -84,7 +91,7 @@ void GameScene::OnEnter() {
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
 	camera_.Init();
-	camera_.scale_ = 0.0125f;
+	camera_.scale_ = 0.015f;
 	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
 
 	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
@@ -141,6 +148,7 @@ void GameScene::Update() {
 		// ゴール座標からの距離で判定する
 		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
+				goalSE_.Play(false, 0.5f);
 				stageClearTimer_.Start();
 
 				stageTransitionFunc_ = (&GameScene::StageClear);
@@ -234,16 +242,19 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef _DEBUG
-	ImGuiIO &io = ImGui::GetIO();
-	if (io.MouseWheel > 0.0f) {
-		// ホイール上スクロール
-		camera_.scale_ -= 0.01f;
-	}
-	if (io.MouseWheel < 0.0f) {
-		// ホイール下スクロール
-		camera_.scale_ += 0.01f;
-	}
+	ImGuiIO& io = ImGui::GetIO();
+	if (not ImGui::GetIO().WantCaptureMouse){
 
+		if (io.MouseWheel > 0.0f) {
+			// ホイール上スクロール
+			camera_.scale_ -= 0.01f;
+		}
+		if (io.MouseWheel < 0.0f) {
+			// ホイール下スクロール
+			camera_.scale_ += 0.01f;
+		}
+	}
+	
 
 
 #endif // _DEBUG
