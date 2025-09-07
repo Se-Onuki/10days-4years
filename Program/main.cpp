@@ -119,7 +119,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ImGuiに新規フレームであると伝える
 		ImGuiManager::StartFlame();
 
-		const float deltaTime = ImGui::GetIO().DeltaTime;
+		float deltaTime = ImGui::GetIO().DeltaTime;
+
+		if (deltaTime >= 0.018f) {
+			deltaTime = 0.018f;
+		}
 
 		///
 		/// ↓ゲーム処理↓
