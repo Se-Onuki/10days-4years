@@ -96,23 +96,17 @@ namespace TD_10days {
 		return std::span<const MapChip>{ &mapChips_[index * x_], x_ };
 	}
 
-	const LevelMapChip::LevelMapChipHitBox *LevelMapChip::CreateHitBox()
+	void LevelMapChip::CreateHitBox()
 	{
-		// 当たり判定がないなら作る
-		if (not hitBox_) {
-			hitBox_ = std::make_unique<LevelMapChipHitBox>();
-		}
-		// サイズの設定
-		hitBox_->y_ = y_;
-		hitBox_->x_ = x_;
-		// メモリの確保
-		hitBox_->hitBoxData_.resize(y_ * x_, false);
-		// 変換して書き込む
-		std::transform(mapChips_.begin(), mapChips_.end(), hitBox_->hitBoxData_.begin(), [this](const MapChip &chip) {
+		playerHitBox_ = *CreateHitBox([this](const MapChip &chip) {
 			// 当たり判定のフラグを持っているならtrue
 			return mapChipData_[static_cast<uint32_t>(chip)].IsHasCollision();
 			});
-		return hitBox_.get();
+		waterHitBox_ = *CreateHitBox([this](const MapChip &chip) {
+			// 当たり判定のフラグを持っているならtrue
+			return mapChipData_[static_cast<uint32_t>(chip)].IsHasWaterCollision();
+			});
+
 	}
 
 	void LevelMapChip::Resize(uint32_t y, uint32_t x)
@@ -147,6 +141,22 @@ namespace TD_10days {
 	const std::unordered_set<Vector2> &LevelMapChip::GetNeedlePosition() const
 	{
 		return needlePosList_;
+	}
+
+	std::unique_ptr<LevelMapChip::LevelMapChipHitBox> LevelMapChip::CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const
+	{
+		auto result = std::make_unique<LevelMapChipHitBox>();
+
+		// サイズの設定
+		result->y_ = y_;
+		result->x_ = x_;
+
+		// メモリの確保
+		result->hitBoxData_.resize(y_ * x_, false);
+		// 変換して書き込む
+		std::transform(mapChips_.begin(), mapChips_.end(), result->hitBoxData_.begin(), checkFunc);
+
+		return std::move(result);
 	}
 
 	void LevelMapChipRenderer::Init(const LevelMapChip *levelMapChip) {

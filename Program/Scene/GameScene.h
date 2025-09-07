@@ -148,6 +148,7 @@ private:
 	TD_10days::LevelMapChip *pLevelMapChip_;
 	TD_10days::LevelMapChipRenderer levelMapChipRenderer_;
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipHitBox_;
+	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
 

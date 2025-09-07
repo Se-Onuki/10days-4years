@@ -74,16 +74,19 @@ void GameScene::OnEnter() {
 	camera_.Init();
 	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
 	camera_.translation_.y = 4.f;
-	
+
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
 	levelMapChipRenderer_.Init(pLevelMapChip_);
-	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
+	pLevelMapChip_->CreateHitBox();
+	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
+	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
+	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
 	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
 	waterParticleManager_->Init();
@@ -121,7 +124,7 @@ void GameScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
 
-	
+
 
 	stageClearTimer_.Update(deltaTime);
 	// もし範囲内で､タイマーが動いてないならスタート
@@ -193,7 +196,7 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef _DEBUG
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	if (io.MouseWheel > 0.0f) {
 		// ホイール上スクロール
 		camera_.scale_ -= 0.01f;
@@ -202,7 +205,7 @@ void GameScene::Debug() {
 		// ホイール下スクロール
 		camera_.scale_ += 0.01f;
 	}
-	
+
 
 
 #endif // _DEBUG
