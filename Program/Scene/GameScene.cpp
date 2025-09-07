@@ -229,11 +229,12 @@ void GameScene::Draw() {
 
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
-	player_.Draw();
 
 	water_->Draw();
 
 	DrawWater();
+
+	player_.Draw();
 
 	particleManager_->Draw();
 
@@ -383,6 +384,8 @@ void GameScene::DrawWater()
 	fullScreen_->Draw({ L"WaterEffect.PS.hlsl" }, **resultTex);
 
 	Sprite::StartDraw(commandList);
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
 
 
 }

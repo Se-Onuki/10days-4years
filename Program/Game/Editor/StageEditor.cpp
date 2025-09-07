@@ -378,6 +378,8 @@ void StageEditor::LoadFile(const std::string &fileName) {
 	fileName;
 	std::string message = "File loading completed";
 	MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
+#else 
+	fileName;
 
 #endif // _DEBUG
 }
