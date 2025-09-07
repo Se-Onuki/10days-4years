@@ -37,9 +37,13 @@ void SelectScene::OnEnter(){
 	colorTimer_->Clear();
 
 	// bgmのロード
-	soundA_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
+	selectBGM_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
-	soundA_.Play(true, 0.5f);
+	selectBGM_.Play(true, 0.5f);
+
+	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
+	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
+	
 
 	backGround_ = std::make_unique<Tex2DState>();
 	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
@@ -76,6 +80,7 @@ void SelectScene::Update(){
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
+		stageSelectSE_.Play(false, 0.5f);
 		SelectToGame::GetInstance()->SetStageNum(stageNum_);
 		sceneManager_->ChangeScene<GameScene>(1.f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
@@ -184,6 +189,7 @@ void SelectScene::PlayerMoving(){
 	//右入力
 	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
 		if (stageNum_ < (kMaxStages_ - 1)) {
+			stageChangeSE_.Play(false, 0.5f);
 			stageNum_++;
 			// タイマーの実行
 			timer_->Start(moveSpeed_);
@@ -195,6 +201,7 @@ void SelectScene::PlayerMoving(){
 	//左入力
 	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
 		if (stageNum_ > 0) {
+			stageChangeSE_.Play(false, 0.5f);
 			stageNum_--;
 			// タイマーの実行
 			timer_->Start(moveSpeed_);

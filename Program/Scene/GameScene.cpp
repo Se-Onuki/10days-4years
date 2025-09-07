@@ -59,6 +59,13 @@ void GameScene::OnEnter() {
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
 	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl" });
 
+	// bgmのロード
+	gameBGM_ = audio_->LoadMP3("resources/Audio/BGM/Game.mp3");
+
+	gameBGM_.Play(true, 0.5f);
+
+	goalSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Clear.mp3");
+
 
 	gaussianParam_->first = 32.f;
 	gaussianParam_->second = 1;
@@ -123,6 +130,7 @@ void GameScene::Update() {
 		// ゴール座標からの距離で判定する
 		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
+				goalSE_.Play(false, 0.5f);
 				stageClearTimer_.Start();
 
 				stageTransitionFunc_ = (&GameScene::StageClear);

@@ -172,8 +172,6 @@ void StageEditor::Update() {
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
-	ClickPushMove(mousePos);
-
 #endif // _DEBUG
 
 }
@@ -284,14 +282,6 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 
 }
 
-void StageEditor::LoadFileAll() {
-
-}
-
-void StageEditor::ClickPushMove([[maybe_unused]] Vector2 mousePos) {
-
-}
-
 void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 	std::filesystem::path dir(kDirectoryPath_);
 	if (!std::filesystem::exists(dir)) {
@@ -325,64 +315,6 @@ void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 
 	std::string message = "File save completed.";
 	MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
-}
-
-void StageEditor::ChackFiles() {
-	if (!std::filesystem::exists(kDirectoryName_)) {
-		std::wstring message = L"Failed open data file for write.";
-		MessageBoxW(WinApp::GetInstance()->GetHWND(), message.c_str(), L"ディレクトリないよぉ！", 0);
-		return;
-	}
-
-	std::filesystem::directory_iterator dir_it(kDirectoryPath_);
-
-	for (const std::filesystem::directory_entry &entry : dir_it) {
-		//ファイルパスを取得
-		const std::filesystem::path &filePath = entry.path();
-
-		//ファイル拡張子を取得
-		std::string extension = filePath.extension().string();
-		//.jsonファイル以外はスキップ
-		if (extension.compare(".json") != 0) {
-			continue;
-		}
-
-		if (LoadChackItem(filePath.stem().string())) {
-			chackOnlyNumber_ = 1;
-		}
-
-		if (fileName_.size() != 0) {
-			bool noneFail = true;
-			for (size_t i = 0; i < fileName_.size(); i++) {
-				if (fileName_[i].c_str() == filePath.stem().string()) {
-					noneFail = false;
-				}
-			}
-			if (noneFail) {
-				fileName_.push_back(filePath.stem().string());
-			}
-
-		}
-		else {
-			//ファイルの名前を取得
-			fileName_.push_back(filePath.stem().string());
-		}
-	}
-}
-
-void StageEditor::LoadFile(const std::string &fileName) {
-#ifdef _DEBUG
-	fileName;
-	std::string message = "File loading completed";
-	MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
-
-#endif // _DEBUG
-}
-
-void StageEditor::DragMove() {
-#ifdef _DEBUG
-
-#endif
 }
 
 TD_10days::LevelMapChip::MapChip StageEditor::NumberToMap(const int32_t num) {
@@ -453,7 +385,7 @@ void StageEditor::SwapStage(){
 			auto* vec = (std::vector<std::string>*)data;
 			if (idx < 0 || idx >= (int)vec->size()) return false;
 			static std::string display;
-			// ファイル名（例: stage1.csv）
+			// ファイル名
 			std::string filename = std::filesystem::path((*vec)[idx]).stem().string();
 
 			// "stage" の後ろの数字を取り出して "StageDataN" に変換

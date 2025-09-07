@@ -154,4 +154,8 @@ private:
 
 	std::unique_ptr<TD_10days::Water> water_;
 
+	// bgm
+	SolEngine::Audio::SoundHandle gameBGM_;
+	SolEngine::Audio::SoundHandle goalSE_;
+
 };

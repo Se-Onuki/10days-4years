@@ -84,8 +84,8 @@ private:
 	float moveSpeedButtom_ = 0.5f;
 
 	// bgm
-	SolEngine::Audio::SoundHandle TitleBGM_;
+	SolEngine::Audio::SoundHandle titleBGM_;
 	// bgm
-	SolEngine::Audio::SoundHandle DecisionSE_;
+	SolEngine::Audio::SoundHandle decisionSE_;
 
 };
