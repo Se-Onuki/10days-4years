@@ -2,8 +2,8 @@
     "PlayerParameter": {
         "AirGravity": -9.800000190734863,
         "AirSpeed": 5.0,
-        "WaterGravity": -4.900000095367432,
-        "WaterJumpPower": 3.5,
+        "WaterGravity": -0.10000000149011612,
+        "WaterJumpPower": 1.5,
         "WaterLifeTime": 10.0,
         "WaterSpeed": 3.5
     }
