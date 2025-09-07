@@ -52,8 +52,7 @@ void TitleScene::OnEnter() {
 	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 	titleBGM_.Play(true, 0.5f);
 
-	decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
-	
+	decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");	
 
 	SolEngine::ResourceObjectManager<SolEngine::LevelData> *const levelDataManager = SolEngine::ResourceObjectManager<SolEngine::LevelData>::GetInstance();
 
