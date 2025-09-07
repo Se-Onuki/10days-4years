@@ -276,6 +276,8 @@ void GameScene::Draw() {
 
 	stageEditor_->PutDraw();
 
+	TextureEditor::GetInstance()->Draw();
+
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
 
@@ -311,7 +313,6 @@ void GameScene::Draw() {
 
 	Sprite::StartDraw(commandList);
 
-	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
 
 	// スプライトの描画
