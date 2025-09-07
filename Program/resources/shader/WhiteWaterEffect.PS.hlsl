@@ -12,7 +12,7 @@ struct PixelShaderOutput
 
 // 固定値のパラメータ（cbufferを使わない）
 static const float Thickness = 0.1f; // しきい値
-static const float4 MaskColor = float4(0.0f, 0.5f, 1.0f, 1.0f); // 水色
+static const float4 MaskColor = float4(0xc8 / 255.f, 1.f, 1.0f, 1.0f); // 水色
 
 PixelShaderOutput main(VertexShaderOutput input)
 {

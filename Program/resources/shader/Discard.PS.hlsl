@@ -29,7 +29,8 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
     
     
-    result.color_ = MaskColor;
+    result.color_ = texColor;
+    result.color_.a = .75f;
  
     return result;
 }

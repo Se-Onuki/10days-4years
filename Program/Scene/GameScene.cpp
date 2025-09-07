@@ -57,11 +57,11 @@ void GameScene::OnEnter() {
 	offScreen_->Init();
 
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
-	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl" });
+	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl", L"WhiteWaterEffect.PS.hlsl", L"Discard.PS.hlsl"});
 
 
 	gaussianParam_->first = 32.f;
-	gaussianParam_->second = 1;
+	gaussianParam_->second = 8;
 
 	vignettingParam_ = { 16.f, 0.8f };
 
@@ -161,10 +161,10 @@ void GameScene::Update() {
 	// grayScaleParam_ = 1;
 	Debug();
 
-	/*ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
+	ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
 
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
-	ImGui::DragInt("Size", &gaussianParam_->second);*/
+	ImGui::DragInt("Size", &gaussianParam_->second);
 
 	SoLib::ImGuiWidget("CameraPos", &camera_.translation_.ToVec2());
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
@@ -232,9 +232,9 @@ void GameScene::Draw() {
 
 	water_->Draw();
 
-	DrawWater();
-
 	player_.Draw();
+
+	DrawWater();
 
 	particleManager_->Draw();
 
@@ -377,11 +377,31 @@ void GameScene::DrawWater()
 
 	Sprite::EndDraw();
 
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	// ポストエフェクトの初期値
+	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
+
+	postEffectProcessor->Execute(L"WhiteWaterEffect.PS.hlsl");
+	// ガウスぼかし
+	if (gaussianParam_->second > 1) {
+		// 処理の実行
+		postEffectProcessor->Execute(L"GaussianFilterLiner.PS.hlsl", gaussianParam_);
+		postEffectProcessor->Execute(L"GaussianFilter.PS.hlsl", gaussianParam_);
+	}
+
+	postEffectProcessor->Execute(L"WhiteWaterEffect.PS.hlsl");
+
+	fullScreen_->Draw({ L"WaterEffect.PS.hlsl" }, **resultTex);
+
+	// 結果を取り出す
+	postEffectProcessor->GetResult(resultTex->renderTargetTexture_.Get());
+
+
 	rtvHandle = offScreen_->GetRtvDescHeap()->GetHeap()->GetCPUDescriptorHandleForHeapStart();
 
 	pDxCommon_->DrawTargetReset(&rtvHandle, offScreen_->GetClearColor(), &dsvHandle, viewport, scissorRect, false);
 
-	fullScreen_->Draw({ L"WaterEffect.PS.hlsl" }, **resultTex);
+	fullScreen_->Draw({ L"Discard.PS.hlsl" }, **resultTex);
 
 	Sprite::StartDraw(commandList);
 
