@@ -91,7 +91,7 @@ void GameScene::OnEnter() {
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
 	camera_.Init();
-	camera_.scale_ = 0.0115f;
+	camera_.scale_ = 0.015f;
 	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
 
 	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
