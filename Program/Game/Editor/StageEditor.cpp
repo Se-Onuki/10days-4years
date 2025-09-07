@@ -1,5 +1,7 @@
 #include "StageEditor.h"
 #include <SelectToGame/SelectToGame.h>
+#include <iostream>
+
 
 StageEditor::~StageEditor() {
 
@@ -79,8 +81,11 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 	if (stageNum_ != SelectToGame::GetInstance()->GetStageNum()){
 		// ステージ番号の取得
 		stageNum_ = SelectToGame::GetInstance()->GetStageNum();
+
 		// ステージ番号の基数を1にする
 		int32_t selectNum = stageNum_ + 1;
+
+		guiSelectNum_ = selectNum;
 
 		// ステージの読み込みを行う
 		if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
@@ -137,7 +142,6 @@ void StageEditor::Update() {
 			// ---- どのマップチップか ----
 			tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
 			tilePos_.second = (world.second + (blockSize_ / 2)) / blockSize_;
-
 
 			newTex_->transform.translate_ = { (float)(tilePos_.first),(float)(tilePos_.second) };
 
@@ -272,6 +276,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 			}			
 		}
 	}
+	SwapStage();
 
 	ImGui::End();
 #endif // DEBUG_
@@ -405,6 +410,94 @@ void StageEditor::LoadStage() {
 	}
 	pLevelMapChipRender_->CalcSpriteData();
 	ApplyMapChips();
+}
+
+void StageEditor::SwapStage(){
+	static int stageA = 0; // 選択中のステージA
+	static int stageB = 1; // 選択中のステージB
+
+	std::vector<std::string> stages;
+	for (auto& entry : std::filesystem::directory_iterator("resources/Datas/StageData")) {
+		if (entry.path().extension() == ".csv") {
+			stages.push_back(entry.path().string());
+		}
+	}
+
+	// コンボでステージ選択
+	ImGui::Text("入れ替えたいステージを選択してください");
+
+	ImGui::Combo("Stage A", &stageA,
+		[](void* data, int idx, const char** out_text) {
+			auto* vec = (std::vector<std::string>*)data;
+			if (idx < 0 || idx >= (int)vec->size()) return false;
+			static std::string display;
+			// ファイル名（例: stage1.csv）
+			std::string filename = std::filesystem::path((*vec)[idx]).stem().string();
+
+			// "stage" の後ろの数字を取り出して "StageDataN" に変換
+			if (filename.rfind("stage", 0) == 0) { // "stage" で始まるか確認
+				std::string number = filename.substr(5); // "stage" の5文字を飛ばす
+				display = "StageData" + number;
+			}
+			else {
+				display = filename; // 想定外の名前ならそのまま表示
+			}
+
+			*out_text = display.c_str();
+			return true;
+		},
+		(void*)&stages, (int)stages.size());
+
+	ImGui::Combo("Stage B", &stageB,
+		[](void* data, int idx, const char** out_text) {
+			auto* vec = (std::vector<std::string>*)data;
+			if (idx < 0 || idx >= (int)vec->size()) return false;
+			static std::string display;
+			// ファイル名（例: stage1.csv）
+			std::string filename = std::filesystem::path((*vec)[idx]).stem().string();
+
+			// "stage" の後ろの数字を取り出して "StageDataN" に変換
+			if (filename.rfind("stage", 0) == 0) { // "stage" で始まるか確認
+				std::string number = filename.substr(5); // "stage" の5文字を飛ばす
+				display = "StageData" + number;
+			}
+			else {
+				display = filename; // 想定外の名前ならそのまま表示
+			}
+
+			*out_text = display.c_str();
+			return true;
+		},
+		(void*)&stages, (int)stages.size());
+
+	// ボタンを押したら入れ替え
+	if (ImGui::Button("ステージを入れ替え")) {
+		if (stageA != stageB) {
+			try {
+				std::string fileA = stages[stageA];
+				std::string fileB = stages[stageB];
+
+				std::string tmp = "stage_tmp.csv";
+
+				std::filesystem::rename(fileA, tmp);
+				std::filesystem::rename(fileB, fileA);
+				std::filesystem::rename(tmp, fileB);
+
+				std::wstring message = L"入れ替えが完了しました";
+				MessageBoxW(WinApp::GetInstance()->GetHWND(), message.c_str(), L"Success!", 0);
+
+				LoadStage();
+
+			}
+			catch (const std::filesystem::filesystem_error& e) {
+				std::cerr << "エラー: " << e.what() << std::endl;
+			}
+		}
+		else {
+			std::wstring message = L"同じファイルが選択されています";
+			MessageBoxW(WinApp::GetInstance()->GetHWND(), message.c_str(), L"Faile", 0);
+		}
+	}
 }
 
 bool StageEditor::LoadChackItem(const std::string &fileName) {
