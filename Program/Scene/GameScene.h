@@ -90,6 +90,8 @@ public:
 
 private:
 
+	void DrawWater();
+
 	/// @brief ステージクリア時の処理を実行します。
 	void StageClear();
 

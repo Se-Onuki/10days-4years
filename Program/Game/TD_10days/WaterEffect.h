@@ -61,8 +61,9 @@ namespace TD_10days {
 
 		float gravity_ = -0.05f;
 		float radius_ = 0.1f;
-		float initialScale_ = 0.5f;
-		const float survivalTime_ = 3.0f;
+		static inline constexpr float defaultRadius_ = 0.1f;
+		static inline constexpr float initialScale_ = 0.6f;
+		static inline constexpr float survivalTime_ = 3.0f;
 		float lifeTime_ = 3.0f;
 
 		Vector2 basePosition_{};

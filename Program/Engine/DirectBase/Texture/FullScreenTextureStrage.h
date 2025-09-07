@@ -23,7 +23,7 @@ namespace SolEngine {
 		// private:
 
 		// クリア時の色
-		SoLib::Color::RGB4 clearColor_ = 0xFF0000FF; // 赤を指定しておく
+		SoLib::Color::RGB4 clearColor_ = 0x00000000;
 
 		ComPtr<ID3D12Resource> renderTargetTexture_;
 

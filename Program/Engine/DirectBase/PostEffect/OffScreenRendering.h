@@ -12,6 +12,7 @@
 #include "../Base/RootSignature.h"
 #include <d3d12.h>
 #include <wrl.h>
+#include <DirectBase/Texture/FullScreenTextureStrage.h>
 
 namespace PostEffect {
 
@@ -135,6 +136,8 @@ namespace PostEffect {
 		/// @param[in] texture 描画するテクスチャ
 		/// @param[in] gpuHandle 描画するテクスチャのGPUハンドル
 		void Draw(const std::wstring &key, ID3D12Resource *texture, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
+
+		void Draw(const std::wstring &key, SolEngine::FullScreenTexture &fullscreenTexture);
 
 		/// @brief ルートシグネチャを取得
 		ID3D12RootSignature *GetRootSignature() { return rootSignature_->Get(); }
