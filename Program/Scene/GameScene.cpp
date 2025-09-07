@@ -21,6 +21,7 @@
 GameScene::GameScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
+	stageEditor_ = StageEditor::GetInstance();
 	auto bufferManager = SolEngine::DxResourceBufferPoolManager<>::GetInstance();
 	bufferManager->ReleaseUnusingReosurce();
 }
@@ -70,7 +71,7 @@ void GameScene::OnEnter() {
 	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
-	stageEditor_ = StageEditor::GetInstance();
+	
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
@@ -95,6 +96,9 @@ void GameScene::OnEnter() {
 	// プレイヤの位置を設定
 	player_.SetPosition(playerPos);
 
+	//各シーンの最初に入れる
+	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
+
 }
 
 void GameScene::OnExit() {
@@ -109,6 +113,7 @@ void GameScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
 
+	
 
 	stageClearTimer_.Update(deltaTime);
 	// もし範囲内で､タイマーが動いてないならスタート
@@ -143,6 +148,7 @@ void GameScene::Update() {
 	}
 
 	// grayScaleParam_ = 1;
+	Debug();
 
 	/*ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
 
@@ -170,6 +176,24 @@ void GameScene::Update() {
 	//SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
 	water_->Update(inGameDeltaTime);
+}
+
+void GameScene::Debug() {
+#ifdef _DEBUG
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.MouseWheel > 0.0f) {
+		// ホイール上スクロール
+		camera_.scale_ -= 0.01f;
+	}
+	if (io.MouseWheel < 0.0f) {
+		// ホイール下スクロール
+		camera_.scale_ += 0.01f;
+	}
+	
+
+
+#endif // _DEBUG
+
 }
 
 void GameScene::Draw() {

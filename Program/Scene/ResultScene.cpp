@@ -89,7 +89,7 @@ void ResultScene::Update()
 	blockHandleRender_->clear();
 
 	if (input_->GetDirectInput()->IsTrigger(DIK_SPACE) or input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A)) {
-		sceneManager_->ChangeScene("TitleScene", 0.5f);
+		sceneManager_->ChangeScene("SelectScene", 0.5f);
 		fade_->Start(Vector2{}, 0x000000FF, 0.5f);
 	}
 
