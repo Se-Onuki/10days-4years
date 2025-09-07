@@ -208,6 +208,7 @@
     <Filter Include="Game\TD_10days\Level">
       <UniqueIdentifier>{a53b88ae-455c-4352-96f1-626ca7c315bd}</UniqueIdentifier>
     </Filter>
+    <Natvis Include="Natvis\ResourceHandle.natvis" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene\SceneManager.cpp">
@@ -599,6 +600,21 @@
     </ClCompile>
     <ClCompile Include="Game\TD_10days\GameManager.cpp">
       <Filter>Game\TD_10days</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\WaterEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\WaterDemoScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\UI\PlacementUI.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1061,9 +1077,6 @@
     <ClInclude Include="Engine\UI\Text\NumberRender.h">
       <Filter>Engine\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\source\repos\NetworkTest\Library\Success.h">
-      <Filter>Engine\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Utils\Network\Network.h">
       <Filter>Engine\Utils\Network</Filter>
     </ClInclude>
@@ -1184,6 +1197,24 @@
     <ClInclude Include="Game\TD_10days\Level\LevelFileIO.h">
       <Filter>Game\TD_10days\Level</Filter>
     </ClInclude>
+    <ClInclude Include="Game\TD_10days\WaterEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\WaterDemoScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\SplashParticle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\UI\PlacementUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\shader\Sprite.PS.hlsl">
@@ -1244,6 +1275,9 @@
       <Filter>Engine\Shader</Filter>
     </FxCompile>
     <FxCompile Include="resources\shader\SkyBox.PS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shader\WaterEffect.PS.hlsl">
       <Filter>Engine\Shader</Filter>
     </FxCompile>
   </ItemGroup>
