@@ -250,8 +250,10 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Player.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Water.cpp" />
-    <ClCompile Include="Game\TD_10days\SplashParticle.cpp" />
+    <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp" />
+    <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
+    <ClCompile Include="Game\UI\PlacementUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
     <ClCompile Include="Header\Entity\Component\FollowCameraComp.cpp" />
     <ClCompile Include="Header\Entity\Component\HealthComp.cpp" />
@@ -426,8 +428,11 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\TD_10days\Object\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
     <ClInclude Include="Game\TD_10days\Object\Water.h" />
+    <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h" />
+    <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h" />
     <ClInclude Include="Game\TD_10days\SplashParticle.h" />
     <ClInclude Include="Game\UI\ControllerUI.h" />
+    <ClInclude Include="Game\UI\PlacementUI.h" />
     <ClInclude Include="Header\Collision\Collision.h" />
     <ClInclude Include="Header\Entity\Component\Collider.h" />
     <ClInclude Include="Header\Entity\Component\ComponentManager.h" />

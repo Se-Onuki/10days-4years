@@ -119,7 +119,7 @@ private:
 
 	SolEngine::Camera2D camera_;
 
-	std::unique_ptr<TD_10days::WaterEffect> waterEffect_ = nullptr;
+	//std::unique_ptr<TD_10days::WaterEffect> waterEffect_ = nullptr;
 	std::unique_ptr<PostEffect::OffScreenRenderer> waterOffScreen_ = nullptr;
 
 };

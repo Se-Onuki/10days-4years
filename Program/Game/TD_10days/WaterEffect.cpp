@@ -6,63 +6,154 @@
 
 namespace TD_10days
 {
-	WaterEffect::WaterEffect()
+	void WaterParticle::Init(const Vector2& position, const Rect& bounds)
 	{
-		input_ = SolEngine::Input::GetInstance();
+		sprite_ = Sprite::Generate(TextureManager::Load("output1.png"));
+		sprite_->SetScale(Vector2{ initialScale_, initialScale_ });
+		sprite_->SetPivot(Vector2{ 0.5f, 0.5f });
+		sprite_->SetColor(/*0x0080FFFF*/0x0000FFFF);
+		position_ = position;
+		startPosition_ = position;
+		sprite_->SetPosition(position_);
+		bounds_ = bounds;
 	}
-	void WaterEffect::Init()
+	void WaterParticle::Update(float deltaTime)
 	{
-		SpawnWater(Vector2{ 640.0f, 360.0f });
-		SpawnWater(Vector2{ 100.0f, 360.0f });
-		SpawnWater(Vector2{ 1200.0f, 360.0f });
-		SpawnSplash(Vector2{ 640.0f, 300.0f }, Vector2{ 0.0f, 1.0f });
+		if(/*onGround_*/not inBoundary_) {
+			// 寿命を減らす
+			lifeTime_ -= deltaTime;
 
-	}
+			// 残り寿命の割合を計算 (0.0f ～ 1.0f)
+			float t = std::max(lifeTime_ / survivalTime_, 0.0f);
 
-	void WaterEffect::Update(/*float deltaTime*/)
-	{
-		if (input_->GetDirectInput()->IsTrigger(DIK_R)) {
-			particles_.clear();
-			SpawnWater(Vector2{ 640.0f, 360.0f });
-			SpawnWater(Vector2{ 100.0f, 360.0f });
-			SpawnWater(Vector2{ 1200.0f, 360.0f });
-			activeFloor_ = true;
+			// 線形補間でスケールを小さく
+			float scale = SoLib::Lerp(initialScale_, 0.0f, 1.0f - t);
+			sprite_->SetScale(Vector2{ scale, scale });
 
-			splashParticles_.clear();
-			SpawnSplash(Vector2{ 640.0f, 300.0f }, Vector2{ 0.0f, 0.0f });
+			// 寿命が尽きたら非アクティブ化
+			if (lifeTime_ <= 0.0f) {
+				isActive_ = false;
+			}
+			velocity_.y += gravity_;
 		}
+		else {
+			velocity_.y += 0.001f;
+		}
+		position_ += velocity_;
+		sprite_->SetPosition(position_);
+	}
+	void WaterParticle::Draw()
+	{
+		sprite_->Draw();
 
+		for(const auto& sprite : boundsSprites_) {
+			sprite->Draw();
+		}
+	}
+
+	void WaterParticleManager::Init()
+	{
+		particles_.clear();
+	}
+
+	void WaterParticleManager::Update(const LevelMapChip::LevelMapChipHitBox* hitBox, float chipSize, float deltaTime)
+	{
 		for (const auto& particle : particles_) {
-
-			particle->Update(0.5f);
+			particle->Update(deltaTime);
 		}
 
-		for (const auto& particle : splashParticles_) {
-			particle->Update(0.1f);
-		}
+		particles_.remove_if([](const std::unique_ptr<WaterParticle>& particle) {
+			return !particle->GetActive();
+		});
 
-
-
-		Collisiton();
+		Collider(hitBox, chipSize);
 	}
 
-	void WaterEffect::Draw()
+	void WaterParticleManager::Draw()
 	{
 		for (const auto& particle : particles_) {
 			particle->Draw();
 		}
+	}
 
-		for (const auto& particle : splashParticles_) {
-			particle->Draw();
+	void WaterParticleManager::SpawnParticle(Vector2 position)
+	{
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				std::unique_ptr<WaterParticle> particle = std::make_unique<WaterParticle>();
+				particle->Init(Vector2{ position.x - 0.5f + x * 0.125f, position.y - 0.5f + y * 0.125f }, Rect{ position.x - 0.5f, position.x + 0.5f, position.y - 0.5f, position.y + 0.5f });
+				particles_.emplace_back(std::move(particle));
+			}
 		}
 	}
-	void WaterEffect::Collider()
+
+	void WaterParticleManager::MoveDirection(const Vector2& direction)
 	{
+		for (const auto& particle : particles_) {
+			particle->SetPosition(particle->GetPosition() + direction);
+			particle->SetBounds(Rect{ particle->GetBounds().left + direction.x, particle->GetBounds().right + direction.x, particle->GetBounds().top + direction.y, particle->GetBounds().bottom + direction.y });
+		}
 	}
-	bool WaterEffect::CircleCircle(WaterParticle* p1, WaterParticle* p2, float restitution, bool activeFloor)
+
+	void WaterParticleManager::Collapse()
+	{
+		for (const auto& particle : particles_) {
+			particle->SetInBoundary(false);
+		}
+	}
+
+	void WaterParticleManager::Collider(const LevelMapChip::LevelMapChipHitBox* hitBox, float chipSize)
+	{
+		// --- 粒子同士の衝突 ---
+		for (auto it1 = particles_.begin(); it1 != particles_.end(); ++it1) {
+			auto it2 = it1;
+			++it2; // it1の次からスタート
+			for (; it2 != particles_.end(); ++it2) {
+				CircleCircle(it1->get(), it2->get(), 0.2f);
+			}
+		}
+
+		for (auto& p : particles_) {
+			if (p->GetInBoundary()) { /// --- 境界との衝突 ---
+				CircleBounds(p.get(), p->GetBounds(), 0.8f);
+			}
+			else { // --- マップチップとの衝突 ---
+				if (hitBox) {
+					Vector2 pos = p->GetPosition();
+					int chipX = static_cast<int>(std::floor(pos.x / chipSize));
+					int chipY = static_cast<int>(std::floor(pos.y / chipSize));
+
+					// 近傍チップをチェック
+					for (int dy = -1; dy <= 1; ++dy) {
+						for (int dx = -1; dx <= 1; ++dx) {
+							int nx = chipX + dx;
+							int ny = chipY + dy;
+
+							if (hitBox->at(ny, nx)) {
+								// チップをRectに変換
+								Rect rect;
+								rect.left = nx - 0.5f;
+								rect.right = nx + 0.5f;
+								rect.top = ny - 0.5f;
+								rect.bottom = ny + 0.5f;
+
+								CircleAABB(p.get(), rect, 0.5f);
+							}
+						}
+					}
+				}
+			}
+
+			
+			
+		}
+
+	}
+
+	void WaterParticleManager::CircleCircle(WaterParticle* p1, WaterParticle* p2, float restitution)
 	{
 		if (!p1->GetActive() || !p2->GetActive()) {
-			return false;
+			return;
 		}
 
 		Vector2 pos1 = p1->GetPosition();
@@ -81,12 +172,13 @@ namespace TD_10days
 
 			// --- 位置修正 ---
 			float overlap = 0.0f;
-			if (activeFloor) {
+			/*if (activeFloor) {
 				overlap = (minDist - dist) * 0.1f;
 			}
 			else {
 				overlap = (minDist - dist) * 0.4f;
-			}
+			}*/
+			overlap = (minDist - dist) * 0.4f;
 
 			pos1.x -= overlap * normal.x;
 			pos1.y -= overlap * normal.y;
@@ -113,15 +205,15 @@ namespace TD_10days
 			p1->SetVelocity(vel1);
 			p2->SetVelocity(vel2);
 
-			return true;
+			return;
 		}
 
-		return false;
+		return;
 	}
-	bool WaterEffect::CircleAABB(WaterParticle* p, const Rect& rect, float restitution)
+	void WaterParticleManager::CircleAABB(WaterParticle* p, const Rect& rect, float restitution)
 	{
 		if (!p->GetActive()) {
-			return false;
+			return;
 		}
 
 		Vector2 pos = p->GetPosition();
@@ -138,7 +230,9 @@ namespace TD_10days
 		float distSq = dx * dx + dy * dy;
 
 		// 衝突していない
-		if (distSq > radius * radius) { return false; }
+		if (distSq > radius * radius) { return; }
+
+		p->SetOnGround(true);
 
 		float dist = std::sqrt(distSq);
 
@@ -176,9 +270,9 @@ namespace TD_10days
 		}
 
 		p->SetVelocity(p->GetVelocity().Reflect(Vector2{ dx, dy }.Normalize()) * restitution);
-		return true;
+		return ;
 	}
-	void WaterEffect::CircleBounds(WaterParticle* p, const Rect& rect, float restitution)
+	void WaterParticleManager::CircleBounds(WaterParticle* p, const Rect& rect, float restitution)
 	{
 		if (not p->GetActive()) {
 			return;
@@ -214,99 +308,4 @@ namespace TD_10days
 
 		return;
 	}
-	void WaterEffect::Collisiton()
-	{
-		// --- 粒子同士の衝突 ---
-		for (size_t i = 0; i < particles_.size(); i++) {
-			for (size_t j = i + 1; j < particles_.size(); j++) {
-				if (CircleCircle(particles_[i].get(), particles_[j].get(), 0.2f, activeFloor_)) {
-
-				}
-			}
-		}
-
-		// --- 境界との衝突 ---
-		if (input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-			activeFloor_ = false;
-		}
-		Rect bounds = { 600.0f, 700.0f, 0.0f, 370.0f };
-		if( not activeFloor_) {
-			bounds = { 0.0f, 1280.0f, 0.0f, 670.0f };
-		}
-
-		for (auto& p : particles_) {
-
-			if (not activeFloor_) {
-				CircleBounds(p.get(), bounds, 0.8f);
-			}
-			else {
-				CircleBounds(p.get(), p->GetBounds()/*bounds*/, 0.8f);
-			}
-			
-
-			// --- 壁との衝突 ---
-			Rect rect = { 520.0f, 760.0f, 600.0f, 650.0f };
-			if (CircleAABB(p.get(), rect, 0.8f)) {
-
-			}
-			rect = { 120.0f, 360.0f, 600.0f, 650.0f };
-			if (CircleAABB(p.get(), rect, 0.8f)) {
-
-			}
-			rect = { 780.0f, 1200.0f, 600.0f, 650.0f };
-			if(CircleAABB(p.get(), rect, 0.8f)) {
-			}
-
-		}
-	}
-	void WaterEffect::SpawnWater(Vector2 position)
-	{
-		for (int i = 0; i < 64; i++) {
-
-			std::unique_ptr<WaterParticle> particle = std::make_unique<WaterParticle>();
-			particle->Init(Vector2{ position.x + 1.0f + i * 2.0f, position.y + 1.0f - i }, Rect{position.x - 100.0f / 2.0f, position.x + 100.0f / 2.0f, position.y - 100.0f / 2.0f, position.y + 100.0f / 2.0f });
-			particles_.emplace_back(std::move(particle));
-		}
-
-	}
-	void WaterEffect::SpawnSplash(Vector2 position, Vector2 velocity)
-	{
-		for (int i = 0; i < 10; i++) {
-			std::unique_ptr<SplashParticle> particle = std::make_unique<SplashParticle>();
-			particle->Init(position, velocity);
-			splashParticles_.push_back(std::move(particle));
-		}
-	}
-	void WaterParticle::Init(const Vector2& position, const Rect& bounds)
-	{
-		sprite_ = Sprite::Generate(TextureManager::Load("output1.png"));
-		sprite_->SetScale(Vector2{ 16.0f, 16.0f }*6.f);
-		sprite_->SetPivot(Vector2{ 0.5f, 0.5f });
-		sprite_->SetColor(0xFFFFFFFF);
-		position_ = position;
-		startPosition_ = position;
-		sprite_->SetPosition(position_);
-		bounds_ = bounds;
-	}
-	void WaterParticle::Update(float gravity)
-	{
-		if (isActive_) {
-			velocity_.y += gravity;
-		}
-		position_ += velocity_;
-		sprite_->SetPosition(position_);
-
-		//Vector4 color = std::clamp((720.0f - position_.y) / (720.0f - startPosition_.y), 0.0f, 1.0f));
-		/*sprite_->SetColor(Vector4{0.0f, 0.0f, 1.0f, std::clamp((720.0f - position_.y) / (720.0f - startPosition_.y), 0.0f, 1.0f)});
-
-		if (std::clamp((720.0f - position_.y) / (720.0f - startPosition_.y), 0.0f, 1.0f) < 0.1f) {
-			isActive_ = false;
-		}*/
-
-	}
-	void WaterParticle::Draw()
-	{
-		sprite_->Draw();
-	}
-
 }

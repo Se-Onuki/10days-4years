@@ -25,7 +25,7 @@ namespace TD_10days {
 		SplashParticle() = default;
 		~SplashParticle() = default;
 		void Init(const Vector2& position, const Vector2& velocity);
-		void Update(float gravity);
+		void Update(float deltaTime, float gravity);
 		void Draw();
 
 		bool GetActive() const { return isActive_; }
@@ -43,7 +43,14 @@ namespace TD_10days {
 		Vector2 velocity_{};
 		Vector2 position_{};
 		Vector2 startPosition_{};
-		const Size size_{ 10.0f, 20.0f };
+		const Size size_{ 0.1f, 0.5f };
 		bool isActive_ = true;
+
+		float age_ = 0.0f;
+		float lifeTime_ = 0.1f; // 0.1秒で消える
+		float startScale_ = 1.0f;
+		Vector4 startColor_{ 0.0f, 0.5f, 1.0f, 1.0f }; // 水色
+		Vector4 endColor_{ 1.0f, 1.0f, 1.0f, 0.0f };   // 白 + 透明
+
 	};
 }

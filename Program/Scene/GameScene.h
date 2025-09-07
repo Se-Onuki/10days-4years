@@ -40,6 +40,9 @@
 #include "../Game/TD_10days/LevelMapChip.h"
 #include "../Game/TD_10days/Object/Player.h"
 #include "../Game/TD_10days/Object/Water.h"
+#include "../Game/TD_10days/WaterEffect.h"
+#include "../Game/UI/PlacementUI.h"
+#include "../Game/TD_10days/Particle/ParticleManager.h"
 
 
 /// @class GameScene
@@ -154,4 +157,6 @@ private:
 
 	std::unique_ptr<TD_10days::Water> water_;
 
+	std::unique_ptr<TD_10days::WaterParticleManager> waterParticleManager_ = nullptr;
+	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
 };
