@@ -80,6 +80,8 @@ private:
 	int32_t MapToNumber(const TD_10days::LevelMapChip::MapChip map);
 
 	void LoadStage();
+	//ステージの入れ替え
+	void SwapStage();
 
 	SoLib::Angle::Radian DegreeToRadian(int32_t degree) {
 		return SoLib::Angle::Radian(degree * SoLib::Angle::Dig2Rad);

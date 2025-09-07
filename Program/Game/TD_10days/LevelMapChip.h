@@ -26,6 +26,7 @@ namespace TD_10days {
 			kStart,		// スタート位置
 			kGoal,		// ゴール位置
 			kNeedle,	// 針
+			kMesh,		// 金網
 			CountElements // 要素数
 		};
 
@@ -37,8 +38,9 @@ namespace TD_10days {
 
 			MapChipData() = default;
 			MapChipData(const TextureHandle texture) : textureHandle_(texture) {}
-			MapChipData(const TextureHandle texture, bool isHasCollision) : textureHandle_(texture), isHasCollision_(isHasCollision) {}
-			MapChipData(bool isHasCollision) : isHasCollision_(isHasCollision) {}
+			MapChipData(const TextureHandle texture, bool isHasCollision) : textureHandle_(texture), isHasCollision_(isHasCollision), isWaterCollision_(isHasCollision) {}
+			MapChipData(const TextureHandle texture, bool isHasCollision, bool isWaterCollision) : textureHandle_(texture), isHasCollision_(isHasCollision), isWaterCollision_(isWaterCollision) {}
+			MapChipData(bool isHasCollision) : isHasCollision_(isHasCollision), isWaterCollision_(isHasCollision) {}
 			//MapChipData(const TextureHandle texture, bool isVisible, const std::function<void(const Vector2 &)> &callback) : textureHandle_(texture), callback_(callback), isVisible_(isVisible) {}
 
 
@@ -50,11 +52,17 @@ namespace TD_10days {
 			/// @return 当たり判定があるならtrue
 			bool IsHasCollision() const { return isHasCollision_; }
 
+			/// @brief 水に対する当たり判定があるかどうか
+			/// @return 水に対して当たるのならtrue
+			bool IsHasWaterCollision() const { return isWaterCollision_; }
+
 		private:
 			/// @brief テクスチャハンドル
 			TextureHandle textureHandle_{};
 			// 当たり判定があるかどうか
 			bool isHasCollision_ = true;
+			// 水に対する当たり判定があるかどうか
+			bool isWaterCollision_ = true;
 		};
 
 		class LevelMapChipHitBox {
@@ -105,9 +113,11 @@ namespace TD_10days {
 		void SetMapChipData(const std::vector<MapChipData> &mapChipData) { mapChipData_ = mapChipData; }
 		void AppendMapChipData(const MapChipData &mapChipData) { mapChipData_.emplace_back(mapChipData); }
 
-		/// @brief ヒットボックスを作成し、返します。
-		/// @return 新しく作成された LevelMapChipHitBox オブジェクトへのポインタ。
-		const LevelMapChipHitBox *CreateHitBox();
+		/// @brief ヒットボックスを作成します
+		void CreateHitBox();
+
+		const LevelMapChipHitBox *GetPlayerHitBox() const { return &playerHitBox_; }
+		const LevelMapChipHitBox *GetWaterHitBox() const { return &waterHitBox_; }
 
 		/// @brief サイズの調整
 		/// @param[in] y 更新後の高さ
@@ -119,12 +129,18 @@ namespace TD_10days {
 		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
 	private:
+
+
+		/// @brief ヒットボックスを作成し、返します。
+		/// @return 新しく作成された LevelMapChipHitBox
+		std::unique_ptr<LevelMapChipHitBox> CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const;
 		/// @brief マップチップの配列
 		std::vector<MapChip> mapChips_;
 		/// @brief マップチップに対応するデータの配列
 		std::vector<MapChipData> mapChipData_;
 
-		std::unique_ptr<LevelMapChipHitBox> hitBox_;
+		LevelMapChipHitBox playerHitBox_;
+		LevelMapChipHitBox waterHitBox_;
 
 		Vector2 startPos_{};
 		std::unordered_set<Vector2> goalPosList_{};
