@@ -57,7 +57,7 @@ void GameScene::OnEnter() {
 	offScreen_->Init();
 
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
-	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl" });
+	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl", L"WhiteWaterEffect.PS.hlsl", L"Discard.PS.hlsl"});
 
 	// bgmのロード
 	gameBGM_ = audio_->LoadMP3("resources/Audio/BGM/Game.mp3");
@@ -68,7 +68,7 @@ void GameScene::OnEnter() {
 
 
 	gaussianParam_->first = 32.f;
-	gaussianParam_->second = 1;
+	gaussianParam_->second = 8;
 
 	vignettingParam_ = { 16.f, 0.8f };
 
@@ -81,20 +81,38 @@ void GameScene::OnEnter() {
 	camera_.Init();
 	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
 	camera_.translation_.y = 4.f;
-	
+
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
 	pLevelMapChip_ = &(stageEditor_->GetMapChip());
 	levelMapChipRenderer_.Init(pLevelMapChip_);
-	levelMapChipHitBox_ = pLevelMapChip_->CreateHitBox();
+	pLevelMapChip_->CreateHitBox();
+	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
+	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
+	camera_.Init();
+	camera_.scale_ = 0.0125f;
+	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
+
+	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
+	endLine_.x = static_cast<float>(mapWidth - 1) - startLine_.x;
+	endLine_.y = static_cast<float>(mapHeight - 1) - 3.0f;
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
+	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
+
+	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
+	waterParticleManager_->Init();
+
+	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
+	particleManager_->Init();
 
 	water_ = std::make_unique<TD_10days::Water>();
+	water_->SetWaterParticleManager(waterParticleManager_.get());
 
 	player_.SetWater(water_.get());
+	player_.SetParticleManager(particleManager_.get());
 
 	// 念の為特殊なブロックの位置を再計算
 	pLevelMapChip_->FindActionChips();
@@ -120,7 +138,7 @@ void GameScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 	const float inGameDeltaTime = stageClearTimer_.IsActive() ? deltaTime * (1.f - stageClearTimer_.GetProgress()) : deltaTime;
 
-	
+
 
 	stageClearTimer_.Update(deltaTime);
 	// もし範囲内で､タイマーが動いてないならスタート
@@ -158,18 +176,49 @@ void GameScene::Update() {
 	// grayScaleParam_ = 1;
 	Debug();
 
-	/*ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
+	ImGui::DragFloat2("VignettingParam", &vignettingParam_->first);
 
 	ImGui::DragFloat("Sigma", &gaussianParam_->first);
-	ImGui::DragInt("Size", &gaussianParam_->second);*/
+	ImGui::DragInt("Size", &gaussianParam_->second);
 
 	SoLib::ImGuiWidget("CameraPos", &camera_.translation_.ToVec2());
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
 
-	SelectToGame::GetInstance()->SetCameraScale(camera_.scale_);
+	// カメラ追従処理
+	if (player_.GetPosition().x > startLine_.x and player_.GetPosition().x < endLine_.x) { // x方向
+		camera_.translation_.x = player_.GetPosition().x;
+	}
+	else {
+		// 範囲外 → 近い方のラインに固定
+		float distToStart = std::abs(player_.GetPosition().x - startLine_.x);
+		float distToEnd = std::abs(player_.GetPosition().x - endLine_.x);
 
-	camera_.translation_.x = player_.GetPosition().x;
+		if (distToStart < distToEnd) {
+			camera_.translation_.x = startLine_.x;
+		}
+		else {
+			camera_.translation_.x = endLine_.x;
+		}
+	}
+	if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
+		camera_.translation_.y = player_.GetPosition().y;
+	}
+	else { 
+		// 範囲外 → 近い方のラインに固定
+		float distToStart = std::abs(player_.GetPosition().y - startLine_.y);
+		float distToEnd = std::abs(player_.GetPosition().y - endLine_.y);
+
+		if (distToStart < distToEnd) {
+			camera_.translation_.y = startLine_.y;
+		}
+		else {
+ 			camera_.translation_.y = endLine_.y;
+		}
+	}
+
+	/*camera_.translation_.x = player_.GetPosition().x;
+	camera_.translation_.y = player_.GetPosition().y;*/
 	camera_.UpdateMatrix();
 
 	stageEditor_->SetCamera(camera_);
@@ -186,6 +235,9 @@ void GameScene::Update() {
 	//SoLib::ImGuiWidget("HsvParam", hsvParam_.get());
 
 	water_->Update(inGameDeltaTime);
+	waterParticleManager_->Update(levelMapChipWaterHitBox_, 1.0f, deltaTime);
+
+	particleManager_->Update(deltaTime);
 }
 
 void GameScene::Debug() {
@@ -226,9 +278,16 @@ void GameScene::Draw() {
 
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
-	player_.Draw();
 
 	water_->Draw();
+
+	player_.Draw();
+
+	DrawWater();
+
+	particleManager_->Draw();
+
+	player_.DrawUI();
 
 	Sprite::SetDefaultProjection();
 
@@ -327,7 +386,76 @@ void GameScene::PostEffectEnd()
 
 	pDxCommon_->DefaultDrawReset(false);
 
-	fullScreen_->Draw({ L"FullScreen.PS.hlsl" }, resultTex->renderTargetTexture_.Get(), resultTex->srvHandle_.gpuHandle_);
+	fullScreen_->Draw({ L"FullScreen.PS.hlsl" }, **resultTex);
+
+}
+
+void GameScene::DrawWater()
+{
+
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+
+	auto resultTex = texStrage_->Allocate();
+
+	// 描画先のRTVとDSVを設定する
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = pDxCommon_->GetDsvDescHeap()->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = resultTex->rtvHandle_.cpuHandle_;
+
+#pragma region ViewportとScissor(シザー)
+
+	// ビューポート
+	D3D12_VIEWPORT viewport;
+	// シザー短形
+	D3D12_RECT scissorRect{};
+
+	Sprite::EndDraw();
+
+	pDxCommon_->SetFullscreenViewPort(&viewport, &scissorRect);
+
+#pragma endregion
+
+	pDxCommon_->DrawTargetReset(&rtvHandle, resultTex->clearColor_, &dsvHandle, viewport, scissorRect);
+
+
+	Sprite::StartDraw(commandList);
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	waterParticleManager_->Draw();
+
+	Sprite::EndDraw();
+
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	// ポストエフェクトの初期値
+	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
+
+	postEffectProcessor->Execute(L"WhiteWaterEffect.PS.hlsl");
+	// ガウスぼかし
+	if (gaussianParam_->second > 1) {
+		// 処理の実行
+		postEffectProcessor->Execute(L"GaussianFilterLiner.PS.hlsl", gaussianParam_);
+		postEffectProcessor->Execute(L"GaussianFilter.PS.hlsl", gaussianParam_);
+	}
+
+	postEffectProcessor->Execute(L"WhiteWaterEffect.PS.hlsl");
+
+	fullScreen_->Draw({ L"WaterEffect.PS.hlsl" }, **resultTex);
+
+	// 結果を取り出す
+	postEffectProcessor->GetResult(resultTex->renderTargetTexture_.Get());
+
+
+	rtvHandle = offScreen_->GetRtvDescHeap()->GetHeap()->GetCPUDescriptorHandleForHeapStart();
+
+	pDxCommon_->DrawTargetReset(&rtvHandle, offScreen_->GetClearColor(), &dsvHandle, viewport, scissorRect, false);
+
+	fullScreen_->Draw({ L"Discard.PS.hlsl" }, **resultTex);
+
+	Sprite::StartDraw(commandList);
+
+	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
 
 }
 

@@ -5,6 +5,9 @@
 #include "../LevelMapChip.h"
 #include "Water.h"
 #include <DirectBase/File/GlobalVariables.h>
+#include "../Game/UI/PlacementUI.h"
+#include "../Game/TD_10days/Particle/ParticleManager.h"
+#include "../Game/TD_10days/CountUI.h"
 
 namespace TD_10days {
 
@@ -76,11 +79,14 @@ namespace TD_10days {
 
 		void Draw() const;
 
+		void DrawUI() const;
+
 		void SetPosition(const Vector2 &position) { position_ = position; }
 
 		void InputFunc();
 
 		void SetHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pHitBox_ = pHitBox; }
+		void SetWaterHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pWaterHitBox_ = pHitBox; }
 
 		Vector2 &GetPosition() { return position_; }
 
@@ -91,6 +97,10 @@ namespace TD_10days {
 		void Load();
 
 		void Save() const;
+
+		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
+
+		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
 
 	private:
 
@@ -125,6 +135,12 @@ namespace TD_10days {
 		std::unique_ptr<Sprite> sprite_;
 		// 当たり判定
 		const LevelMapChip::LevelMapChipHitBox *pHitBox_ = nullptr;
+		const LevelMapChip::LevelMapChipHitBox *pWaterHitBox_ = nullptr;
+		// 水ブロック操作UI
+		std::unique_ptr<PlacementUI> placementUI_;
+		ParticleManager* particleManager_;
+
+		std::unique_ptr<CountUI> countUI_;
 
 		// 座標
 		Vector2 position_{};
@@ -145,5 +161,7 @@ namespace TD_10days {
 		VItem(float, WaterLifeTime, _) { 3.f };
 
 		bool isGround_ = false;
+
+		bool wasInWater_ = false;
 	};
 }

@@ -4,7 +4,7 @@
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../LevelMapChip.h"
-
+#include "../Game/TD_10days/WaterEffect.h"
 namespace TD_10days {
 
 	class Water {
@@ -83,6 +83,11 @@ namespace TD_10days {
 		void Activate(float maxTime);
 
 		const std::unordered_set<Vector2> GetWaterPosition() const;
+
+		WaterParticleManager* GetWaterPartilceManager() { return waterParticleManager_; }
+		void SetWaterParticleManager(WaterParticleManager* manager) { waterParticleManager_ = manager; }
+
+		
 	private:
 		std::unique_ptr<ChainWater> chainWater_;
 		Vector2 position_{};
@@ -91,5 +96,7 @@ namespace TD_10days {
 		float lifeTime_ = 0.f;
 
 		bool isActive_ = false;
+
+		WaterParticleManager* waterParticleManager_ = nullptr;
 	};
 }

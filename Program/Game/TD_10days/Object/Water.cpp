@@ -8,6 +8,8 @@ namespace TD_10days {
 		size_ = size;
 		color_ = color;
 
+		DeleteWater();
+
 		chainWater_ = std::make_unique<ChainWater>();
 		chainWater_->Init(size, color);
 		chainWater_->CreateChain(position);
@@ -36,6 +38,8 @@ namespace TD_10days {
 
 	void Water::DeleteWater() {
 		if (not chainWater_) { return; }
+
+		waterParticleManager_->Collapse();
 		chainWater_->Clear();
 	}
 
@@ -47,7 +51,9 @@ namespace TD_10days {
 		}
 
 		chainWater_->MoveDirection(direction);
+		waterParticleManager_->MoveDirection(direction);
 		chainWater_->CreateChain(position_);
+		waterParticleManager_->SpawnParticle(position_);
 	}
 
 	bool Water::IsPlaceAble(const TD_10days::LevelMapChip::LevelMapChipHitBox *hitBox, const Vector2 &direction) const

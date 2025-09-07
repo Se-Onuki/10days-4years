@@ -27,6 +27,7 @@ void StageEditor::InitOnce() {
 			{("start")},//start
 			{("goal")},//goal
 			{("needle")},//needle
+			{("mesh")},//mesh
 		};
 	}
 	// もしテクスチャのパスがないなら
@@ -39,7 +40,8 @@ void StageEditor::InitOnce() {
 			{("StageTex/blue.png")},//water
 			{("StageTex/red.png")},//start
 			{("StageTex/goal.png")},//goal
-			{("StageTex/yellow.png")},//needle
+			{("StageTex/Needle.png")},//needle
+			{("StageTex/Net.png")},//mesh
 		};
 	}
 
@@ -55,7 +57,8 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[4])}},//water
 			{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
 			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
-			{TextureHandle{TextureManager::Load(texPath_[7])}, false},//needle
+			{TextureHandle{TextureManager::Load(texPath_[7])}, false, true},//needle
+			{TextureHandle{TextureManager::Load(texPath_[8])}, true, false},//Mesh
 			});
 	}
 

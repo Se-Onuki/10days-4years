@@ -183,7 +183,7 @@ public:
 	/// @param[in] dsvHandle 描画先のDSVヒープのハンドル
 	/// @param[in] vp ビューポート
 	/// @param[in] scissorRect シザー短形
-	void DrawTargetReset(D3D12_CPU_DESCRIPTOR_HANDLE *rtvHandle, const SoLib::Color::RGB4 &clearColor, D3D12_CPU_DESCRIPTOR_HANDLE *dsvHandle, const D3D12_VIEWPORT &vp, const D3D12_RECT &scissorRect);
+	void DrawTargetReset(D3D12_CPU_DESCRIPTOR_HANDLE *rtvHandle, const SoLib::Color::RGB4 &clearColor, D3D12_CPU_DESCRIPTOR_HANDLE *dsvHandle, const D3D12_VIEWPORT &vp, const D3D12_RECT &scissorRect, bool isRtvReset = true);
 
 	/// @fn void EndDraw(void)
 	/// @brief 描画終了

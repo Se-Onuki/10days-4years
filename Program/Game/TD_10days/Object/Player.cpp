@@ -31,6 +31,8 @@ namespace TD_10days {
 
 		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
+			player->placementUI_->Appear();
+			player->placementUI_->SetActive(true);
 		}
 
 	}
@@ -69,7 +71,7 @@ namespace TD_10days {
 		// 水の方向がどこか一つに定まっていたら
 		if (nextDir.LengthSQ() == 1.f) {
 			// 尚且つ､水が配置できる座標ならば
-			if (player->pWater_->IsPlaceAble(player->pHitBox_, nextDir)) {
+			if (player->pWater_->IsPlaceAble(player->pWaterHitBox_, nextDir)) {
 				// 水を設置する
 				player->pWater_->PlacementWater(nextDir);
 			}
@@ -79,6 +81,12 @@ namespace TD_10days {
 		/// 地上に居る場合に遷移ができる
 		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
 			player->nextState_ = std::make_unique<PlayerMovement>(player);
+			player->placementUI_->Disappear();
+			player->placementUI_->SetActive(false);
+			player->countUI_->SetIsActive(true);
+			player->countUI_->SetPostion(player->GetPosition());
+			player->countUI_->SetTime(player->vWaterLifeTime_);
+			player->pWater_->GetWaterPartilceManager()->Fixed();
 		}
 	}
 
@@ -103,6 +111,10 @@ namespace TD_10days {
 		sprite_->SetPivot(Vector2::one / 2.f);
 		sprite_->SetInvertY(true);
 		nextState_ = std::make_unique<PlayerMovement>(this);
+		placementUI_ = std::make_unique<PlacementUI>();
+		placementUI_->Init(position_);
+		countUI_ = std::make_unique<CountUI>();
+		countUI_->Init();
 	}
 
 	void Player::PreUpdate([[maybe_unused]] float deltaTime)
@@ -129,10 +141,35 @@ namespace TD_10days {
 
 		// スプライトの計算
 		CalcSprite();
+
+		placementUI_->SetBasePos(position_);
+		placementUI_->Update(deltaTime);
+
+		countUI_->Update(deltaTime, position_);
+
+		if (playerState_->GetStateName() == "PlayerMovement") {
+			// --- 水しぶき処理 ---
+			const bool isNowInWater = IsInWater();
+			if (!wasInWater_ && isNowInWater) {
+				// 入った瞬間
+				particleManager_->SpawnSplash(position_, velocity_ * -1.0f);
+			}
+			else if (wasInWater_ && !isNowInWater) {
+				// 出た瞬間
+				particleManager_->SpawnSplash(position_, velocity_ * 1.0f);
+			}
+			wasInWater_ = isNowInWater; // 状態更新
+		}
 	}
 
 	void Player::Draw() const {
 		sprite_->Draw();
+	}
+
+	void Player::DrawUI() const
+	{
+		placementUI_->Draw();
+		countUI_->Draw();
 	}
 
 	void Player::InputFunc() {
