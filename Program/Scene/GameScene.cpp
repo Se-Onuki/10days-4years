@@ -129,6 +129,9 @@ void GameScene::OnEnter() {
 	camera_.scale_ = 0.015f;
 	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
 
+	playerDrawer_ = std::make_unique<TD_10days::PlayerDrawer>();
+	playerDrawer_->Init(&player_);
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
@@ -245,6 +248,7 @@ void GameScene::Update() {
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
+	playerDrawer_->Update(inGameDeltaTime);
 
 	/*auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }*/
@@ -258,7 +262,7 @@ void GameScene::Update() {
 }
 
 void GameScene::Debug() {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGuiIO &io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
@@ -273,8 +277,7 @@ void GameScene::Debug() {
 	}
 
 
-
-#endif // _DEBUG
+#endif // USE_IMGUI
 
 }
 
@@ -300,7 +303,7 @@ void GameScene::Draw() {
 
 	water_->Draw();
 
-	player_.Draw();
+	playerDrawer_->Draw();
 
 	DrawWater();
 

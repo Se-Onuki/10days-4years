@@ -250,6 +250,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\TD_10days\GameManager.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Player.cpp" />
+    <ClCompile Include="Game\TD_10days\Object\PlayerDrawer.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Water.cpp" />
     <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp" />
     <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp" />
@@ -429,6 +430,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\TD_10days\Level\LevelFileIO.h" />
     <ClInclude Include="Game\TD_10days\Object\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
+    <ClInclude Include="Game\TD_10days\Object\PlayerDrawer.h" />
     <ClInclude Include="Game\TD_10days\Object\Water.h" />
     <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h" />
     <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h" />

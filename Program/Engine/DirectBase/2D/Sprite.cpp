@@ -529,6 +529,11 @@ void Sprite::CalcBuffer() {
 	vertexArray[(uint32_t)VertexNumer::RDown].texCoord = { texDiff.x,texDiff.y };	// 右下 { 1, 1 }
 	vertexArray[(uint32_t)VertexNumer::RTop].texCoord = { texDiff.x,texOrigin.y };	// 右上 { 1, 0 }
 
+	if (isInvertX_) {
+		std::swap(vertexArray[(uint32_t)VertexNumer::LDown].texCoord, vertexArray[(uint32_t)VertexNumer::RDown].texCoord);
+		std::swap(vertexArray[(uint32_t)VertexNumer::LTop].texCoord, vertexArray[(uint32_t)VertexNumer::RTop].texCoord);
+	}
+
 	if (isInvertY_) {
 		std::swap(vertexArray[(uint32_t)VertexNumer::LDown].texCoord, vertexArray[(uint32_t)VertexNumer::LTop].texCoord);
 		std::swap(vertexArray[(uint32_t)VertexNumer::RDown].texCoord, vertexArray[(uint32_t)VertexNumer::RTop].texCoord);

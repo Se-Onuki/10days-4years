@@ -160,6 +160,7 @@ private:
 	Vector2 stageOffset_{ 15.0f, 10.0f };
 
 	TD_10days::Player player_;
+	std::unique_ptr<TD_10days::PlayerDrawer> playerDrawer_;
 
 	std::unique_ptr<Sprite> background_ = nullptr;
 

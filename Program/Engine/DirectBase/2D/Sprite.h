@@ -164,6 +164,9 @@ private:
 	/// @brief スプライトの表示状態
 	bool isVisible_ = true;
 
+	/// @brief X軸反転フラグ
+	bool isInvertX_ = false;
+
 	/// @brief Y軸反転フラグ
 	bool isInvertY_ = false;
 
@@ -201,6 +204,12 @@ public:
 	/// @brief 表示状態取得
 	/// @return 表示中ならtrue
 	bool GetVisible() const { return isVisible_; }
+
+	/// @fn void SetInvertX(bool)
+	/// @brief X軸反転設定
+	/// @param[in] invertY X軸反転フラグ
+	/// @details デフォルトではテクスチャのY軸は上が0で下が1となっている｡
+	void SetInvertX(bool invertX) { isInvertX_ = invertX; CalcBuffer(); }
 
 	/// @fn void SetInvertY(bool)
 	/// @brief Y軸反転設定
