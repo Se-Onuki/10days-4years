@@ -46,7 +46,6 @@ namespace TD_10days {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
-			player->countUI_->SetIsActive(false);
 			player->pWater_->IsPlaceAble(player->pWaterHitBox_, Vector2::right);
 		}
 		if (isTrigger) {
@@ -120,7 +119,6 @@ namespace TD_10days {
 			player->nextState_ = std::make_unique<PlayerMovement>(player);
 			player->placementUI_->Disappear();
 			player->placementUI_->SetActive(false);
-			player->countUI_->SetIsActive(true);
 			player->countUI_->SetPostion(player->GetPosition());
 			player->countUI_->SetTime(player->vWaterLifeTime_);
 			player->pWater_->GetWaterPartilceManager()->Fixed();
@@ -187,6 +185,9 @@ namespace TD_10days {
 		placementUI_->Update(deltaTime);
 		if (auto timeOpt = pWater_->GetWaterTime()) { // optional が値を持つか確認
 			countUI_->SetTime(*timeOpt);              // 値を取り出して渡す
+		}
+		else {
+			countUI_->SetTime(0);
 		}
 		countUI_->Update(position_);
 	}
