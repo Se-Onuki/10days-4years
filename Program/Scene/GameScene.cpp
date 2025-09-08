@@ -258,8 +258,6 @@ void GameScene::Debug() {
 			camera_.scale_ += 0.01f;
 		}
 	}
-	\
-		14
 
 
 #endif // USE_IMGUI
