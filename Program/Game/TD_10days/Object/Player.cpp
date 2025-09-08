@@ -458,10 +458,12 @@ namespace TD_10days {
 		const bool isInWater = IsInWater();
 		const float inputSpeed = std::abs(acceleration_.x);
 		acceleration_.y += (isInWater ? vWaterGravity_ : vAirGravity_) * deltaTime;
-		acceleration_.x += (-velocity_.x * 0.5f);
+		acceleration_.x += (-velocity_.x * deltaTime * 10.f);
 
 		velocity_ += acceleration_;
-		velocity_.x = std::copysign(std::clamp(velocity_.x, -inputSpeed, inputSpeed), velocity_.x);
+		if (inputSpeed != 0) {
+			velocity_.x = std::copysign(std::clamp(velocity_.x, -inputSpeed, inputSpeed), velocity_.x);
+		}
 		std::list<Vector3> hitNormalList;
 
 		Vector2 moveVec = velocity_ * deltaTime;
