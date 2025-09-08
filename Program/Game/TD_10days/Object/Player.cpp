@@ -33,6 +33,7 @@ namespace TD_10days {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
+			player->countUI_->SetIsActive(false);
 		}
 
 	}
@@ -93,7 +94,10 @@ namespace TD_10days {
 	void PlayerPlacement::OnEnter() {
 		const auto player = GetPlayer();
 
-		const Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
+		Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
+		if (not player->pHitBox_->at(static_cast<size_t>(placePos.y - 1), static_cast<size_t>(placePos.x))) {
+			placePos.x += std::copysign(1.f, player->position_.x - placePos.x);
+		}
 		player->pWater_->Init(placePos, Vector2::one, 0x0000FF55);
 	}
 
@@ -123,6 +127,7 @@ namespace TD_10days {
 		Load();
 #endif // _DEBUG
 
+		SetPosInStage();
 
 		// もし次の状態があるなら､それを適用する
 		if (nextState_) {
@@ -137,24 +142,24 @@ namespace TD_10days {
 		// 移動処理
 		MoveUpdate(deltaTime);
 
-
-
 		// スプライトの計算
 		CalcSprite();
 
 		placementUI_->SetBasePos(position_);
 		placementUI_->Update(deltaTime);
-
-		countUI_->Update(deltaTime, position_);
+		if (auto timeOpt = pWater_->GetWaterTime()) { // optional が値を持つか確認
+			countUI_->SetTime(*timeOpt);              // 値を取り出して渡す
+		}
+		countUI_->Update(position_);
 
 		if (playerState_->GetStateName() == "PlayerMovement") {
 			// --- 水しぶき処理 ---
 			const bool isNowInWater = IsInWater();
-			if (!wasInWater_ && isNowInWater) {
+			if (not wasInWater_ && isNowInWater) {
 				// 入った瞬間
 				particleManager_->SpawnSplash(position_, velocity_ * -1.0f);
 			}
-			else if (wasInWater_ && !isNowInWater) {
+			else if (wasInWater_ && not isNowInWater) {
 				// 出た瞬間
 				particleManager_->SpawnSplash(position_, velocity_ * 1.0f);
 			}
@@ -220,6 +225,22 @@ namespace TD_10days {
 		group << vWaterJumpPower_;
 		group << vWaterLifeTime_;
 
+	}
+
+	void Player::SetPosInStage()
+	{
+		if (position_.x < 0) {
+			position_.x = 0;
+		}
+		if (position_.x >= static_cast<float>(pHitBox_->GetX() - 1)) {
+			position_.x = static_cast<float>(pHitBox_->GetX() - 1);
+		}
+		if (position_.y < 0) {
+			position_.y = 0;
+		}
+		if (position_.y >= static_cast<float>(pHitBox_->GetY() - 1)) {
+			position_.y = static_cast<float>(pHitBox_->GetY() - 1);
+		}
 	}
 
 
@@ -407,11 +428,18 @@ namespace TD_10days {
 		// 水の座標のリスト
 		const auto waterPos = pWater_->GetWaterPosition();
 
-		// プレイヤの座標を丸める
-		const Vector2 target = Vector2{ std::roundf(position_.x), std::roundf(position_.y) };
 
-		// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
-		return waterPos.find(target) != waterPos.cend();
+		for (const auto &verPos : GetVertex()) {
+			// プレイヤの座標を丸める
+			const Vector2 target = Vector2{ std::roundf(verPos.x), std::roundf(verPos.y) };
+
+
+			// 丸めた座標とプレイヤの位置が一致したら水の中にいると見なす
+			if (waterPos.find(target) != waterPos.cend()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

@@ -21,7 +21,7 @@ namespace SoLib {
 		using InnerArrayType = std::array<char, sizeof(T) *MaxSize>;
 
 		/// @brief デストラクタを持っているか
-		static constexpr bool kIsHasDestructor = !std::is_trivially_destructible_v<T>;
+		static constexpr bool kIsHasDestructor = not std::is_trivially_destructible_v<T>;
 
 		ConstVector(uint32_t size = 0u) : size_(size) {}
 

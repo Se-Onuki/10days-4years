@@ -16,7 +16,7 @@ namespace TD_10days {
 			struct ChainWaterData {
 
 				/// @brief 画像データ
-				std::unique_ptr<Sprite> sprite_;
+				//std::unique_ptr<Sprite> sprite_;
 
 				/// @brief 位置
 				Vector2 position_{};
@@ -86,6 +86,10 @@ namespace TD_10days {
 
 		WaterParticleManager* GetWaterPartilceManager() { return waterParticleManager_; }
 		void SetWaterParticleManager(WaterParticleManager* manager) { waterParticleManager_ = manager; }
+
+		/// @brief タイマーの時間を返す
+		/// @return nulloptの場合は､タイマーが動作してない
+		std::optional<float> GetWaterTime() const;
 
 		
 	private:

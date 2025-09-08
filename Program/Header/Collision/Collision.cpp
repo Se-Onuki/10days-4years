@@ -101,7 +101,7 @@ const bool Collision::IsHit(const Sphere &sphere, const Plane &plane) {
 
 const bool Collision::IsHit(const LineBase &line, const Triangle &triangle) {
 	Plane plane = Plane::Create(triangle);
-	if (!IsHit(line, plane))
+	if (not IsHit(line, plane))
 		return false;
 	const Vector3 pos = HitPoint(line, plane);
 	const Vector3 closs[3] = {

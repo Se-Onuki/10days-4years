@@ -9,7 +9,7 @@ namespace TD_10days {
 		CountUI() = default;
 		~CountUI() = default;
 		void Init();
-		void Update(float deltaTime, const Vector2& position);
+		void Update(const Vector2& position);
 		void Draw();
 
 		void SetIsActive(bool isActive) { isActive_ = isActive; }
@@ -18,7 +18,8 @@ namespace TD_10days {
 
 	private:
 		bool isActive_ = false;
-		std::vector<std::unique_ptr<Sprite>> number_;
+		std::vector<std::unique_ptr<Sprite>> onesNumber_;
+		std::vector<std::unique_ptr<Sprite>> tensNumber_;
 		const float count_ = 9.0f;
 		float time_;
 		const float size_ = 0.4f;

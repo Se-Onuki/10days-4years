@@ -77,7 +77,7 @@ namespace SoLib {
 				}
 
 				bool operator!=(const iterator &other) const {
-					return !(*this == other);
+					return not (*this == other);
 				}
 
 				iterator &operator++() {

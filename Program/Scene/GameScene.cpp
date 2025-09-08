@@ -57,7 +57,7 @@ void GameScene::OnEnter() {
 	offScreen_->Init();
 
 	fullScreen_ = PostEffect::FullScreenRenderer::GetInstance();
-	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl", L"WhiteWaterEffect.PS.hlsl", L"Discard.PS.hlsl"});
+	fullScreen_->Init({ L"FullScreen.PS.hlsl", L"GrayScale.PS.hlsl", L"Vignetting.PS.hlsl",  L"Smoothing.PS.hlsl", L"GaussianFilter.PS.hlsl" ,  L"GaussianFilterLiner.PS.hlsl",  L"HsvFillter.PS.hlsl", L"WaterEffect.PS.hlsl", L"WhiteWaterEffect.PS.hlsl", L"Discard.PS.hlsl" });
 
 	// bgmのロード
 	gameBGM_ = audio_->LoadMP3("resources/Audio/BGM/Game.mp3");
@@ -72,9 +72,8 @@ void GameScene::OnEnter() {
 
 	vignettingParam_ = { 16.f, 0.8f };
 
-	background_ = Sprite::Generate(TextureManager::Load("white2x2.png"));
+	background_ = Sprite::Generate(TextureManager::Load("TD_10days/BackGround/BackGround.png"));
 	background_->SetScale(Vector2{ static_cast<float>(WinApp::kWindowWidth), static_cast<float>(WinApp::kWindowHeight) });
-	background_->SetColor(0x5555FFFF);
 	background_->CalcBuffer();
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
@@ -91,7 +90,7 @@ void GameScene::OnEnter() {
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
 
 	camera_.Init();
-	camera_.scale_ = 0.0125f;
+	camera_.scale_ = 0.015f;
 	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
 
 	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
@@ -156,16 +155,12 @@ void GameScene::Update() {
 			}
 		}
 
-		const auto &playerVertex = player_.GetVertex();
 		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
-		for (const auto &vertex : playerVertex) {
-			const Vector2 roundV = Vector2{ std::roundf(vertex.x), std::roundf(vertex.y) };
-			if (needlePos.find(roundV) != needlePos.end()) {
+		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
+		if (needlePos.find(roundPos) != needlePos.end()) {
 
-				stageClearTimer_.Start();
-				stageTransitionFunc_ = (&GameScene::StageDefeat);
-				break;
-			}
+			stageClearTimer_.Start();
+			stageTransitionFunc_ = (&GameScene::StageDefeat);
 		}
 	}
 
@@ -204,7 +199,7 @@ void GameScene::Update() {
 	if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
 		camera_.translation_.y = player_.GetPosition().y;
 	}
-	else { 
+	else {
 		// 範囲外 → 近い方のラインに固定
 		float distToStart = std::abs(player_.GetPosition().y - startLine_.y);
 		float distToEnd = std::abs(player_.GetPosition().y - endLine_.y);
@@ -213,13 +208,17 @@ void GameScene::Update() {
 			camera_.translation_.y = startLine_.y;
 		}
 		else {
- 			camera_.translation_.y = endLine_.y;
+			camera_.translation_.y = endLine_.y;
 		}
 	}
 
 	/*camera_.translation_.x = player_.GetPosition().x;
 	camera_.translation_.y = player_.GetPosition().y;*/
 	camera_.UpdateMatrix();
+
+	// カメラから背景の位置を調整する
+	const float cameraX = (camera_.translation_.x);
+	background_->SetTexOrigin({ cameraX * 16.f, 0 });
 
 	stageEditor_->SetCamera(camera_);
 	stageEditor_->Update();
@@ -242,8 +241,8 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef _DEBUG
-	ImGuiIO& io = ImGui::GetIO();
-	if (not ImGui::GetIO().WantCaptureMouse){
+	ImGuiIO &io = ImGui::GetIO();
+	if (not ImGui::GetIO().WantCaptureMouse) {
 
 		if (io.MouseWheel > 0.0f) {
 			// ホイール上スクロール
@@ -254,7 +253,7 @@ void GameScene::Debug() {
 			camera_.scale_ += 0.01f;
 		}
 	}
-	
+
 
 
 #endif // _DEBUG
@@ -478,7 +477,7 @@ void GameScene::ResetStage(bool isNext)
 	// ステージ番号
 	const auto stageNum = levelSelecter->GetStageNum();
 	// ステージ番号を加算するかの分岐
-	levelSelecter->SetStageNum(stageNum + isNext ? 1 : 0);
+	levelSelecter->SetStageNum(stageNum + (isNext ? 1 : 0));
 
 	sceneManager_->ChangeScene("GameScene");
 }
