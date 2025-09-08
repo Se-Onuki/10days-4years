@@ -13,7 +13,7 @@
                     0.0
                 ],
                 "color": 0,
-                "degree": -1,
+                "degree": 1,
                 "scale": [
                     370.0,
                     64.0
@@ -295,7 +295,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    1500.0,
+                    1200.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -317,7 +317,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    1800.0,
+                    1500.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -376,11 +376,11 @@
                 ]
             },
             {
-                "TextureFullPath": "UI\\Title\\Player.png",
-                "TextureName": "Player",
+                "TextureFullPath": "UI\\Title\\PlayerWalk.png",
+                "TextureName": "PlayerWalk",
                 "UVScale": [
-                    170.0,
-                    170.0
+                    200.0,
+                    200.0
                 ],
                 "UVTranslate": [
                     0.0,
@@ -389,8 +389,8 @@
                 "color": 4294967040,
                 "degree": 0,
                 "scale": [
-                    170.0,
-                    170.0
+                    200.0,
+                    200.0
                 ],
                 "translate": [
                     250.0,

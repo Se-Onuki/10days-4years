@@ -38,13 +38,21 @@ void TitleScene::OnEnter() {
 	//アイテムの追加
 	global->AddValue(groupName, "PotAnimationSpeed", moveSpeed_);
 
-
+	groupName = "TitlePlayerMove";
+	global->CreateGroups(groupName);
+	//アイテムの追加
+	global->AddValue(groupName, "Gravity", gravity_);
+	global->AddValue(groupName, "JumpPower", jumpPower_);
+	global->AddValue(groupName, "MovePower", movePower_); 
+	global->AddValue(groupName, "DashPower", dashPower_);
 	// ライトの生成
 	ModelManager::GetInstance()->CreateDefaultModel();
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
+	playerAnimTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	playerAnimTimer_->Clear();
 	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimer_->Clear();
 
@@ -75,6 +83,8 @@ void TitleScene::OnEnter() {
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Title);
 
+	playerPos_ = BasePlayerPos_;
+
 	/*シーンが移動した際の巻き戻し用の処理*/
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
 	for (size_t i = 0; i < texDetas_.size(); i++) {
@@ -84,6 +94,11 @@ void TitleScene::OnEnter() {
 			nowTex->sprite->SetTextureHaundle((TextureManager::Load("UI/Title/PlayerInCultureSolution.png")));
 
 			break;
+		}
+		if (nowTex->textureName == "PlayerWalk") {			
+
+			nowTex->transform.translate_ = playerPos_;
+			nowTex->color = 0x00000000;			
 		}
 		
 	}
@@ -101,15 +116,28 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
+		/*if (isFishOutSide_) {
+			isFishOutSide_ = false;
+		}*/
+
 		if (not isFishOutSide_){
 			isClicked_ = true;
+			isOnGround_ = false;
 			decisionSE_.Play(false, 0.5f);
+			
 			playerPotUV_ = { 0.0f,0.0f };
+			isFishOutSide_ = true;
+			velocity_ = Vector2::zero;
+			velocity_.y -= jumpPower_;
+			velocity_.x += movePower_;
+			playerPos_ = BasePlayerPos_;
 		}
 		
-		isFishOutSide_ = true;
-		
-		
+		/*isFishOutSide_ = true;
+		velocity_ = Vector2::zero;
+		velocity_.y -= jumpPower_;
+		velocity_.x += movePower_;
+		playerPos_ = BasePlayerPos_;*/
 	}
 	else {
 		if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
@@ -119,6 +147,48 @@ void TitleScene::Update() {
 		}	
 		isClicked_ = false;
 	}
+	//魚が外に出たら
+	if (isFishOutSide_){
+		if (not isOnGround_){
+			//地面についていないとき
+			acceleration_.y += gravity_ * deltaTime;
+
+			velocity_ += acceleration_;
+		}
+		else {
+			//地面についた後
+			velocity_.y = 0;
+
+			if (isLookAround_){
+				/*きょろきょろし終わったら*/
+				velocity_.x = dashPower_;
+			}
+			else {
+				/*きょろきょろする動作*/
+
+			}
+		}
+
+		Vector2 moveVec = velocity_ * deltaTime;
+
+		playerPos_ += moveVec;
+
+		if (playerPos_.y > 590) {
+			//地面のテクスチャに近づいたら
+			isOnGround_ = true;
+			velocity_.x = 0;
+			playerPos_.y = 590;
+		}
+
+		// 加速度をリセット
+		acceleration_ = Vector2::zero;
+		//プレイヤーがある程度行ったら遷移させる
+		if (playerPos_.x > 1400.0f){
+			isFishMoved_ = true;
+		}
+	}
+	
+
 	Debug();
 
 	ApplyGlobalVariables();
@@ -184,6 +254,7 @@ void TitleScene::Debug() {
 
 	ImGui::Checkbox("プレイヤーがボタンを押したかどうか", &isClicked_);
 	ImGui::Checkbox("魚が移動しきったかどうか", &isFishMoved_);
+	ImGui::Checkbox("きょろきょろし終わったかどうか", &isLookAround_);
 
 	ImGui::End();
 #endif // _DEBUG
@@ -202,9 +273,16 @@ void TitleScene::ApplyGlobalVariables(){
 
 	groupName = "PotAnim";
 	moveSpeed_ = global->Get<float>(groupName, "PotAnimationSpeed");
+
+	groupName = "TitlePlayerMove";
+	gravity_ = global->Get<float>(groupName, "Gravity");
+	jumpPower_ = global->Get<float>(groupName, "JumpPower");
+	movePower_ = global->Get<float>(groupName, "MovePower");
+	dashPower_ = global->Get<float>(groupName, "DashPower");
 }
 
 void TitleScene::TextureSetting(){
+	//背景
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
 	backGround_->sprite->SetPivot({ 0.5f,0.5f });
@@ -213,6 +291,7 @@ void TitleScene::TextureSetting(){
 	randAngle_ = SoLib::Random::GetRandom(angleMinMax_.first, angleMinMax_.second);
 	randPos_ = SoLib::Random::GetRandom(posMinMax_.first, posMinMax_.second);
 
+	//テクスチャエディターの物
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
 	for (size_t i = 0; i < texDetas_.size(); i++) {
 		Tex2DState* nowTex = texDetas_[i];
@@ -247,7 +326,16 @@ void TitleScene::TextureSetting(){
 				nowTex->color = 0xffffffff;
 			}
 		}
+		if (nowTex->textureName == "PlayerWalk") {
+			if (isFishOutSide_){			
+				nowTex->transform.translate_ = playerPos_;
+				nowTex->color = 0xffffffff;
+
+			}			
+		}
+
 	}
+	//タイマーによって切り替える
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	if (not timer_->IsActive()){
 		playerPotUV_.x += kUVMoveValue_;

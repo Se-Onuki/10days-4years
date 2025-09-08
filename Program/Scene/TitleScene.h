@@ -78,15 +78,24 @@ private:
 	Vector2 playerPotUV_ = { 0.0f, 0.0f };
 	//初期値が違うもの
 	Vector2 nullPotLeftUV_ = { 300.0f, 0.0f };
+	//プレイヤー
+	Vector2 playerUV_ = { 0.0f, 0.0f };
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
+
+	std::unique_ptr<SoLib::DeltaTimer> playerAnimTimer_ = nullptr;
+
 	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
 	//クリックした瞬間を感知
 	bool isClicked_ = false;
 	//ふぐが移動しきったのを感知
 	bool isFishMoved_ = false;
-	//魚が
+	//魚がポットの外に出たかどうか
 	bool isFishOutSide_ = false;
+	//魚が地面についたかどうか
+	bool isOnGround_ = false;
+	//魚がきょろきょろしたら
+	bool isLookAround_ = false;
 
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
@@ -96,6 +105,26 @@ private:
 
 	float moveSpeed_ = 0.25f;
 	float moveSpeedButtom_ = 0.5f;
+
+	/*playerの移動回り*/
+ 	float gravity_ = 49.0f;
+	//Y軸移動力
+	float jumpPower_ = 100.0f;
+	//X軸移動力
+	float movePower_ = 40.0f;
+	//X軸移動力
+	float dashPower_ = 400.0f;
+
+
+	// 移動量
+	Vector2 velocity_{};
+	// 加速度
+	Vector2 acceleration_{};
+
+	//プレイヤーの座標
+	Vector2 BasePlayerPos_ = { 250.0f,460.0f };
+	//プレイヤーの座標
+	Vector2 playerPos_ = {};
 
 	// bgm
 	SolEngine::Audio::SoundHandle titleBGM_;
