@@ -74,6 +74,19 @@ void TitleScene::OnEnter() {
 
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Title);
+
+	/*シーンが移動した際の巻き戻し用の処理*/
+	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
+	for (size_t i = 0; i < texDetas_.size(); i++) {
+		Tex2DState* nowTex = texDetas_[i];
+		if (nowTex->textureName == "PlayerInCultureSolution") {
+
+			nowTex->sprite->SetTextureHaundle((TextureManager::Load("UI/Title/PlayerInCultureSolution.png")));
+
+			break;
+		}
+		
+	}
 }
 
 void TitleScene::OnExit() {
@@ -88,14 +101,26 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()){
+		if (not isFishOutSide_){
+			isClicked_ = true;
 			decisionSE_.Play(false, 0.5f);
-			sceneManager_->ChangeScene<SelectScene>(1.f);
-			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		}	
+			playerPotUV_ = { 0.0f,0.0f };
+		}
+		
+		isFishOutSide_ = true;
 		
 		
 	}
+	else {
+		if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
+			
+			sceneManager_->ChangeScene<SelectScene>(1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}	
+		isClicked_ = false;
+	}
+	Debug();
+
 	ApplyGlobalVariables();
 
 	TextureSetting();
@@ -152,6 +177,20 @@ void TitleScene::Draw() {
 
 }
 
+void TitleScene::Debug() {
+
+#ifdef _DEBUG
+	ImGui::Begin("タイトルテスト用");
+
+	ImGui::Checkbox("プレイヤーがボタンを押したかどうか", &isClicked_);
+	ImGui::Checkbox("魚が移動しきったかどうか", &isFishMoved_);
+
+	ImGui::End();
+#endif // _DEBUG
+
+
+}
+
 void TitleScene::ApplyGlobalVariables(){
 	GlobalVariables* global = GlobalVariables::GetInstance();
 	const char* groupName = "UIRandom";
@@ -170,11 +209,45 @@ void TitleScene::TextureSetting(){
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
 	backGround_->sprite->SetPivot({ 0.5f,0.5f });
 
-	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
 	
 	randAngle_ = SoLib::Random::GetRandom(angleMinMax_.first, angleMinMax_.second);
 	randPos_ = SoLib::Random::GetRandom(posMinMax_.first, posMinMax_.second);
 
+	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
+	for (size_t i = 0; i < texDetas_.size(); i++) {
+		Tex2DState* nowTex = texDetas_[i];
+		if (nowTex->textureName == "PlayerInCultureSolution") {
+			if (isClicked_){
+				nowTex->sprite->SetTextureHaundle((TextureManager::Load("UI/Title/BreakCultureSolution.png")));
+			}
+			nowTex->uvTransform.translate_ = (playerPotUV_);
+		}
+		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == -74.0f) {
+			nowTex->uvTransform.translate_ = (nullPotLeftUV_);
+		}
+		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == 500.0f) {
+			nowTex->uvTransform.translate_ = (nullPotRightUV_);
+		}
+		if (nowTex->textureName == "AButtomUI") {			
+			if (isFishOutSide_){
+				nowTex->color = 0x00000000;
+			}
+			else {
+				nowTex->color = (buttomColor_);
+			}
+		}
+		if (nowTex->textureName == "TitleStartUI") {
+			nowTex->angle_degrees = randAngle_;
+			nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
+			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
+			if (isFishOutSide_) {
+				nowTex->color = 0x00000000;
+			}
+			else {
+				nowTex->color = 0xffffffff;
+			}
+		}
+	}
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	if (not timer_->IsActive()){
 		playerPotUV_.x += kUVMoveValue_;
@@ -197,6 +270,13 @@ void TitleScene::TextureSetting(){
 		colorTimer_->Start(moveSpeedButtom_);
 	}
 
+	if (isFishOutSide_){
+		if (playerPotUV_.x >= kUVMaxValuePlayerMoved_) {
+			playerPotUV_.x = kUVMoveValueWater_;
+		}
+	}
+	
+
 	if (playerPotUV_.x >= kUVMaxValuePlayer_){
 		playerPotUV_.x = 0;
 	}
@@ -207,26 +287,6 @@ void TitleScene::TextureSetting(){
 		nullPotRightUV_.x = 0;
 	}
 
-	for (size_t i = 0; i < texDetas_.size(); i++) {
-		Tex2DState* nowTex = texDetas_[i];
-		if (nowTex->textureName == "TitleStartUI") {
-			nowTex->angle_degrees = randAngle_;
-			nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
-			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
-		}
-		if (nowTex->textureName == "PlayerInCultureSolution") {
-			nowTex->uvTransform.translate_ = (playerPotUV_);
-		}
-		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == -74.0f) {
-			nowTex->uvTransform.translate_ = (nullPotLeftUV_);
-		}
-		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == 500.0f) {
-			nowTex->uvTransform.translate_ = (nullPotRightUV_);
-		}
-		if (nowTex->textureName == "AButtomUI") {
-			nowTex->color = (buttomColor_);
-		}
-	}
 
 
 }

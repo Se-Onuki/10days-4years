@@ -32,6 +32,9 @@ public:
 	void Draw() override;
 
 private:
+	//シーン限定のimguiの配置
+	void Debug();
+
 	void ApplyGlobalVariables();
 
 	//テクスチャの設定や移動など
@@ -61,8 +64,14 @@ private:
 	//UVの最大値
 	const float kUVMaxValue_ = 2700.0f;
 
+	//培養ポットのUV動かす値
+	const float kUVMoveValueWater_ = 900.0f;
+	//UVの最大値
+	const float kUVMaxValuePlayerMoved_ = 1500.0f;
+
 	//UVの最大値
 	const float kUVMaxValuePlayer_ = 3600.0f;
+ 
 	//右のからのポット
 	Vector2 nullPotRightUV_ = { 0.0f, 0.0f };
 	//ふぐが入ったポット
@@ -72,7 +81,12 @@ private:
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
 	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
-
+	//クリックした瞬間を感知
+	bool isClicked_ = false;
+	//ふぐが移動しきったのを感知
+	bool isFishMoved_ = false;
+	//魚が
+	bool isFishOutSide_ = false;
 
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
