@@ -34,6 +34,7 @@ namespace TD_10days {
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
 			player->countUI_->SetIsActive(false);
+			player->pWater_->IsPlaceAble(player->pWaterHitBox_, Vector2::right);
 		}
 
 	}

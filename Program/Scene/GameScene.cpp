@@ -88,24 +88,20 @@ void GameScene::OnEnter() {
 	pLevelMapChip_->CreateHitBox();
 	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
-
-	camera_.Init();
-	camera_.scale_ = 0.015f;
-	camera_.translation_ = Vector3{ startLine_.x, startLine_.y, camera_.translation_.z };
-
-	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
-	endLine_.x = static_cast<float>(mapWidth - 1) - startLine_.x;
-	endLine_.y = static_cast<float>(mapHeight - 1) - 3.0f;
+	
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
 	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
+	// 水ブロック用パーティクルマネージャー
 	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
 	waterParticleManager_->Init();
 
+	// パーティクルマネージャー
 	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
 	particleManager_->Init();
+
 
 	water_ = std::make_unique<TD_10days::Water>();
 	water_->SetWaterParticleManager(waterParticleManager_.get());
@@ -119,6 +115,19 @@ void GameScene::OnEnter() {
 	const Vector2 playerPos = pLevelMapChip_->GetStartPosition();
 	// プレイヤの位置を設定
 	player_.SetPosition(playerPos);
+
+	auto [mapHeight, mapWidth] = pLevelMapChip_->GetSize();
+	// スタート位置から初期のカメラ位置を決定
+	startLine_.x = playerPos.x /*+ targetOffset_.x*/;
+	startLine_.y = playerPos.y + targetOffset_.y;
+
+	// ステージからスクロールを終了地点を決める
+	endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
+	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
+
+	camera_.Init();
+	camera_.scale_ = 0.015f;
+	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
 
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
@@ -180,40 +189,49 @@ void GameScene::Update() {
 	SoLib::ImGuiWidget("CameraRot", &camera_.rotation_.z);
 	SoLib::ImGuiWidget("CameraScale", &camera_.scale_);
 
+	const Vector2 playerPosition = player_.GetPosition();
+
 	// カメラ追従処理
-	if (player_.GetPosition().x > startLine_.x and player_.GetPosition().x < endLine_.x) { // x方向
-		camera_.translation_.x = player_.GetPosition().x;
+	if (playerPosition.x > startLine_.x and playerPosition.x < endLine_.x) { // x方向
+		camera_.translation_.x = playerPosition.x + targetOffset_.x;
 	}
 	else {
 		// 範囲外 → 近い方のラインに固定
-		float distToStart = std::abs(player_.GetPosition().x - startLine_.x);
-		float distToEnd = std::abs(player_.GetPosition().x - endLine_.x);
+		float distToStart = std::abs(playerPosition.x - startLine_.x);
+		float distToEnd = std::abs(playerPosition.x - endLine_.x);
 
 		if (distToStart < distToEnd) {
-			camera_.translation_.x = startLine_.x;
+			camera_.translation_.x = startLine_.x + targetOffset_.x;
 		}
 		else {
-			camera_.translation_.x = endLine_.x;
+			camera_.translation_.x = endLine_.x + targetOffset_.x;
 		}
 	}
-	if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
+
+	//const auto hoge =(*pLevelMapChip_)[0][0];
+
+	camera_.translation_.y = player_.GetPosition().y;
+	/*TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(playerPosition.y + 4.0f)][static_cast<int>(playerPosition.x)];
+	if (mapChipType == TD_10days::LevelMapChip::MapChipType::kEmpty) {
 		camera_.translation_.y = player_.GetPosition().y;
-	}
-	else {
-		// 範囲外 → 近い方のラインに固定
-		float distToStart = std::abs(player_.GetPosition().y - startLine_.y);
-		float distToEnd = std::abs(player_.GetPosition().y - endLine_.y);
+	}*/
+	
+	//if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
+	//	camera_.translation_.y = player_.GetPosition().y;
+	//}
+	//else {
+	//	// 範囲外 → 近い方のラインに固定
+	//	float distToStart = std::abs(player_.GetPosition().y - startLine_.y);
+	//	float distToEnd = std::abs(player_.GetPosition().y - endLine_.y);
 
-		if (distToStart < distToEnd) {
-			camera_.translation_.y = startLine_.y;
-		}
-		else {
-			camera_.translation_.y = endLine_.y;
-		}
-	}
+	//	if (distToStart < distToEnd) {
+	//		camera_.translation_.y = startLine_.y;
+	//	}
+	//	else {
+	//		camera_.translation_.y = endLine_.y;
+	//	}
+	//}
 
-	/*camera_.translation_.x = player_.GetPosition().x;
-	camera_.translation_.y = player_.GetPosition().y;*/
 	camera_.UpdateMatrix();
 
 	// カメラから背景の位置を調整する
