@@ -58,6 +58,8 @@ void TitleScene::OnEnter() {
 	colorTimer_->Clear();
 	colorTimerStart_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimerStart_->Clear();
+	titleTexMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	titleTexMoveTimer_->Clear();
 
 
 	// bgmのロード
@@ -271,7 +273,7 @@ void TitleScene::Debug() {
 	ImGui::Checkbox("プレイヤーがボタンを押したかどうか", &isClicked_);
 	ImGui::Checkbox("魚が移動しきったかどうか", &isFishMoved_);
 	ImGui::Checkbox("きょろきょろし終わったかどうか", &isLookAround_);
-
+	ImGui::DragFloat("moveT", &moveT_);
 	ImGui::End();
 #endif // _DEBUG
 
@@ -333,14 +335,20 @@ void TitleScene::TextureSetting(){
 			}
 		}
 		if (nowTex->textureName == "TitleStartUI") {
-			//nowTex->angle_degrees = randAngle_;
-			//nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
-			//nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
 			if (isFishOutSide_) {
 				nowTex->color = 0x00000000;
 			}
 			else {
 
+				nowTex->color = startTexColor_;
+			}
+		}
+		if (nowTex->textureName == "TitleLogo") {
+			if (isFishOutSide_) {
+				nowTex->color = 0x00000000;
+			}
+			else {
+				nowTex->transform.translate_ = nowTex->originalTransform.translate_ + titleTexPos_;
 				nowTex->color = startTexColor_;
 			}
 		}
@@ -397,6 +405,30 @@ void TitleScene::TextureSetting(){
 
 		colorTimerStart_->Clear();
 		colorTimerStart_->Start(colorChangeSpeed_);
+	}
+
+	titleTexMoveTimer_->Update(ImGui::GetIO().DeltaTime);
+	if (not titleTexMoveTimer_->IsActive()) {
+		if ((titleTexMoveValue_ + titleTexMoveSpeed_) < 0.0f) {
+			titleTexMoveValue_ = 0;
+			//反転
+			titleTexMoveSpeed_ *= -1;
+		}
+		else if ((titleTexMoveValue_ + titleTexMoveSpeed_) > 1.0f) {
+			titleTexMoveValue_ = 1.0f;
+			//反転
+			titleTexMoveSpeed_ *= -1;
+		}
+		else {
+			titleTexMoveValue_ += titleTexMoveSpeed_;
+		}
+
+		moveT_ = SoLib::easeInBack(titleTexMoveValue_);
+
+		titleTexPos_.y = SoLib::Lerp(titleTexMoveRange_.x, titleTexMoveRange_.y, moveT_);
+
+		titleTexMoveTimer_->Clear();
+		titleTexMoveTimer_->Start(colorChangeSpeed_);
 	}
 
 	if (isFishOutSide_){

@@ -82,6 +82,8 @@ private:
 	Vector2 nullPotLeftUV_ = { 300.0f, 0.0f };
 	//プレイヤー
 	Vector2 playerUV_ = { 0.0f, 0.0f };
+	//タイトルの動きの幅yだけmin,maxの順
+	Vector2 titleTexMoveRange_ = { -10.0f,10.0f };
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
 
@@ -90,6 +92,8 @@ private:
 	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
 
 	std::unique_ptr<SoLib::DeltaTimer> colorTimerStart_ = nullptr;
+
+	std::unique_ptr<SoLib::DeltaTimer> titleTexMoveTimer_ = nullptr;
 	//クリックした瞬間を感知
 	bool isClicked_ = false;
 	//ふぐが移動しきったのを感知
@@ -116,6 +120,10 @@ private:
 	float colorChangeSpeed_ = 0.05f;
 	float colorChangeValue_ = 0.05f;
 
+	float titleTexMoveSpeed_ = 0.05f;
+	float titleTexMoveValue_ = 0.05f;
+	float moveT_ = 0.5f;
+
 	/*playerの移動回り*/
  	float gravity_ = 49.0f;
 	//Y軸移動力
@@ -135,6 +143,7 @@ private:
 	Vector2 BasePlayerPos_ = { 250.0f,460.0f };
 	//プレイヤーの座標
 	Vector2 playerPos_ = {};
+	Vector2 titleTexPos_ = {};
 
 	// bgm
 	SolEngine::Audio::SoundHandle titleBGM_;
