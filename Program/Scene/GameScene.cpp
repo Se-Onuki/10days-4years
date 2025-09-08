@@ -240,7 +240,7 @@ void GameScene::Update() {
 }
 
 void GameScene::Debug() {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGuiIO &io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
@@ -253,10 +253,11 @@ void GameScene::Debug() {
 			camera_.scale_ += 0.01f;
 		}
 	}
+	\
+		14
 
 
-
-#endif // _DEBUG
+#endif // USE_IMGUI
 
 }
 
