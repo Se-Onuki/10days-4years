@@ -51,39 +51,33 @@ void TextureEditor::Update() {
 	
 	ClickPushMove(id_, mousePos);
 
-	if (isTextureEditor_ and isColorChange_){
+	if (isTextureEditor_ and isColorChange_) {
 		//マウスが画像と重なっているか
 		for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
 			if (i != static_cast<size_t>(id_))
 				continue;
-
-			int topHitIndex = -1;
 			for (size_t j = 0; j < texies_[i].size(); j++) {
-				if (UICollider::IsMouseOverRotatedRect(
-					texies_[i][j]->transform.translate_,
-					texies_[i][j]->transform.rotate_.Get(),
-					texies_[i][j]->transform.scale_)) {
-					topHitIndex = static_cast<int>(j); // とりあえず最後に当たったのを覚える
-				}
+				uint32_t beforeColor = texColors_[i][j];
+				if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
+					//重複がしないように
+					if (selectNumber_ == -1 || selectNumber_ == int(j)) {
+						SoLib::Color::RGB4 color4 = texies_[i][j]->color;
+						color4.a = 1.0f - 0.5f;
 
-				texies_[i][j]->color = texColors_[i][j];
-			}
+						texies_[i][j]->color = color4;
+					}
+					else {
+						texies_[i][j]->color = beforeColor;
+					}
 
-			// 3. 一番手前だけ処理
-			if (topHitIndex != -1) {
-				if (selectNumber_ == -1 or selectNumber_ == topHitIndex) {
-					SoLib::Color::RGB4 color4 = texies_[i][topHitIndex]->color;
-					color4.a = 1.0f - 0.5f;
-					texies_[i][topHitIndex]->color = color4;
+				}
+				else {
+					texies_[i][j]->color = beforeColor;
 				}
 			}
-			
-		}		
-		
-			
+		}
 	}
 
-	//ShortCutMove(id_);
 #endif // _DEBUG
 
 }
@@ -761,7 +755,6 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 	for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
 		if (i != static_cast<size_t>(id))
 			continue;
-		int topHitIndex = -1;
 		for (size_t j = 0; j < texies_[i].size(); j++) {
 			if (isSelecteTex_) {
 				//左を押している間拾う
@@ -770,7 +763,20 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 				}
 			}
 			if (UICollider::IsMouseOverRotatedRect(texies_[i][j]->transform.translate_, texies_[i][j]->transform.rotate_.Get(), texies_[i][j]->transform.scale_)) {
-				topHitIndex = static_cast<int>(j); // とりあえず最後に当たったのを覚える				
+
+				if (ImGui::IsMouseDown(0)) {
+					//重複がしないように
+					if (selectNumber_ == -1 and not ImGui::GetIO().WantCaptureMouse) {
+						selectNumber_ = int(j);
+						selectTexNumber_ = selectNumber_;
+						selectTexImguiNumber_ = selectNumber_;
+					}
+				}
+				else {
+					if (!ImGui::GetIO().WantCaptureMouse) {
+						selectNumber_ = -1;
+					}
+				}
 
 			}
 			else {
@@ -781,24 +787,9 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 					}
 				}
 			}
-
 		}
-
-		if (ImGui::IsMouseDown(0)) {
-			//重複がしないように
-			if (selectNumber_ == -1 and not ImGui::GetIO().WantCaptureMouse and topHitIndex != -1) {
-				selectNumber_ = int(topHitIndex);
-				selectTexNumber_ = selectNumber_;
-				selectTexImguiNumber_ = selectNumber_;
-			}
-		}
-		else {
-			if (!ImGui::GetIO().WantCaptureMouse) {
-				selectNumber_ = -1;
-			}
-		}
-
 	}
+
 
 
 }
