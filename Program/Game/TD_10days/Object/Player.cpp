@@ -39,14 +39,16 @@ namespace TD_10days {
 			}
 		}
 
+		const bool isTrigger = dInput->IsTrigger(DIK_RETURN) or xInput->IsTrigger(SolEngine::KeyCode::RIGHT_SHOULDER);
 
-		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN) and player->pWater_->GetWaterCount() == 0) {
+
+		if (player->isGround_ and isTrigger and player->pWater_->GetWaterCount() == 0) {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
 			player->countUI_->SetIsActive(false);
 		}
-		if (dInput->IsTrigger(DIK_RETURN)) {
+		if (isTrigger) {
 			player->pWater_->DeleteWater();
 		}
 
@@ -172,7 +174,7 @@ namespace TD_10days {
 	}
 
 	void Player::Update([[maybe_unused]] const float deltaTime) {
-		
+
 
 		// 移動処理
 		MoveUpdate(deltaTime);
@@ -257,7 +259,7 @@ namespace TD_10days {
 
 		// 次に設置する水の場所
 		Vector2 nextDir = Vector2::zero;
-		if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.25f) {
+		if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.0625f) {
 			nextDir = xInput->GetState()->stickL_;
 			if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
 				nextDir.y = 0.f;
@@ -265,7 +267,7 @@ namespace TD_10days {
 			else {
 				nextDir.x = 0.f;
 			}
-			nextDir.Normalize();
+			nextDir = nextDir.Normalize();
 		}
 
 		if (nextDir == Vector2::zero) {
