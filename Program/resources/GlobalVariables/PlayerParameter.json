@@ -4,7 +4,7 @@
         "AirSpeed": 5.0,
         "WaterGravity": -1.0,
         "WaterJumpPower": 2.0,
-        "WaterLifeTime": 7.0,
+        "WaterLifeTime": 5.0,
         "WaterSpeed": 3.5
     }
 }
