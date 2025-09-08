@@ -37,6 +37,7 @@ void TitleScene::OnEnter() {
 	global->CreateGroups(groupName);
 	//アイテムの追加
 	global->AddValue(groupName, "PotAnimationSpeed", moveSpeed_);
+	global->AddValue(groupName, "PlayerAnimation", moveSpeedPlayer_);
 
 	groupName = "TitlePlayerMove";
 	global->CreateGroups(groupName);
@@ -95,10 +96,12 @@ void TitleScene::OnEnter() {
 
 			break;
 		}
-		if (nowTex->textureName == "PlayerWalk") {			
+		if (nowTex->textureName == "PlayerWalk") {
 
 			nowTex->transform.translate_ = playerPos_;
-			nowTex->color = 0x00000000;			
+			nowTex->color = 0x00000000;
+			playerUV_ = { 0.0f,0.0f };
+			nowTex->uvTransform.translate_ = playerUV_;
 		}
 		
 	}
@@ -116,10 +119,6 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		/*if (isFishOutSide_) {
-			isFishOutSide_ = false;
-		}*/
-
 		if (not isFishOutSide_){
 			isClicked_ = true;
 			isOnGround_ = false;
@@ -133,11 +132,6 @@ void TitleScene::Update() {
 			playerPos_ = BasePlayerPos_;
 		}
 		
-		/*isFishOutSide_ = true;
-		velocity_ = Vector2::zero;
-		velocity_.y -= jumpPower_;
-		velocity_.x += movePower_;
-		playerPos_ = BasePlayerPos_;*/
 	}
 	else {
 		if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
@@ -147,6 +141,8 @@ void TitleScene::Update() {
 		}	
 		isClicked_ = false;
 	}
+	playerAnimTimer_->Update(ImGui::GetIO().DeltaTime);
+
 	//魚が外に出たら
 	if (isFishOutSide_){
 		if (not isOnGround_){
@@ -162,9 +158,25 @@ void TitleScene::Update() {
 			if (isLookAround_){
 				/*きょろきょろし終わったら*/
 				velocity_.x = dashPower_;
+
+				if (not playerAnimTimer_->IsActive()) {
+					playerUV_.x += kUVMovePlayerValue_;
+
+					playerAnimTimer_->Clear();
+					playerAnimTimer_->Start(moveSpeed_);
+				}
 			}
 			else {
 				/*きょろきょろする動作*/
+				//タイマーによって切り替える
+				
+				if (not playerAnimTimer_->IsActive()) {
+					playerUV_.x = 0;
+					playerAnimTimer_->Clear();
+				}
+				else {
+					playerUV_.x = kUVMovePlayerValue_;
+				}
 
 			}
 		}
@@ -175,6 +187,7 @@ void TitleScene::Update() {
 
 		if (playerPos_.y > 590) {
 			//地面のテクスチャに近づいたら
+			playerAnimTimer_->Start(moveSpeedPlayer_);
 			isOnGround_ = true;
 			velocity_.x = 0;
 			playerPos_.y = 590;
@@ -273,6 +286,7 @@ void TitleScene::ApplyGlobalVariables(){
 
 	groupName = "PotAnim";
 	moveSpeed_ = global->Get<float>(groupName, "PotAnimationSpeed");
+	moveSpeedPlayer_ = global->Get<float>(groupName, "PlayerAnimation");
 
 	groupName = "TitlePlayerMove";
 	gravity_ = global->Get<float>(groupName, "Gravity");
@@ -330,7 +344,7 @@ void TitleScene::TextureSetting(){
 			if (isFishOutSide_){			
 				nowTex->transform.translate_ = playerPos_;
 				nowTex->color = 0xffffffff;
-
+				nowTex->uvTransform.translate_ = playerUV_;
 			}			
 		}
 

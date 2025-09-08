@@ -61,6 +61,8 @@ private:
 
 	//培養ポットのUV動かす値
 	const float kUVMoveValue_ = 300.0f;
+	//培養ポットのUV動かす値
+	const float kUVMovePlayerValue_ = 200.0f;
 	//UVの最大値
 	const float kUVMaxValue_ = 2700.0f;
 
@@ -96,7 +98,8 @@ private:
 	bool isOnGround_ = false;
 	//魚がきょろきょろしたら
 	bool isLookAround_ = false;
-
+	//一回目のアニメーションか
+	bool isFirstAnimation_ = true;
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
@@ -104,6 +107,7 @@ private:
 	uint32_t buttomColor_ = 0xffffffff;
 
 	float moveSpeed_ = 0.25f;
+	float moveSpeedPlayer_ = 0.25f;
 	float moveSpeedButtom_ = 0.5f;
 
 	/*playerの移動回り*/
