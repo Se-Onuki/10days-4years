@@ -139,6 +139,8 @@ namespace TD_10days {
 	}
 
 	void Player::Update([[maybe_unused]] const float deltaTime) {
+		
+
 		// 移動処理
 		MoveUpdate(deltaTime);
 
@@ -151,20 +153,6 @@ namespace TD_10days {
 			countUI_->SetTime(*timeOpt);              // 値を取り出して渡す
 		}
 		countUI_->Update(position_);
-
-		if (playerState_->GetStateName() == "PlayerMovement") {
-			// --- 水しぶき処理 ---
-			const bool isNowInWater = IsInWater();
-			if (not wasInWater_ && isNowInWater) {
-				// 入った瞬間
-				particleManager_->SpawnSplash(position_, velocity_ * -1.0f);
-			}
-			else if (wasInWater_ && not isNowInWater) {
-				// 出た瞬間
-				particleManager_->SpawnSplash(position_, velocity_ * 1.0f);
-			}
-			wasInWater_ = isNowInWater; // 状態更新
-		}
 	}
 
 	void Player::Draw() const {
@@ -415,6 +403,21 @@ namespace TD_10days {
 			isGround_ = true;
 			// 着地したのなら､高さを丸める｡
 			position_.y = std::roundf(position_.y) - (0.5f - size_.y / 2) - 0.01f;
+		}
+
+		// 水しぶきパーティクルを生成する
+		if (playerState_->GetStateName() == "PlayerMovement") {
+			// --- 水しぶき処理 ---
+			const bool isNowInWater = IsInWater();
+			if (not wasInWater_ && isNowInWater) {
+				// 入った瞬間
+				particleManager_->SpawnSplash(position_, velocity_, true);
+			}
+			else if (wasInWater_ && not isNowInWater) {
+				// 出た瞬間
+				particleManager_->SpawnSplash(position_, velocity_, false);
+			}
+			wasInWater_ = isNowInWater; // 状態更新
 		}
 
 		// 左右移動の慣性を消す
