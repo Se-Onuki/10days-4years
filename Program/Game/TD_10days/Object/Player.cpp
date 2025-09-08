@@ -9,31 +9,45 @@ namespace TD_10days {
 
 		const auto input = SolEngine::Input::GetInstance();
 		const auto dInput = input->GetDirectInput();
+		const auto xInput = input->GetXInput();
 
 		const bool isInWater = player->IsInWater();
 		const float moveSpeed = isInWater ? player->vWaterSpeed_ : player->vAirSpeed_;
 		float velocityPower = 0;
 
-		if (dInput->IsPress(DIK_A)) {
-			velocityPower -= 1.f;
-		}
-		if (dInput->IsPress(DIK_D)) {
-			velocityPower += 1.f;
-		}
-		player->velocity_.x += velocityPower * moveSpeed;
+		const Vector2 lStick(xInput->GetState()->stickL_);
 
-		if (dInput->IsTrigger(DIK_SPACE)) {
+		// 横方向への移動入力
+		velocityPower = lStick.x;
+
+		if (velocityPower == 0.f) {
+			if (dInput->IsPress(DIK_A) or xInput->IsPress(SolEngine::KeyCode::DPAD_LEFT)) {
+				velocityPower -= 1.f;
+			}
+			if (dInput->IsPress(DIK_D) or xInput->IsPress(SolEngine::KeyCode::DPAD_RIGHT)) {
+				velocityPower += 1.f;
+			}
+		}
+
+		player->acceleration_.x += velocityPower * moveSpeed;
+
+		// ジャンプ処理
+		if (dInput->IsTrigger(DIK_SPACE) or xInput->IsPress(SolEngine::KeyCode::A) or xInput->IsPress(SolEngine::KeyCode::B)) {
 			if (isInWater) {
 				player->velocity_.y = 0.f;
 				player->acceleration_.y += player->vWaterJumpPower_;
 			}
 		}
 
-		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
+
+		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN) and player->pWater_->GetWaterCount() == 0) {
 			player->nextState_ = std::make_unique<PlayerPlacement>(player);
 			player->placementUI_->Appear();
 			player->placementUI_->SetActive(true);
 			player->countUI_->SetIsActive(false);
+		}
+		if (dInput->IsTrigger(DIK_RETURN)) {
+			player->pWater_->DeleteWater();
 		}
 
 	}
@@ -49,38 +63,57 @@ namespace TD_10days {
 	void PlayerPlacement::InputFunc() {
 		const auto player = GetPlayer();
 
-		const auto input = SolEngine::Input::GetInstance();
-		const auto dInput = input->GetDirectInput();
+		const auto *const input = SolEngine::Input::GetInstance();
+		const auto *const dInput = input->GetDirectInput();
+		const auto *const xInput = input->GetXInput();
 
-		// 次に設置する水の場所
-		Vector2 nextDir = Vector2::zero;
+		//// 次に設置する水の場所
+		//Vector2 nextDir = Vector2::zero;
+		//if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.25f) {
+		//	nextDir = xInput->GetState()->stickL_;
+		//	if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
+		//		nextDir.y = 0.f;
+		//	}
+		//	else {
+		//		nextDir.x = 0.f;
+		//	}
+		//	nextDir.Normalize();
+		//}
 
-		// 入力に応じて値を加算する
-		if (dInput->IsTrigger(DIK_D)) {
-			nextDir += +Vector2::right;
-		}
-		if (dInput->IsTrigger(DIK_A)) {
-			nextDir += -Vector2::right;
-		}
-		if (dInput->IsTrigger(DIK_W)) {
-			nextDir += +Vector2::up;
-		}
-		if (dInput->IsTrigger(DIK_S)) {
-			nextDir += -Vector2::up;
-		}
+		//if (nextDir == Vector2::zero) {
+		//	// 入力に応じて値を加算する
+		//	if (dInput->IsTrigger(DIK_D) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT)) {
+		//		nextDir += +Vector2::right;
+		//	}
+		//	if (dInput->IsTrigger(DIK_A) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_LEFT)) {
+		//		nextDir += -Vector2::right;
+		//	}
+		//	if (dInput->IsTrigger(DIK_W) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_UP)) {
+		//		nextDir += +Vector2::up;
+		//	}
+		//	if (dInput->IsTrigger(DIK_S) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_DOWN)) {
+		//		nextDir += -Vector2::up;
+		//	}
+		//}
 
-		// 水の方向がどこか一つに定まっていたら
-		if (nextDir.LengthSQ() == 1.f) {
-			// 尚且つ､水が配置できる座標ならば
-			if (player->pWater_->IsPlaceAble(player->pWaterHitBox_, nextDir)) {
-				// 水を設置する
-				player->pWater_->PlacementWater(nextDir);
-			}
+		//// 水の方向がどこか一つに定まっていたら
+		//if (nextDir.LengthSQ() == 1.f) {
+		//	// 尚且つ､水が配置できる座標ならば
+		//	if (player->pWater_->IsPlaceAble(player->pWaterHitBox_, nextDir)) {
+		//		// 水を設置する
+		//		player->pWater_->PlacementWater(nextDir);
+		//	}
+		//}
+
+		const Vector2 nextDir = player->InputPlaceAble();
+		if (nextDir != Vector2::zero) {
+			// 水を設置する
+			player->pWater_->PlacementWater(nextDir);
 		}
 
 
 		/// 地上に居る場合に遷移ができる
-		if (player->isGround_ and dInput->IsTrigger(DIK_RETURN)) {
+		if (player->isGround_ and (dInput->IsTrigger(DIK_RETURN) or xInput->IsTrigger(SolEngine::KeyCode::RIGHT_SHOULDER))) {
 			player->nextState_ = std::make_unique<PlayerMovement>(player);
 			player->placementUI_->Disappear();
 			player->placementUI_->SetActive(false);
@@ -225,6 +258,52 @@ namespace TD_10days {
 		group << vWaterJumpPower_;
 		group << vWaterLifeTime_;
 
+	}
+
+	Vector2 Player::InputPlaceAble() const
+	{
+
+		const auto *const input = SolEngine::Input::GetInstance();
+		const auto *const dInput = input->GetDirectInput();
+		const auto *const xInput = input->GetXInput();
+
+		// 次に設置する水の場所
+		Vector2 nextDir = Vector2::zero;
+		if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.25f) {
+			nextDir = xInput->GetState()->stickL_;
+			if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
+				nextDir.y = 0.f;
+			}
+			else {
+				nextDir.x = 0.f;
+			}
+			nextDir.Normalize();
+		}
+
+		if (nextDir == Vector2::zero) {
+			// 入力に応じて値を加算する
+			if (dInput->IsTrigger(DIK_D) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT)) {
+				nextDir += +Vector2::right;
+			}
+			if (dInput->IsTrigger(DIK_A) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_LEFT)) {
+				nextDir += -Vector2::right;
+			}
+			if (dInput->IsTrigger(DIK_W) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_UP)) {
+				nextDir += +Vector2::up;
+			}
+			if (dInput->IsTrigger(DIK_S) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_DOWN)) {
+				nextDir += -Vector2::up;
+			}
+		}
+
+		// 水の方向がどこか一つに定まっていたら
+		if (nextDir.LengthSQ() == 1.f) {
+			// 尚且つ､水が配置できる座標ならば
+			if (pWater_->IsPlaceAble(pWaterHitBox_, nextDir)) {
+				return nextDir;
+			}
+		}
+		return Vector2::zero;
 	}
 
 	void Player::SetPosInStage()
@@ -377,9 +456,12 @@ namespace TD_10days {
 
 	void Player::MoveUpdate(float deltaTime) {
 		const bool isInWater = IsInWater();
+		const float inputSpeed = std::abs(acceleration_.x);
 		acceleration_.y += (isInWater ? vWaterGravity_ : vAirGravity_) * deltaTime;
+		acceleration_.x += (-velocity_.x * 0.5f);
 
 		velocity_ += acceleration_;
+		velocity_.x = std::copysign(std::clamp(velocity_.x, -inputSpeed, inputSpeed), velocity_.x);
 		std::list<Vector3> hitNormalList;
 
 		Vector2 moveVec = velocity_ * deltaTime;
@@ -416,9 +498,6 @@ namespace TD_10days {
 			// 着地したのなら､高さを丸める｡
 			position_.y = std::roundf(position_.y) - (0.5f - size_.y / 2) - 0.01f;
 		}
-
-		// 左右移動の慣性を消す
-		velocity_.x = 0.f;
 		// 加速度をリセット
 		acceleration_ = Vector2::zero;
 	}

@@ -120,6 +120,9 @@ void GameScene::OnEnter() {
 	// プレイヤの位置を設定
 	player_.SetPosition(playerPos);
 
+	playerDrawer_ = std::make_unique<TD_10days::PlayerDrawer>();
+	playerDrawer_->Init(&player_);
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
@@ -210,6 +213,7 @@ void GameScene::Update() {
 		else {
 			camera_.translation_.y = endLine_.y;
 		}
+
 	}
 
 	/*camera_.translation_.x = player_.GetPosition().x;
@@ -227,6 +231,7 @@ void GameScene::Update() {
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
+	playerDrawer_->Update(inGameDeltaTime);
 
 	/*auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }*/
@@ -282,7 +287,7 @@ void GameScene::Draw() {
 
 	water_->Draw();
 
-	player_.Draw();
+	playerDrawer_->Draw();
 
 	DrawWater();
 
