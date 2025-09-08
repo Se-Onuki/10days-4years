@@ -338,6 +338,7 @@ int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
 
 void StageEditor::LoadStage() {
 	int32_t selectNum = guiSelectNum_;
+	SelectToGame::GetInstance()->SetStageNum(selectNum - 1);
 
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
 		csvData_ = csvFile_;
