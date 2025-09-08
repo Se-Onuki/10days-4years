@@ -88,6 +88,8 @@ private:
 	std::unique_ptr<SoLib::DeltaTimer> playerAnimTimer_ = nullptr;
 
 	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
+
+	std::unique_ptr<SoLib::DeltaTimer> colorTimerStart_ = nullptr;
 	//クリックした瞬間を感知
 	bool isClicked_ = false;
 	//ふぐが移動しきったのを感知
@@ -105,10 +107,14 @@ private:
 	Vector2 randPos_ = {};
 
 	uint32_t buttomColor_ = 0xffffffff;
+	uint32_t startTexColor_ = 0xffffffff;
 
 	float moveSpeed_ = 0.25f;
 	float moveSpeedPlayer_ = 0.25f;
 	float moveSpeedButtom_ = 0.5f;
+
+	float colorChangeSpeed_ = 0.05f;
+	float colorChangeValue_ = 0.05f;
 
 	/*playerの移動回り*/
  	float gravity_ = 49.0f;

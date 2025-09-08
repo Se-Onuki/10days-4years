@@ -56,6 +56,9 @@ void TitleScene::OnEnter() {
 	playerAnimTimer_->Clear();
 	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimer_->Clear();
+	colorTimerStart_ = std::make_unique<SoLib::DeltaTimer>();
+	colorTimerStart_->Clear();
+
 
 	// bgmのロード
 	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
@@ -330,14 +333,15 @@ void TitleScene::TextureSetting(){
 			}
 		}
 		if (nowTex->textureName == "TitleStartUI") {
-			nowTex->angle_degrees = randAngle_;
-			nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
-			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
+			//nowTex->angle_degrees = randAngle_;
+			//nowTex->transform.rotate_ = DegreeToRadian(nowTex->angle_degrees);
+			//nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
 			if (isFishOutSide_) {
 				nowTex->color = 0x00000000;
 			}
 			else {
-				nowTex->color = 0xffffffff;
+
+				nowTex->color = startTexColor_;
 			}
 		}
 		if (nowTex->textureName == "PlayerWalk") {
@@ -370,6 +374,29 @@ void TitleScene::TextureSetting(){
 
 		colorTimer_->Clear();
 		colorTimer_->Start(moveSpeedButtom_);
+	}
+	colorTimerStart_->Update(ImGui::GetIO().DeltaTime);
+	if (not colorTimerStart_->IsActive()) {
+		SoLib::Color::RGB4 color4 = startTexColor_;
+		if ((color4.a - colorChangeValue_) < 0.0f) {
+			color4.a = 0;
+			//反転
+			colorChangeValue_ *= -1;
+		}
+		else if ((color4.a - colorChangeValue_) > 1.0f) {
+			color4.a = 1.0f;
+			//反転
+			colorChangeValue_ *= -1;
+		}
+		else {
+			color4.a -= colorChangeValue_;
+		}
+		
+
+		startTexColor_ = color4;
+
+		colorTimerStart_->Clear();
+		colorTimerStart_->Start(colorChangeSpeed_);
 	}
 
 	if (isFishOutSide_){
