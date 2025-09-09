@@ -62,8 +62,6 @@ void TitleScene::OnEnter() {
 	timer_->Clear();
 	playerAnimTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	playerAnimTimer_->Clear();
-	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
-	colorTimer_->Clear();
 	colorTimerStart_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimerStart_->Clear();
 	titleTexMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
@@ -397,7 +395,6 @@ void TitleScene::TextureSetting(){
 	//タイマーによって切り替える
 	//ポット
 	timer_->Update(ImGui::GetIO().DeltaTime);
-	colorTimer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimerStart_->Update(ImGui::GetIO().DeltaTime);
 	titleTexMoveTimer_->Update(ImGui::GetIO().DeltaTime);
 
@@ -408,18 +405,6 @@ void TitleScene::TextureSetting(){
 
 		timer_->Clear();
 		timer_->Start(moveSpeed_);
-	}
-	//ボタン
-	if (not colorTimer_->IsActive()) {
-		if (buttomColor_ == 0xffffffff){
-			buttomColor_ = 0x00000000;
-		}
-		else {
-			buttomColor_ = 0xffffffff;
-		}
-
-		colorTimer_->Clear();
-		colorTimer_->Start(moveSpeedButtom_);
 	}
 	//始めるUI
 	if (not colorTimerStart_->IsActive()) {
@@ -440,6 +425,7 @@ void TitleScene::TextureSetting(){
 		
 
 		startTexColor_ = color4;
+		buttomColor_ = color4;
 
 		colorTimerStart_->Clear();
 		colorTimerStart_->Start(colorChangeSpeed_);
