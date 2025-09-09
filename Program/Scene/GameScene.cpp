@@ -215,7 +215,7 @@ void GameScene::Update() {
 
 	//const auto hoge =(*pLevelMapChip_)[0][0];
 
-	camera_.translation_.y = SoLib::Lerp(player_.GetPosition().y, camera_.translation_.y,0.9f);
+	camera_.translation_.y = SoLib::Lerp(player_.GetPosition().y, camera_.translation_.y, 0.5f) + 1.0f;
 
 	/*TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(playerPosition.y + 4.0f)][static_cast<int>(playerPosition.x)];
 	if (mapChipType == TD_10days::LevelMapChip::MapChipType::kEmpty) {
@@ -237,6 +237,8 @@ void GameScene::Update() {
 	//		camera_.translation_.y = endLine_.y;
 	//	}
 	//}
+
+	
 
 	camera_.UpdateMatrix();
 
