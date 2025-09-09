@@ -60,6 +60,7 @@ namespace TD_10days {
 
 		PlayerDrawState playerState_ = PlayerDrawState::CountElements;
 		float stateTime_;
+		float oldUVX_ = -100.0f;
 
 		bool isLeftFacing_ = false;
 	};
