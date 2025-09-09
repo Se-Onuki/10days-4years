@@ -60,7 +60,7 @@ private:
 	//数字のそれ以外の時の大きさ
 	Vector2 defaultScaleNumber_ = { 160.0f,160.0f };
 
-	static const int32_t kMaxStages_ = 6;
+	static const int32_t kMaxStages_ = 15;
 	//ステージごとの幅
 	const int32_t kBaseMoveValue_ = 450;
 	//ランダムで変化する変数
