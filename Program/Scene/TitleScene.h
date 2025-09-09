@@ -121,6 +121,7 @@ private:
 
 	float moveSpeed_ = 0.25f;
 	float moveSpeedPlayer_ = 0.25f;
+	float playerAnimSpeed_ = 0.25f;
 
 	float colorChangeSpeed_ = 0.05f;
 	float colorChangeValue_ = 0.05f;

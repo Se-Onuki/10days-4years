@@ -363,3 +363,5 @@ FodyWeavers.xsd
 !/Externals/DirectXTex/Lib/**
 
 !**/hidapi.dll
+
+imgui.ini

@@ -48,6 +48,7 @@ void TitleScene::OnEnter() {
 	groupName = "TitlePlayerMove";
 	global->CreateGroups(groupName);
 	//アイテムの追加
+	global->AddValue(groupName, "AnimSpeed", playerAnimSpeed_);
 	global->AddValue(groupName, "Gravity", gravity_);
 	global->AddValue(groupName, "JumpPower", jumpPower_);
 	global->AddValue(groupName, "MovePower", movePower_); 
@@ -174,7 +175,7 @@ void TitleScene::Update() {
 					playerUV_.x += kUVMovePlayerValue_;
 
 					playerAnimTimer_->Clear();
-					playerAnimTimer_->Start(moveSpeed_);
+					playerAnimTimer_->Start(playerAnimSpeed_);
 				}
 			}
 			else {
@@ -321,6 +322,7 @@ void TitleScene::ApplyGlobalVariables(){
 	titleTexMoveRange_ = global->Get<Vector2>(groupName, "TitleTexMoveRange");
 
 	groupName = "TitlePlayerMove";
+	playerAnimSpeed_ = global->Get<float>(groupName, "AnimSpeed");
 	gravity_ = global->Get<float>(groupName, "Gravity");
 	jumpPower_ = global->Get<float>(groupName, "JumpPower");
 	movePower_ = global->Get<float>(groupName, "MovePower");
