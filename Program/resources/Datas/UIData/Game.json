@@ -1,0 +1,50 @@
+{
+    "UIs": {
+        "Game": [
+            {
+                "TextureFullPath": "UI\\InGame\\StartButtomUI.png",
+                "TextureName": "StartButtomUI",
+                "UVScale": [
+                    68.0,
+                    68.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    50.0,
+                    50.0
+                ],
+                "translate": [
+                    46.0,
+                    41.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Result\\GoStageSelectUI.png",
+                "TextureName": "GoStageSelectUI",
+                "UVScale": [
+                    540.0,
+                    64.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    270.0,
+                    32.0
+                ],
+                "translate": [
+                    231.0,
+                    41.0
+                ]
+            }
+        ]
+    }
+}
