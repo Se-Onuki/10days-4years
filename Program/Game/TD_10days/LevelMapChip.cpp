@@ -70,6 +70,9 @@ namespace TD_10days {
 		goalPosList_.clear();
 		needlePosList_.clear();
 
+		// マップチップ上に保存されているデータの場所
+		std::unordered_map<Vector2, FocusPoint> focusChips;
+
 		for (uint32_t yi = 0; yi < y_; ++yi) {
 			const auto &line = (*this)[yi];
 			for (uint32_t xi = 0; xi < x_; ++xi) {
@@ -89,7 +92,7 @@ namespace TD_10days {
 					break;
 				}
 				case MapChip::kFocusPoint: {
-					focusPoints_[Vector2{ static_cast<float>(xi), static_cast<float>(yi) }];
+					focusChips[Vector2{ static_cast<float>(xi), static_cast<float>(yi) }];
 					break;
 				}
 				default: {
@@ -98,6 +101,14 @@ namespace TD_10days {
 				}
 			}
 		}
+
+		// マップチップにデータがないなら破棄
+		for (const auto &[pos, data] : focusPoints_) {
+			if (focusChips.find(pos) == focusChips.end()) { continue; }
+			focusChips[pos] = data;
+		}
+		// マップチップ上のものと紐づけて書き込む
+		focusPoints_ = focusChips;
 	}
 
 	std::span<LevelMapChip::MapChip> LevelMapChip::operator[](const uint32_t index) {
@@ -165,7 +176,7 @@ namespace TD_10days {
 
 			const auto size = str.find("/");
 			values.push_back(str.substr(0, size));
-			str = str.substr(size);
+			str = str.substr(size+1);
 		}
 
 		if (values.size() % 4 != 0) { return; }
@@ -242,7 +253,7 @@ namespace TD_10days {
 					continue;
 				}
 #ifndef USE_IMGUI
-				if (mapChipType == LevelMapChip::MapChip::kStart) {
+				if (mapChipType == LevelMapChip::MapChip::kStart or mapChipType == LevelMapChip::MapChip::kFocusPoint) {
 					continue;
 				}
 #endif // USE_IMGUI
