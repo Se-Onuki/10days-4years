@@ -84,16 +84,18 @@ private:
 	Vector2 playerUV_ = { 0.0f, 0.0f };
 	//タイトルの動きの幅yだけmin,maxの順
 	Vector2 titleTexMoveRange_ = { -10.0f,10.0f };
-
+	//ポットのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
-
+	//プレイヤーアニメーションのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> playerAnimTimer_ = nullptr;
-
+	//ボタンUIのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
-
+	//始めるUIのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> colorTimerStart_ = nullptr;
-
+	//タイトルロゴのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> titleTexMoveTimer_ = nullptr;
+	//きょろきょろ間隔のタイマー
+	std::unique_ptr<SoLib::DeltaTimer> lookAroundMoveTimer_ = nullptr;
 	//クリックした瞬間を感知
 	bool isClicked_ = false;
 	//ふぐが移動しきったのを感知
@@ -106,9 +108,15 @@ private:
 	bool isLookAround_ = false;
 	//一回目のアニメーションか
 	bool isFirstAnimation_ = true;
+	//左を向くかどうか
+	bool isLookLeft_ = false;
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
+	//振り向き回数上限
+	uint16_t lookAroundLimit_ = 4;
+	//現在の振りむき回数
+	uint16_t lookAroundNum_ = 0;
 
 	uint32_t buttomColor_ = 0xffffffff;
 	uint32_t startTexColor_ = 0xffffffff;
@@ -123,6 +131,8 @@ private:
 	float titleTexMoveSpeed_ = 0.05f;
 	float titleTexMoveValue_ = 0.05f;
 	float moveT_ = 0.5f;
+
+	float lookAroundDistance_ = 0.5f;
 
 	/*playerの移動回り*/
  	float gravity_ = 49.0f;

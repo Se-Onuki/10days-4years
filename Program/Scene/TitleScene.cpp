@@ -60,8 +60,8 @@ void TitleScene::OnEnter() {
 	colorTimerStart_->Clear();
 	titleTexMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	titleTexMoveTimer_->Clear();
-
-
+	lookAroundMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	lookAroundMoveTimer_->Clear();
 	// bgmのロード
 	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 	titleBGM_.Play(true, 0.5f);
@@ -178,8 +178,25 @@ void TitleScene::Update() {
 				if (not playerAnimTimer_->IsActive()) {
 					playerUV_.x = 0;
 					playerAnimTimer_->Clear();
+
+					lookAroundMoveTimer_->Update(ImGui::GetIO().DeltaTime);
+					if (not lookAroundMoveTimer_->IsActive()) {
+						lookAroundNum_++;
+						isLookLeft_ = !isLookLeft_;
+						if (lookAroundNum_ == lookAroundLimit_){
+							isLookAround_ = true;
+						}
+						else {
+							lookAroundMoveTimer_->Clear();
+							lookAroundMoveTimer_->Start(lookAroundDistance_);
+						}						
+					}
+
+
+
 				}
 				else {
+					lookAroundMoveTimer_->Start(lookAroundDistance_);
 					playerUV_.x = kUVMovePlayerValue_;
 				}
 
@@ -353,12 +370,18 @@ void TitleScene::TextureSetting(){
 				nowTex->transform.translate_ = playerPos_;
 				nowTex->color = 0xffffffff;
 				nowTex->uvTransform.translate_ = playerUV_;
+				nowTex->sprite->SetInvertX(isLookLeft_);
 			}			
 		}
 
 	}
 	//タイマーによって切り替える
+	//ポット
 	timer_->Update(ImGui::GetIO().DeltaTime);
+	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	colorTimerStart_->Update(ImGui::GetIO().DeltaTime);
+	titleTexMoveTimer_->Update(ImGui::GetIO().DeltaTime);
+
 	if (not timer_->IsActive()){
 		playerPotUV_.x += kUVMoveValue_;
 		nullPotLeftUV_.x += kUVMoveValue_;
@@ -367,7 +390,7 @@ void TitleScene::TextureSetting(){
 		timer_->Clear();
 		timer_->Start(moveSpeed_);
 	}
-	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	//ボタン
 	if (not colorTimer_->IsActive()) {
 		if (buttomColor_ == 0xffffffff){
 			buttomColor_ = 0x00000000;
@@ -379,7 +402,7 @@ void TitleScene::TextureSetting(){
 		colorTimer_->Clear();
 		colorTimer_->Start(moveSpeedButtom_);
 	}
-	colorTimerStart_->Update(ImGui::GetIO().DeltaTime);
+	//始めるUI
 	if (not colorTimerStart_->IsActive()) {
 		SoLib::Color::RGB4 color4 = startTexColor_;
 		if ((color4.a - colorChangeValue_) < 0.0f) {
@@ -402,8 +425,8 @@ void TitleScene::TextureSetting(){
 		colorTimerStart_->Clear();
 		colorTimerStart_->Start(colorChangeSpeed_);
 	}
-
-	titleTexMoveTimer_->Update(ImGui::GetIO().DeltaTime);
+	//タイトルロゴ
+	
 	if (not titleTexMoveTimer_->IsActive()) {
 		if ((titleTexMoveValue_ + titleTexMoveSpeed_) < 0.0f) {
 			titleTexMoveValue_ = 0;
