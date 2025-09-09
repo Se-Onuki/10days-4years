@@ -163,6 +163,11 @@ namespace TD_10days {
 		void CalcSpriteData();
 		void Draw();
 
+		/// @brief 
+		/// @param[in] pos 
+		/// @return 
+		Vector2 StageToDrawMap(Vector2 pos);
+
 	private:
 
 		std::vector<std::unique_ptr<Sprite>> spriteList_;

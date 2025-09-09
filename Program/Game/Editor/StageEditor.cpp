@@ -40,7 +40,7 @@ void StageEditor::InitOnce() {
 			{},
 			{("StageTex/block.png")},//wall
 			{("StageTex/floor2.png")},//tile
-			{("StageTex/floor.png")},//floor
+			{("StageTex/FloorCTM.png")},//floor
 			{("StageTex/blue.png")},//water
 			{("StageTex/red.png")},//start
 			{("StageTex/goal.png")},//goal

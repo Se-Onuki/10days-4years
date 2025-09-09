@@ -209,6 +209,9 @@
       <UniqueIdentifier>{a53b88ae-455c-4352-96f1-626ca7c315bd}</UniqueIdentifier>
     </Filter>
     <Natvis Include="Natvis\ResourceHandle.natvis" />
+    <Filter Include="Game\TD_10days\Particle">
+      <UniqueIdentifier>{e630a3fe-8d84-4355-8fd2-24758b5af70e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene\SceneManager.cpp">
@@ -604,12 +607,6 @@
     <ClCompile Include="Scene\WaterDemoScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Game\UI\PlacementUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -621,6 +618,15 @@
     </ClCompile>
     <ClCompile Include="Game\TD_10days\Object\PlayerDrawer.cpp">
       <Filter>Game\TD_10days\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\BackgroundParticle.cpp">
+      <Filter>Game\TD_10days\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1209,15 +1215,6 @@
     <ClInclude Include="Scene\WaterDemoScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Game\TD_10days\SplashParticle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Game\UI\PlacementUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -1226,6 +1223,18 @@
     </ClInclude>
     <ClInclude Include="Game\TD_10days\Object\PlayerDrawer.h">
       <Filter>Game\TD_10days\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\SplashParticle.h">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\BackgroundParticle.h">
+      <Filter>Game\TD_10days\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
