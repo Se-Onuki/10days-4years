@@ -1,5 +1,6 @@
 {
     "PotAnim": {
-        "PotAnimationSpeed": 0.10000000149011612
+        "PlayerAnimation": 0.25,
+        "PotAnimationSpeed": 0.15000000596046448
     }
 }

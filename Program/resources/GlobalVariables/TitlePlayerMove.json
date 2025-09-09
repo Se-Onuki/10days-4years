@@ -1,9 +1,10 @@
 {
     "TitlePlayerMove": {
+        "AnimSpeed": 0.10000000149011612,
         "DashPower": 400.0,
         "Gravity": 1320.699951171875,
         "JumpPower": 466.6000061035156,
-        "LookAroundDistance": 0.699999988079071,
+        "LookAroundDistance": 0.5,
         "LookAroundLimit": 4,
         "MovePower": 301.70001220703125
     }
