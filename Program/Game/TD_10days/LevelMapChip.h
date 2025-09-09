@@ -27,6 +27,10 @@ namespace TD_10days {
 			kGoal,		// ゴール位置
 			kNeedle,	// 針
 			kMesh,		// 金網
+			kMoveUI,		// 移動UI
+			kSwimUI,		// 泳ぎUI
+			kWaterSetUI,	// 水設置UI
+			kGoalBord,		// ゴール上の看板
 			CountElements // 要素数
 		};
 
