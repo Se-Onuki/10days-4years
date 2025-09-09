@@ -94,20 +94,10 @@ void GameScene::OnEnter() {
 	player_.SetHitBox(levelMapChipHitBox_);
 	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
-	// 水ブロック用パーティクルマネージャー
-	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
-	waterParticleManager_->Init();
-
-	// パーティクルマネージャー
-	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
-	particleManager_->Init();
-
-
+	
 	water_ = std::make_unique<TD_10days::Water>();
-	water_->SetWaterParticleManager(waterParticleManager_.get());
-
+	
 	player_.SetWater(water_.get());
-	player_.SetParticleManager(particleManager_.get());
 
 	// 念の為特殊なブロックの位置を再計算
 	pLevelMapChip_->FindActionChips();
@@ -131,6 +121,18 @@ void GameScene::OnEnter() {
 
 	playerDrawer_ = std::make_unique<TD_10days::PlayerDrawer>();
 	playerDrawer_->Init(&player_);
+
+	// 水ブロック用パーティクルマネージャー
+	waterParticleManager_ = std::make_unique<TD_10days::WaterParticleManager>();
+	waterParticleManager_->Init();
+
+	// パーティクルマネージャー
+	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
+	particleManager_->Init(&camera_);
+
+	water_->SetWaterParticleManager(waterParticleManager_.get());
+
+	player_.SetParticleManager(particleManager_.get());
 
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
@@ -293,7 +295,10 @@ void GameScene::Draw() {
 
 	background_->Draw();
 
+
 	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	particleManager_->DrawBack();
 
 	stageEditor_->PutDraw();
 
@@ -309,6 +314,8 @@ void GameScene::Draw() {
 	DrawWater();
 
 	particleManager_->Draw();
+
+	
 
 	player_.DrawUI();
 

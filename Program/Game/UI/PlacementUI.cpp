@@ -153,15 +153,26 @@ void TD_10days::PlacementUI::Update(float deltaTime)
 
 }
 
-void TD_10days::PlacementUI::Draw() const
+void TD_10days::PlacementUI::Draw()
 {
 	if(!isActive_) {
 		return;
 	}
 	for(int i = 0; i < 4; ++i) {
+
+		if (not isPlaceableDir_[i]) {
+			arrows_[i].state_ = ArrowState::kIncapable;
+		}
+		else if (arrows_[i].state_ == ArrowState::kIncapable) {
+			arrows_[i].state_ = ArrowState::kNone;
+		}
+
+
 		arrows_[i].sprites_[static_cast<int>(arrows_[i].state_)]->Draw();
 		
 	}
 	text_->Draw();
 	button_->Draw();
 }
+
+

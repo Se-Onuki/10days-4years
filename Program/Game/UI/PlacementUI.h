@@ -10,7 +10,7 @@ namespace TD_10days {
 			kDisappearing // 消失中
 		};
 
-		enum class ArrowState{
+		enum class ArrowState {
 			kNone,
 			kTrigger,
 			kIncapable
@@ -23,17 +23,25 @@ namespace TD_10days {
 			const float pressDuration = 0.2f;
 		};
 
+		enum class Direction {
+			kRight,
+			kUp,
+			kLeft,
+			kDown
+		};
+
 	public:
 
 		PlacementUI() = default;
 		~PlacementUI() = default;
 		void Init(const Vector2& basePos);
 		void Update(float deltaTime);
-		void Draw() const;
+		void Draw();
 
 		void Appear() { easingState_ = EasingState::kAppearing; elapsed_ = 0.0f; };
 		void Disappear() { easingState_ = EasingState::kDisappearing; elapsed_ = 0.0f; };
 
+		void SetIsPlaceableDir_(Direction dir, bool isPlaceable) { isPlaceableDir_[static_cast<int>(dir)] = isPlaceable; }
 		void SetBasePos(const Vector2& pos) { basePos_ = pos; }
 		const Vector2& GetBasePos() const { return basePos_; }
 		void SetActive(const bool isActive) { isActive_ = isActive; }
@@ -45,6 +53,8 @@ namespace TD_10days {
 		Vector2 basePos_{};
 		const float offset_ = 1.0f;
 		const float uiOffset_ = 2.0f;
+
+		bool isPlaceableDir_[4]{ false, false, false, false };
 
 		// イージング
 		EasingState easingState_ = EasingState::kNone;

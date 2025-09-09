@@ -1,34 +1,38 @@
 #include "ParticleManager.h"
 
-void TD_10days::ParticleManager::Init() {
+void TD_10days::ParticleManager::Init(SolEngine::Camera2D* camera) {
 	splashParticles_.clear();
+	backgroundParticles_.clear();
+
+	for (int i = 0; i < 25; i++) {
+		auto drop = std::make_unique<BackgroundParticle>();
+		drop->Init(*camera); // 画面サイズを渡す
+		drop->SetCamera(camera);
+		backgroundParticles_.push_back(std::move(drop));
+	}
 }
 
 void TD_10days::ParticleManager::Update(float deltaTime) {
-	const auto input = SolEngine::Input::GetInstance();
-	const auto dInput = input->GetDirectInput();
-
-	if (dInput->IsTrigger(DIK_I)) {
-		SpawnSplash(Vector2{ 3.0f, 5.0f }, Vector2{ 0.0f, 1.0f }, false);
-	}
-	if (dInput->IsTrigger(DIK_K)) {
-		SpawnSplash(Vector2{ 3.0f, 5.0f }, Vector2{ 0.0f, -1.0f }, false);
-	}
-	if (dInput->IsTrigger(DIK_L)) {
-		SpawnSplash(Vector2{ 3.0f, 5.0f }, Vector2{ 1.0f, 0.0f }, false);
-	}
-	if (dInput->IsTrigger(DIK_J)) {
-		SpawnSplash(Vector2{ 3.0f, 5.0f }, Vector2{ -1.0f, 0.0f }, false);
-	}
-
 	for (const auto& particle : splashParticles_) {
 		particle->Update(deltaTime, -0.01f);
+	}
+
+	// 背景水滴更新
+	for (auto& drop : backgroundParticles_) {
+		drop->Update(deltaTime);
 	}
 }
 
 void TD_10days::ParticleManager::Draw() {
 	for (const auto& particle : splashParticles_) {
 		particle->Draw();
+	}
+}
+
+void TD_10days::ParticleManager::DrawBack()
+{
+	for (auto& drop : backgroundParticles_) {
+		drop->Draw();
 	}
 }
 
