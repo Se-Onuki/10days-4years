@@ -114,9 +114,9 @@ private:
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
 	//振り向き回数上限
-	uint16_t lookAroundLimit_ = 4;
+	int32_t lookAroundLimit_ = 4;
 	//現在の振りむき回数
-	uint16_t lookAroundNum_ = 0;
+	int32_t lookAroundNum_ = 0;
 
 	uint32_t buttomColor_ = 0xffffffff;
 	uint32_t startTexColor_ = 0xffffffff;
@@ -128,7 +128,9 @@ private:
 	float colorChangeSpeed_ = 0.05f;
 	float colorChangeValue_ = 0.05f;
 
+	float titleTexMoveTimeSpeed_ = 0.01f;
 	float titleTexMoveSpeed_ = 0.05f;
+	float titleTexMoveSpeedBase_ = 0.05f;
 	float titleTexMoveValue_ = 0.05f;
 	float moveT_ = 0.5f;
 

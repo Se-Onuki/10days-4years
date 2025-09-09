@@ -39,6 +39,12 @@ void TitleScene::OnEnter() {
 	global->AddValue(groupName, "PotAnimationSpeed", moveSpeed_);
 	global->AddValue(groupName, "PlayerAnimation", moveSpeedPlayer_);
 
+	groupName = "TitleLogo";
+	global->CreateGroups(groupName);
+	//アイテムの追加
+	global->AddValue(groupName, "TitleTexMoveSpeed", titleTexMoveSpeedBase_);
+	global->AddValue(groupName, "TitleTexMoveRange", titleTexMoveRange_);
+
 	groupName = "TitlePlayerMove";
 	global->CreateGroups(groupName);
 	//アイテムの追加
@@ -46,6 +52,8 @@ void TitleScene::OnEnter() {
 	global->AddValue(groupName, "JumpPower", jumpPower_);
 	global->AddValue(groupName, "MovePower", movePower_); 
 	global->AddValue(groupName, "DashPower", dashPower_);
+	global->AddValue(groupName, "LookAroundLimit", lookAroundLimit_);
+	global->AddValue(groupName, "LookAroundDistance", lookAroundDistance_);
 	// ライトの生成
 	ModelManager::GetInstance()->CreateDefaultModel();
 
@@ -310,11 +318,22 @@ void TitleScene::ApplyGlobalVariables(){
 	moveSpeed_ = global->Get<float>(groupName, "PotAnimationSpeed");
 	moveSpeedPlayer_ = global->Get<float>(groupName, "PlayerAnimation");
 
+	groupName = "TitleLogo";
+	titleTexMoveSpeedBase_ = global->Get<float>(groupName, "TitleTexMoveSpeed");
+	titleTexMoveRange_ = global->Get<Vector2>(groupName, "TitleTexMoveRange");
+
 	groupName = "TitlePlayerMove";
 	gravity_ = global->Get<float>(groupName, "Gravity");
 	jumpPower_ = global->Get<float>(groupName, "JumpPower");
 	movePower_ = global->Get<float>(groupName, "MovePower");
 	dashPower_ = global->Get<float>(groupName, "DashPower");
+	lookAroundLimit_ = global->Get<int32_t>(groupName, "LookAroundLimit");
+	if (lookAroundLimit_< 2){
+		//最低値が2になるように
+		lookAroundLimit_ = 2;
+	}
+	lookAroundDistance_ = global->Get<float>(groupName, "LookAroundDistance");
+
 }
 
 void TitleScene::TextureSetting(){
@@ -427,27 +446,29 @@ void TitleScene::TextureSetting(){
 	}
 	//タイトルロゴ
 	
+	
+
 	if (not titleTexMoveTimer_->IsActive()) {
 		if ((titleTexMoveValue_ + titleTexMoveSpeed_) < 0.0f) {
 			titleTexMoveValue_ = 0;
 			//反転
-			titleTexMoveSpeed_ *= -1;
+			titleTexMoveSpeed_ = titleTexMoveSpeedBase_;
 		}
 		else if ((titleTexMoveValue_ + titleTexMoveSpeed_) > 1.0f) {
 			titleTexMoveValue_ = 1.0f;
 			//反転
-			titleTexMoveSpeed_ *= -1;
+			titleTexMoveSpeed_ = -titleTexMoveSpeedBase_;
 		}
 		else {
 			titleTexMoveValue_ += titleTexMoveSpeed_;
 		}
 
-		moveT_ = SoLib::easeInBack(titleTexMoveValue_);
+		moveT_ = SoLib::easeInSine(titleTexMoveValue_);
 
 		titleTexPos_.y = SoLib::Lerp(titleTexMoveRange_.x, titleTexMoveRange_.y, moveT_);
 
 		titleTexMoveTimer_->Clear();
-		titleTexMoveTimer_->Start(colorChangeSpeed_);
+		titleTexMoveTimer_->Start(titleTexMoveTimeSpeed_);
 	}
 
 	if (isFishOutSide_){
