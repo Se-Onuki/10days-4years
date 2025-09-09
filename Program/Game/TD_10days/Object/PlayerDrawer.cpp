@@ -44,6 +44,9 @@ namespace TD_10days {
 		sprite_->SetInvertY(true);
 
 		sprite_->SetPivot(Vector2::one * 0.5f);
+
+		swimSETimer_ = std::make_unique<SoLib::DeltaTimer>();
+		swimSETimer_->Clear();
 	}
 
 	void PlayerDrawer::Update(const float deltaTime) {
@@ -76,15 +79,17 @@ namespace TD_10days {
 			// 左向きの移動であればtrue､そうでないならfalse;
 			isLeftFacing_ = pPlayer_->velocity_.x < 0.f;
 		}
-		if (uvX > oldUVX_ + 1.0f){
-			oldUVX_ = uvX;
-		}
-		
+
+		swimSETimer_->Update(deltaTime);
 		//泳いでいてアニメーションが変化したら
-		if (sample == PlayerDrawState::kSwim and oldUVX_ == uvX) {
-			//pPlayer_->GetWaterSwimSE().Play(false, pPlayer_->GetSEValume());
+		if (sample == PlayerDrawState::kSwim) {
+			if (not swimSETimer_->IsActive() and (pPlayer_->velocity_.x != 0.f or pPlayer_->velocity_.y != 0.f)) {
+				pPlayer_->GetWaterSwimSE().Play(false, pPlayer_->GetSEValume());
+				swimSETimer_->Clear();
+				swimSETimer_->Start(0.7f);
+			}
+			
 		}
-		
 
 		sprite_->SetTexOrigin({ uvX * pixelSize ,0 });
 		sprite_->SetPosition(pPlayer_->GetPosition() - Vector2::up * 0.1f);

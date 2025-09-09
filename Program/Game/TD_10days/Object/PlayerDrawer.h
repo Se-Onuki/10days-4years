@@ -2,6 +2,7 @@
 #include <memory>
 #include "DirectBase/2D/Sprite.h"
 #include "Utils/Containers/Singleton.h"
+#include <Utils/SoLib/SoLib_Timer.h>
 
 namespace TD_10days {
 
@@ -57,6 +58,9 @@ namespace TD_10days {
 		size_t waterCount_ = 0;
 
 		std::array<std::unique_ptr<PlayerDrawParametor>, static_cast<size_t>(PlayerDrawState::CountElements)> parametors_;
+
+		//プレイヤーアニメーションのタイマー
+		std::unique_ptr<SoLib::DeltaTimer> swimSETimer_ = nullptr;
 
 		PlayerDrawState playerState_ = PlayerDrawState::CountElements;
 		float stateTime_;
