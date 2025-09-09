@@ -172,6 +172,7 @@ namespace TD_10days {
 		void Init(const LevelMapChip *levelMapChip);
 		void CalcSpriteData();
 		void Draw();
+		void DrawNet();
 
 		/// @brief 
 		/// @param[in] pos 
@@ -181,6 +182,7 @@ namespace TD_10days {
 	private:
 
 		std::vector<std::unique_ptr<Sprite>> spriteList_;
+		std::vector<std::unique_ptr<Sprite>> meshSpriteList_;
 		const LevelMapChip *pLevelMapChip_ = nullptr;
 		/// @brief マップチップの位置を計算する
 		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;
