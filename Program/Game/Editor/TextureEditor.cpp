@@ -36,7 +36,7 @@ void TextureEditor::Finalize() {
 
 void TextureEditor::Update() {
 
-#ifdef _DEBUG	
+#ifdef USE_IMGUI	
 	
 	//マウスの座標をアプリと合わせる
 	Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
@@ -51,7 +51,7 @@ void TextureEditor::Update() {
 	
 	ClickPushMove(id_, mousePos);
 
-	if (isTextureEditor_){
+	if (isTextureEditor_ and isColorChange_) {
 		//マウスが画像と重なっているか
 		for (size_t i = 0; i < static_cast<size_t>(SceneID::kNum); i++) {
 			if (i != static_cast<size_t>(id_))
@@ -63,7 +63,7 @@ void TextureEditor::Update() {
 					if (selectNumber_ == -1 || selectNumber_ == int(j)) {
 						SoLib::Color::RGB4 color4 = texies_[i][j]->color;
 						color4.a = 1.0f - 0.5f;
-					
+
 						texies_[i][j]->color = color4;
 					}
 					else {
@@ -78,7 +78,6 @@ void TextureEditor::Update() {
 		}
 	}
 
-	//ShortCutMove(id_);
 #endif // _DEBUG
 
 }
@@ -104,7 +103,7 @@ void TextureEditor::Draw() {
 }
 
 void TextureEditor::PutDraw() {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	if (isDecideToPlace_ and isTextureEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
 		newTex_->sprite->SetPosition(newTex_->transform.translate_);
@@ -118,7 +117,7 @@ void TextureEditor::PutDraw() {
 }
 
 void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Vector2 mousePos) {
-#ifdef _DEBUG	
+#ifdef USE_IMGUI	
 	// 例: ユーザーがUIのテクスチャを選んだときなど
 	bool shouldFocus = false;
 	if (selectNumber_ != -1) {
@@ -239,6 +238,7 @@ void TextureEditor::Debug([[maybe_unused]] const SceneID id, [[maybe_unused]] Ve
 				ImGui::Checkbox("選択移動機能", &isSelecteTex_);
 				ImGui::Checkbox("ショートカットキー機能", &isShortCuts_);
 				ImGui::Checkbox("サイズを元の物にする機能", &isUseTextureBaseSize_);
+				ImGui::Checkbox("色がえ機能", &isColorChange_);
 				// 先に状態を保存
 				bool wasPush = isPush_;
 				bool wasTrigger = isTriger_;
@@ -679,7 +679,7 @@ void TextureEditor::LoadFile(const std::string& fileName) {
 		texColors_[static_cast<size_t>(id_)].emplace_back(std::move(color));
 	}
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	std::string message = "File loading completed";
 	MessageBoxA(WinApp::GetInstance()->GetHWND(), message.c_str(), "Object", 0);
 
@@ -773,7 +773,7 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 					}
 				}
 				else {
-					if (!ImGui::GetIO().WantCaptureMouse){
+					if (!ImGui::GetIO().WantCaptureMouse) {
 						selectNumber_ = -1;
 					}
 				}
@@ -789,6 +789,7 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 			}
 		}
 	}
+
 
 
 }
@@ -920,7 +921,7 @@ void TextureEditor::ChangeTex(std::filesystem::path path, Tex2DState* tex) {
 }
 
 void TextureEditor::DragMove([[maybe_unused]] std::filesystem::path path) {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	// ドラッグ処理の開始
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 		dragSelectPath_ = path;
@@ -932,7 +933,7 @@ void TextureEditor::DragMove([[maybe_unused]] std::filesystem::path path) {
 }
 
 void TextureEditor::DropMove([[maybe_unused]] const SceneID id, [[maybe_unused]] Vector2 mousePos) {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	// ドロップされた場所で配置処理
 	if (isDraging_) {
 		if (ImGui::IsMouseDown(0)) {

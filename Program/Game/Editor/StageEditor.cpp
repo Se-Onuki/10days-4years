@@ -122,27 +122,28 @@ void StageEditor::Update() {
 #ifdef USE_IMGUI
 	if (isUseEditor_) {
 
-
-
-		//マウスの座標をアプリと合わせる
-		Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-		mousePos.y *= -1; // Y反転（上が正になる）
-		mousePos += Vector2{ -640, 360 };
-		//カメラの距離に合わせてサイズを変更
-		blockSize_ = (int)(1.0f / camera_.scale_);
-
-		//カメラを考慮した座標に変換
-		
-		world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
-		world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
-
-		int blockQuater = (blockSize_ / 4);
-		// ---- マップチップの範囲内かどうか ----
-		isIncide_ =
-			((-(blockQuater * 2) <= world.first) and (world.first < (mapSize_.second * blockSize_) - (blockQuater * 3))) and
-			((-(blockQuater * 2) <= world.second) and (world.second < (mapSize_.first * blockSize_) - (blockQuater * 3)));
-
 		if (not ImGui::GetIO().WantCaptureMouse) {
+			//マウスの座標をアプリと合わせる
+			Vector2 mousePos = Vector2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+			mousePos.y *= -1; // Y反転（上が正になる）
+			mousePos += Vector2{ -640, 360 };
+			//カメラの距離に合わせてサイズを変更
+			blockSize_ = (int)(1.0f / camera_.scale_);
+
+			//カメラを考慮した座標に変換
+		
+			world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
+			world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
+
+			int blockQuater = (blockSize_ / 4);
+
+			std::pair<int32_t, int32_t> mapChipSize = levelMapChip_.GetSize();
+
+			// ---- マップチップの範囲内かどうか ----
+			isIncide_ =
+				((-(blockQuater * 2) <= world.first) and (world.first < (mapChipSize.second * blockSize_) - (blockQuater * 3))) and
+				((-(blockQuater * 2) <= world.second) and (world.second < (mapChipSize.first * blockSize_) - (blockQuater * 3)));
+
 			if (isIncide_) {
 				// ---- どのマップチップか ----
 				tilePos_.first = (world.first + (blockSize_ / 2)) / blockSize_;
@@ -340,11 +341,15 @@ int32_t StageEditor::MapToNumber(const TD_10days::LevelMapChip::MapChip map) {
 
 void StageEditor::LoadStage() {
 	int32_t selectNum = guiSelectNum_;
+	SelectToGame::GetInstance()->SetStageNum(selectNum - 1);
 
 	if (csvFile_.Load(kDirectoryPath_ + kFileName_ + std::to_string(selectNum).c_str() + ".csv")) {
 		csvData_ = csvFile_;
 
 		levelMapChip_.Init(csvData_);
+
+		mapSize_ = levelMapChip_.GetSize();
+		nowMapSize_ = mapSize_;
 	}
 	else {
 		levelMapChip_.Init(nowMapSize_.first, nowMapSize_.second);

@@ -12,14 +12,14 @@
                     0.0,
                     0.0
                 ],
-                "color": 4294967295,
+                "color": 4294967256,
                 "degree": -1,
                 "scale": [
                     370.0,
                     64.0
                 ],
                 "translate": [
-                    850.0,
+                    920.0,
                     538.0
                 ]
             },
@@ -41,7 +41,7 @@
                     255.0
                 ],
                 "translate": [
-                    842.0,
+                    922.0,
                     216.0
                 ]
             },
@@ -261,28 +261,6 @@
                     128.0
                 ],
                 "translate": [
-                    357.0,
-                    710.0
-                ]
-            },
-            {
-                "TextureFullPath": "UI\\Title\\Floor.png",
-                "TextureName": "Floor",
-                "UVScale": [
-                    128.0,
-                    128.0
-                ],
-                "UVTranslate": [
-                    0.0,
-                    0.0
-                ],
-                "color": 4294967295,
-                "degree": 0,
-                "scale": [
-                    128.0,
-                    128.0
-                ],
-                "translate": [
                     -27.0,
                     710.0
                 ]
@@ -295,7 +273,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    300.0,
+                    0.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -317,7 +295,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    2100.0,
+                    1800.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -339,7 +317,7 @@
                     400.0
                 ],
                 "UVTranslate": [
-                    2400.0,
+                    2100.0,
                     0.0
                 ],
                 "color": 4294967295,
@@ -371,8 +349,52 @@
                     68.0
                 ],
                 "translate": [
-                    842.0,
+                    918.0,
                     461.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\Floor.png",
+                "TextureName": "Floor",
+                "UVScale": [
+                    128.0,
+                    128.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967295,
+                "degree": 0,
+                "scale": [
+                    128.0,
+                    128.0
+                ],
+                "translate": [
+                    356.0,
+                    710.0
+                ]
+            },
+            {
+                "TextureFullPath": "UI\\Title\\PlayerWalk.png",
+                "TextureName": "PlayerWalk",
+                "UVScale": [
+                    200.0,
+                    200.0
+                ],
+                "UVTranslate": [
+                    0.0,
+                    0.0
+                ],
+                "color": 4294967040,
+                "degree": 0,
+                "scale": [
+                    200.0,
+                    200.0
+                ],
+                "translate": [
+                    250.0,
+                    460.0
                 ]
             }
         ]

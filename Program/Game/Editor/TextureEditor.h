@@ -170,6 +170,8 @@ private:
 
 	//UIエディターを使うかどうか
 	bool isTextureEditor_ = true;
+	//UIエディターを使うかどうか
+	bool isColorChange_ = true;
 
 	float time_ = 0;
 

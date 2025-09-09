@@ -42,7 +42,7 @@ void SelectScene::OnEnter(){
 	selectBGM_.Play(true, 0.5f);
 
 	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
-	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
+	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/CursolMove.mp3");
 	
 
 	backGround_ = std::make_unique<Tex2DState>();
@@ -163,7 +163,7 @@ void SelectScene::ApplyGlobalVariables() {
 }
 
 void SelectScene::Debug(){
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("選択しているステージ");
 	ImGui::SliderInt("ステージ番号", &stageNum_, 0, 14);
 

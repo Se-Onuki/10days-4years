@@ -1,0 +1,9 @@
+{
+    "TitleLogo": {
+        "TitleTexMoveRange": [
+            -5.0,
+            5.0
+        ],
+        "TitleTexMoveSpeed": 0.029999999329447746
+    }
+}
