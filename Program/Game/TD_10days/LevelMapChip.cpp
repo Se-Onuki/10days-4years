@@ -218,7 +218,6 @@ namespace TD_10days {
 					sprite = Sprite::Generate();
 				}
 
-				// スプライトの生成
 				Sprite *sprite = spriteList_[i].get();
 
 				sprite->SetTextureHaundle(textureHandle.index_);
@@ -227,6 +226,12 @@ namespace TD_10days {
 				// スプライトの設定
 				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
 				sprite->SetInvertY(true);			// UVのY軸反転
+
+				if (index == static_cast<size_t>(LevelMapChip::MapChip::kFloor)) {
+					sprite->SetTexDiff(Vector2::one * 128);
+					sprite->SetTexOrigin(StageToDrawMap(position) * 128.f);
+				}
+
 				i += 1;
 			}
 		}
@@ -244,5 +249,268 @@ namespace TD_10days {
 	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x) const
 	{
 		return Vector2(x * vMapChipScale_, y * vMapChipScale_);
+	}
+
+	Vector2 LevelMapChipRenderer::StageToDrawMap(Vector2 pos) {
+		//	const int stage = *stagePointer;
+
+		const auto [xSize, ySize] = pLevelMapChip_->GetSize();
+
+		const auto &hitMap = *pLevelMapChip_;
+
+		const auto BlockChip = LevelMapChip::MapChip::kFloor;
+
+		const int32_t dx = static_cast<int32_t>(pos.x), dy = static_cast<int32_t>(pos.y);
+
+
+		if ((*pLevelMapChip_)[dy][dx] == BlockChip) {
+			std::bitset<10> mapChipConnect = { 0 };
+
+			if (dy <= 1) {
+				mapChipConnect[1] = true;
+				mapChipConnect[2] = true;
+				mapChipConnect[3] = true;
+			}
+			if (dy >= static_cast<int32_t>(ySize - 1)) {
+				mapChipConnect[7] = true;
+				mapChipConnect[8] = true;
+				mapChipConnect[9] = true;
+
+			}
+
+			if (dx <= 0) {
+				mapChipConnect[1] = true;
+				mapChipConnect[4] = true;
+				mapChipConnect[7] = true;
+			}
+			if (dx >= static_cast<int32_t>(xSize - 1)) {
+				mapChipConnect[3] = true;
+				mapChipConnect[6] = true;
+				mapChipConnect[9] = true;
+			}
+
+			if (dy > 1) {
+				if (dx > 0) {
+					if (hitMap[dy - 1][dx - 1] == BlockChip) {
+						mapChipConnect[1] = true;
+					}
+				}
+				if (hitMap[dy - 1][dx] == BlockChip) {
+					mapChipConnect[2] = true;
+				}
+				if (dx < static_cast<int32_t>(xSize)) {
+					if (hitMap[dy - 1][dx + 1] == BlockChip) {
+						mapChipConnect[3] = true;
+					}
+				}
+			}
+
+
+			if (dx > 0) {
+				if (hitMap[dy][dx - 1] == BlockChip) {
+					mapChipConnect[4] = true;
+				}
+			}
+			if (dx < static_cast<int32_t>(xSize)) {
+				if (hitMap[dy][dx + 1] == BlockChip) {
+					mapChipConnect[6] = true;
+				}
+			}
+
+			if (dy < static_cast<int32_t>(ySize)) {
+				if (dx > 0) {
+					if (hitMap[dy + 1][dx - 1] == BlockChip) {
+						mapChipConnect[7] = true;
+					}
+				}
+				if (hitMap[dy + 1][dx] == BlockChip) {
+					mapChipConnect[8] = true;
+				}
+				if (dx < static_cast<int32_t>(xSize)) {
+					if (hitMap[dy + 1][dx + 1] == BlockChip) {
+						mapChipConnect[9] = true;
+					}
+				}
+			}
+
+
+			if ((!mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,3 };
+			}
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,0 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,1 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,2 };
+			}
+
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6])) {
+				return { 0,3 };
+			}
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6])) {
+				return { 1,3 };
+			}
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 2,3 };
+			}
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3])) {
+				return { 0,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3])) {
+				return { 1,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1])) {
+				return { 2,0 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3] && mapChipConnect[9])) {
+				return { 0,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 1,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[7])) {
+				return { 2,1 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[9])) {
+				return { 0,2 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[7] && mapChipConnect[9])) {
+				return { 1,2 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[7])) {
+				return { 2,2 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3])) {
+				return { 4,0 };
+			}
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3])) {
+				return { 5,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3])) {
+				return { 6,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3])) {
+				return { 8,0 };
+			}
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1])) {
+				return { 7,0 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3] && mapChipConnect[9])) {
+				return { 4,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 5,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 8,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[7])) {
+				return { 7,1 };
+			}
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3] && !mapChipConnect[9])) {
+				return { 4,2 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,2 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[7])) {
+				return { 7,2 };
+			}
+
+
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[9])) {
+				return { 4,3 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,3 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,3 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,3 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[7])) {
+				return { 7,3 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3] && !mapChipConnect[9])) {
+				return { 4,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[7])) {
+				return { 7,4 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,4 };
+			}
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 9,0 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 9,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 9,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 9,3 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 10,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 10,3 };
+			}
+
+		}
+
+		return {};
 	}
 }
