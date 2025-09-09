@@ -267,7 +267,7 @@ void TitleScene::Draw() {
 
 void TitleScene::Debug() {
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("タイトルテスト用");
 
 	ImGui::Checkbox("プレイヤーがボタンを押したかどうか", &isClicked_);
@@ -344,13 +344,9 @@ void TitleScene::TextureSetting(){
 			}
 		}
 		if (nowTex->textureName == "TitleLogo") {
-			if (isFishOutSide_) {
-				nowTex->color = 0x00000000;
-			}
-			else {
-				nowTex->transform.translate_ = nowTex->originalTransform.translate_ + titleTexPos_;
-				nowTex->color = startTexColor_;
-			}
+		
+			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + titleTexPos_;
+				
 		}
 		if (nowTex->textureName == "PlayerWalk") {
 			if (isFishOutSide_){			

@@ -163,7 +163,7 @@ void SelectScene::ApplyGlobalVariables() {
 }
 
 void SelectScene::Debug(){
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("選択しているステージ");
 	ImGui::SliderInt("ステージ番号", &stageNum_, 0, 14);
 
