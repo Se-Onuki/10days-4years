@@ -178,6 +178,11 @@ void GameScene::Update() {
 		}
 	}
 
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE)) {
+		sceneManager_->ChangeScene("SelectScene", 1.f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
+
 	if (stageClearTimer_.IsActive() and stageClearTimer_.IsFinish()) {
 		(this->*stageTransitionFunc_)();
 	}
@@ -491,8 +496,8 @@ void GameScene::DrawWater()
 
 }
 
-void GameScene::StageClear()
-{
+void GameScene::StageClear(){
+
 	ResetStage(true);
 
 }
@@ -508,10 +513,20 @@ void GameScene::ResetStage(bool isNext)
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
 	const auto stageNum = levelSelecter->GetStageNum();
-	// ステージ番号を加算するかの分岐
-	levelSelecter->SetStageNum(stageNum + (isNext ? 1 : 0));
 
-	sceneManager_->ChangeScene("GameScene");
+	int32_t finalStageNum = stageNum + (isNext ? 1 : 0);
+
+	if (finalStageNum != levelSelecter->GetStageMax()){
+		// ステージ番号を加算するかの分岐
+		levelSelecter->SetStageNum(finalStageNum);
+
+		sceneManager_->ChangeScene("GameScene");
+	}
+	else {
+		sceneManager_->ChangeScene("SelectScene", 1.0f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
+	
 }
 
 void GameScene::Load(const GlobalVariables::Group &)
