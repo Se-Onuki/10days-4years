@@ -128,6 +128,10 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 			levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 			levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 		}
+		const auto [y, x] = levelMapChip_.GetSize();
+		nowMapSize_.first = static_cast<int32_t>(y);
+		nowMapSize_.second = static_cast<int32_t>(x);
+		mapSize_ = levelMapChip_.GetSize();
 	}
 
 
@@ -339,6 +343,7 @@ void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 		}
 		ofs << "\n";
 	}
+	ofs << "EX," << levelMapChip_.FocusPointToString();
 
 	//ファイルを閉じる
 	ofs.close();

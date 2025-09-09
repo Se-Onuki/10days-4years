@@ -149,6 +149,10 @@ namespace TD_10days {
 		const std::unordered_set<Vector2> &GetGoalPosition() const;
 		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
+		void StringToFocusPointData(std::string_view str);
+
+		const std::string FocusPointToString() const;
+
 	private:
 
 
@@ -166,7 +170,7 @@ namespace TD_10days {
 		Vector2 startPos_{};
 		std::unordered_set<Vector2> goalPosList_{};
 		std::unordered_set<Vector2> needlePosList_{};
-		
+
 		// 注視点の情報
 		std::unordered_map<Vector2, FocusPoint> focusPoints_;
 

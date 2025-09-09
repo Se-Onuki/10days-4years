@@ -4,9 +4,9 @@
 
 namespace TD_10days {
 
-	void FocusManager::Update(const float deltaTime) {
+	void FocusManager::Update(const float) {
 
-		const auto &lvMap = *pLevelMapChip_;
+		//const auto &lvMap = *pLevelMapChip_;
 
 
 	}
@@ -15,7 +15,7 @@ namespace TD_10days {
 
 	}
 
-	void FocusCamera::Update(const float deltaTime) {
+	void FocusCamera::Update(const float) {
 
 	}
 

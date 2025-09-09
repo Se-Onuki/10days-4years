@@ -43,9 +43,17 @@ namespace TD_10days {
 
 	void LevelMapChip::Init(const SoLib::IO::CSV &csv)
 	{
+
 		// 縦横のデータを取得
 		x_ = static_cast<uint32_t>(csv.GetWidth());
 		y_ = static_cast<uint32_t>(csv.GetHeight());
+		// もし末尾に拡張文字があったら
+		if ((*(--csv.end())->begin()) == "EX") {
+			// 縦情報を1つ減らす
+			y_ -= 1;
+			// 文字列を変換する
+			StringToFocusPointData(csv[y_][1]);
+		}
 
 		mapChips_.resize(y_ * x_, static_cast<MapChip>(0));
 
@@ -145,6 +153,44 @@ namespace TD_10days {
 	const std::unordered_set<Vector2> &LevelMapChip::GetNeedlePosition() const
 	{
 		return needlePosList_;
+	}
+
+	void LevelMapChip::StringToFocusPointData(std::string_view str)
+	{
+		const auto source = str;
+		std::vector<std::string_view> values;
+
+		while (true) {
+			if (str.empty() or str.size() <= 0 or str.starts_with('\n')) { break; }
+
+			const auto size = str.find("/");
+			values.push_back(str.substr(0, size));
+			str = str.substr(size);
+		}
+
+		if (values.size() % 4 != 0) { return; }
+
+		for (size_t i = 0; i < values.size() / 4; ++i) {
+			const Vector2 pos = Vector2(std::stof(values[i + 0].data()), std::stof(values[i + 1].data()));
+			const FocusPoint datas{
+				.focusRadius_ = std::stof(values[i + 2].data()),
+				.focutPower_ = std::stof(values[i + 3].data()),
+			};
+			focusPoints_[pos] = datas;
+		}
+
+	}
+
+	const std::string LevelMapChip::FocusPointToString() const
+	{
+		std::string result;
+
+		for (const auto &[pos, data] : focusPoints_) {
+			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/';
+		}
+		result += '\n';
+
+		return result;
 	}
 
 	std::unique_ptr<LevelMapChip::LevelMapChipHitBox> LevelMapChip::CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const
