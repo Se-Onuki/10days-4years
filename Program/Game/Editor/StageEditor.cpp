@@ -28,6 +28,10 @@ void StageEditor::InitOnce() {
 			{("goal")},//goal
 			{("needle")},//needle
 			{("mesh")},//mesh
+			{("moveUI")},//moveUI
+			{("swimUI")},//swimUI
+			{("waterSetUI")},//waterSetUI
+			{("goalBord")},//goalBord
 		};
 	}
 	// もしテクスチャのパスがないなら
@@ -42,6 +46,10 @@ void StageEditor::InitOnce() {
 			{("StageTex/goal.png")},//goal
 			{("StageTex/Needle.png")},//needle
 			{("StageTex/Net.png")},//mesh
+			{("StageTex/MoveUI.png")},//moveUI
+			{("StageTex/SwimUI.png")},//swimUI
+			{("StageTex/WaterSetUI.png")},//waterSetUI
+			{("StageTex/GoalSignboard.png")},//goalBord
 		};
 	}
 
@@ -59,6 +67,10 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
 			{TextureHandle{TextureManager::Load(texPath_[7])}, false, false},//needle
 			{TextureHandle{TextureManager::Load(texPath_[8])}, true, false},//Mesh
+			{TextureHandle{TextureManager::Load(texPath_[9])}, false, false},//moveUI
+			{TextureHandle{TextureManager::Load(texPath_[10])}, false, false},//swimUI
+			{TextureHandle{TextureManager::Load(texPath_[11])}, false, false},//waterSetUI
+			{TextureHandle{TextureManager::Load(texPath_[12])}, false, false},//goalBord
 			});
 	}
 
