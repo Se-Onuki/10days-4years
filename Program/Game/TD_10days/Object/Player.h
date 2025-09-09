@@ -8,6 +8,7 @@
 #include "../Game/UI/PlacementUI.h"
 #include "../Game/TD_10days/Particle/ParticleManager.h"
 #include "../Game/TD_10days/CountUI.h"
+#include "PlayerDrawer.h"
 
 namespace TD_10days {
 
@@ -69,6 +70,7 @@ namespace TD_10days {
 		friend IPlayerState;
 		friend PlayerMovement;
 		friend PlayerPlacement;
+		friend PlayerDrawer;
 	public:
 
 		Player() = default;
@@ -101,6 +103,8 @@ namespace TD_10days {
 		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
 
 		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
+
+		Vector2 InputPlaceAble() const;
 
 	private:
 

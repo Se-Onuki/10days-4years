@@ -50,6 +50,8 @@ namespace TD_10days {
 			/// @brief 水のリストを破棄する
 			void Clear();
 
+			size_t GetWaterCount() const { return chainWaterList_.size(); }
+
 		private:
 
 
@@ -84,14 +86,17 @@ namespace TD_10days {
 
 		const std::unordered_set<Vector2> GetWaterPosition() const;
 
-		WaterParticleManager* GetWaterPartilceManager() { return waterParticleManager_; }
-		void SetWaterParticleManager(WaterParticleManager* manager) { waterParticleManager_ = manager; }
+		WaterParticleManager *GetWaterPartilceManager() { return waterParticleManager_; }
+		void SetWaterParticleManager(WaterParticleManager *manager) { waterParticleManager_ = manager; }
 
 		/// @brief タイマーの時間を返す
 		/// @return nulloptの場合は､タイマーが動作してない
 		std::optional<float> GetWaterTime() const;
 
-		
+		/// @brief 水の個数の取得
+		/// @return 水の量
+		size_t GetWaterCount() const { return chainWater_ ? chainWater_->GetWaterCount() : 0u; }
+
 	private:
 		std::unique_ptr<ChainWater> chainWater_;
 		Vector2 position_{};
@@ -101,6 +106,6 @@ namespace TD_10days {
 
 		bool isActive_ = false;
 
-		WaterParticleManager* waterParticleManager_ = nullptr;
+		WaterParticleManager *waterParticleManager_ = nullptr;
 	};
 }

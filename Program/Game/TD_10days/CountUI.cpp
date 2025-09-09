@@ -26,22 +26,16 @@ namespace TD_10days {
 
         }
 
-        //time_ = count_; // 初期残り時間
-        isActive_ = false;
     }
 
     void CountUI::Update(const Vector2& position) {
-        if (not isActive_) { return; };
 
-        if (time_ < 0.0f) {
-            time_ = 0.0f;
-            isActive_ = false; // カウント終了
-        }
         position_ = position;
     }
 
     void CountUI::Draw() {
-        if (not isActive_) { return; };
+        // もし値が無効であればその場で終わらせる
+        if (time_ <= 0.f) { return; }
 
         //// 残り時間を整数にして表示
         int displayNumber = static_cast<int>(std::ceil(time_));

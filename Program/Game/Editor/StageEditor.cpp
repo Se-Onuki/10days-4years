@@ -57,7 +57,7 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[4])}},//water
 			{TextureHandle{TextureManager::Load(texPath_[5])}, false},//start
 			{TextureHandle{TextureManager::Load(texPath_[6])}, false},//goal
-			{TextureHandle{TextureManager::Load(texPath_[7])}, false, true},//needle
+			{TextureHandle{TextureManager::Load(texPath_[7])}, false, false},//needle
 			{TextureHandle{TextureManager::Load(texPath_[8])}, true, false},//Mesh
 			});
 	}
@@ -119,7 +119,7 @@ void StageEditor::Finalize() {
 
 void StageEditor::Update() {
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	if (isUseEditor_) {
 
 		if (not ImGui::GetIO().WantCaptureMouse) {
@@ -175,13 +175,13 @@ void StageEditor::Update() {
 
 	Debug(Vector2({ (float)(world.first),(float)(world.second) }));
 
-#endif // _DEBUG
+#endif // USE_IMGUI
 
 }
 
 void StageEditor::PutDraw() {
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 
 	if (isIncide_ or isUseEditor_) {
 		newTex_->sprite->SetColor(newTex_->color);
@@ -193,13 +193,13 @@ void StageEditor::PutDraw() {
 		newTex_->sprite->Draw();
 	}
 
-#endif // _DEBUG
+#endif // USE_IMGUI
 
 }
 
 void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("ステージエディター");
 	ImGui::Text("%s", texName_[selectNumber_].c_str());
 	ImGui::SliderInt("設置するマップの種類", &selectNumber_, 1, static_cast<int>(TD_10days::LevelMapChip::MapChip::CountElements) - 1u);
@@ -284,7 +284,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::Begin("Stageエディター使用状況");
 	ImGui::Checkbox("Stageエディターを利用しているか", &isUseEditor_);
 	ImGui::End();
-#endif // DEBUG_
+#endif // USE_IMGUI
 
 
 }

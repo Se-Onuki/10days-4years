@@ -22,7 +22,7 @@ namespace TD_10days {
 		void Update(float deltaTime);
 		void Draw();
 
-		void SpawnSplash(Vector2 position, Vector2 velocity);
+		void SpawnSplash(Vector2 position, Vector2 velocity, bool isEnter);
 
 	private:
 		std::list<std::unique_ptr<SplashParticle>> splashParticles_;

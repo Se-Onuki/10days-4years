@@ -44,6 +44,7 @@ namespace TD_10days {
 
 		waterParticleManager_->Collapse();
 		chainWater_->Clear();
+		lifeTime_ = 0.f;
 	}
 
 	void Water::PlacementWater(const Vector2 &direction)
@@ -97,7 +98,7 @@ namespace TD_10days {
 
 	std::optional<float> Water::GetWaterTime() const
 	{
-		std::optional<float> result;
+		std::optional<float> result = std::nullopt;
 		if (isActive_) { result = lifeTime_; }
 		return result;
 	}

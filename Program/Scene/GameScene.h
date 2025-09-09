@@ -154,11 +154,13 @@ private:
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
-	Vector2 startLine_{7.5f, 5.0f};
+	Vector2 startLine_{7.0f, 5.0f};
 	Vector2 endLine_{};
-	Vector2 halfWindowSize_{640.0f, 360.0f};
+	Vector2 targetOffset_{ 4.0f, 4.0f };
+	Vector2 stageOffset_{ 15.0f, 10.0f };
 
 	TD_10days::Player player_;
+	std::unique_ptr<TD_10days::PlayerDrawer> playerDrawer_;
 
 	std::unique_ptr<Sprite> background_ = nullptr;
 
