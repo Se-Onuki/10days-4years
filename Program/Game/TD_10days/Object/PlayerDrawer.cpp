@@ -76,7 +76,7 @@ namespace TD_10days {
 		constexpr float pixelSize = 200.f;
 
 		sprite_->SetTexOrigin({ uvX * pixelSize ,0 });
-		sprite_->SetPosition(pPlayer_->GetPosition());
+		sprite_->SetPosition(pPlayer_->GetPosition() - Vector2::up * 0.1f);
 
 		sprite_->SetInvertX(isLeftFacing_);
 
