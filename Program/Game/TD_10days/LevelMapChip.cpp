@@ -254,7 +254,7 @@ namespace TD_10days {
 	Vector2 LevelMapChipRenderer::StageToDrawMap(Vector2 pos) {
 		//	const int stage = *stagePointer;
 
-		const auto [xSize, ySize] = pLevelMapChip_->GetSize();
+		const auto [ySize, xSize] = pLevelMapChip_->GetSize();
 
 		const auto &hitMap = *pLevelMapChip_;
 
@@ -266,7 +266,7 @@ namespace TD_10days {
 		if ((*pLevelMapChip_)[dy][dx] == BlockChip) {
 			std::bitset<10> mapChipConnect = { 0 };
 
-			if (dy <= 1) {
+			if (dy <= 0) {
 				mapChipConnect[1] = true;
 				mapChipConnect[2] = true;
 				mapChipConnect[3] = true;
@@ -289,7 +289,7 @@ namespace TD_10days {
 				mapChipConnect[9] = true;
 			}
 
-			if (dy > 1) {
+			if (dy > 0) {
 				if (dx > 0) {
 					if (hitMap[dy - 1][dx - 1] == BlockChip) {
 						mapChipConnect[1] = true;
@@ -298,7 +298,7 @@ namespace TD_10days {
 				if (hitMap[dy - 1][dx] == BlockChip) {
 					mapChipConnect[2] = true;
 				}
-				if (dx < static_cast<int32_t>(xSize)) {
+				if (dx < static_cast<int32_t>(xSize - 1)) {
 					if (hitMap[dy - 1][dx + 1] == BlockChip) {
 						mapChipConnect[3] = true;
 					}
@@ -311,13 +311,13 @@ namespace TD_10days {
 					mapChipConnect[4] = true;
 				}
 			}
-			if (dx < static_cast<int32_t>(xSize)) {
+			if (dx < static_cast<int32_t>(xSize - 1)) {
 				if (hitMap[dy][dx + 1] == BlockChip) {
 					mapChipConnect[6] = true;
 				}
 			}
 
-			if (dy < static_cast<int32_t>(ySize)) {
+			if (dy < static_cast<int32_t>(ySize - 1)) {
 				if (dx > 0) {
 					if (hitMap[dy + 1][dx - 1] == BlockChip) {
 						mapChipConnect[7] = true;
@@ -326,7 +326,7 @@ namespace TD_10days {
 				if (hitMap[dy + 1][dx] == BlockChip) {
 					mapChipConnect[8] = true;
 				}
-				if (dx < static_cast<int32_t>(xSize)) {
+				if (dx < static_cast<int32_t>(xSize - 1)) {
 					if (hitMap[dy + 1][dx + 1] == BlockChip) {
 						mapChipConnect[9] = true;
 					}
