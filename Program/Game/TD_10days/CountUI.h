@@ -9,11 +9,11 @@ namespace TD_10days {
 		CountUI() = default;
 		~CountUI() = default;
 		void Init();
-		void Update(const Vector2& position);
+		void Update(float deltaTime, const Vector2& position);
 		void Draw();
 
 		void SetPostion(const Vector2& position) { position_ = position; }
-		void SetTime(float time) { time_ = time; }
+		void SetTime(float time);
 
 	private:
 		std::vector<std::unique_ptr<Sprite>> onesNumber_;
@@ -22,5 +22,10 @@ namespace TD_10days {
 		const float size_ = 0.4f;
 		const Vector2 offset{ 0.0f, 1.0f };
 		Vector2 position_;
+
+		// 補間用
+		float animTimer_ = 0.f;
+		float animDuration_ = 0.6f; // 0.6秒で拡大
+		int prevNumber_ = -1; // 前フレームの表示数字
 	};
 }

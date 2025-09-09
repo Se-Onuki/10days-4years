@@ -20,8 +20,8 @@ SelectScene::SelectScene() {
 	
 }
 
-SelectScene::~SelectScene()
-{
+SelectScene::~SelectScene(){
+
 }
 
 void SelectScene::OnEnter(){
@@ -42,7 +42,7 @@ void SelectScene::OnEnter(){
 	selectBGM_.Play(true, 0.5f);
 
 	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
-	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
+	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/CursolMove.mp3");
 	
 
 	backGround_ = std::make_unique<Tex2DState>();
@@ -159,11 +159,17 @@ void SelectScene::Draw(){
 }
 
 void SelectScene::ApplyGlobalVariables() {
-	
+	GlobalVariables* global = GlobalVariables::GetInstance();
+	const char* groupName = "UIRandom";
+
+	angleMinMax_.first = global->Get<int>(groupName, "AngleRandomMin");
+	angleMinMax_.second = global->Get<int>(groupName, "AngleRandomMax");
+	posMinMax_.first = global->Get<Vector2>(groupName, "PosRandomMin");
+	posMinMax_.second = global->Get<Vector2>(groupName, "PosRandomMax");
 }
 
 void SelectScene::Debug(){
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ImGui::Begin("選択しているステージ");
 	ImGui::SliderInt("ステージ番号", &stageNum_, 0, 14);
 
@@ -239,7 +245,9 @@ void SelectScene::TextureSetting() {
 	backGround_->sprite->SetPosition(backGround_->originalTransform.translate_);
 	backGround_->sprite->SetScale(backGround_->originalTransform.scale_);
 	backGround_->sprite->SetPivot(kPivotValue_);
-	
+
+	randAngle_ = SoLib::Random::GetRandom(angleMinMax_.first, angleMinMax_.second);
+	randPos_ = SoLib::Random::GetRandom(posMinMax_.first, posMinMax_.second);
 	if (not colorTimer_->IsActive()) {
 		if (buttomColor_ == 0xffffffff) {
 			buttomColor_ = 0x00000000;
@@ -251,11 +259,16 @@ void SelectScene::TextureSetting() {
 		colorTimer_->Clear();
 		colorTimer_->Start(moveSpeedButtom_);
 	}
-	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
+	texDetas_ = TextureEditor::GetInstance()->GetSelectTextures();
 	for (size_t i = 0; i < texDetas_.size(); i++) {
 		Tex2DState* nowTex = texDetas_[i];
 		if (nowTex->textureName == "AButtomUI") {
 			nowTex->color = (buttomColor_);
+		}
+
+		if (nowTex->textureName == "EnterTheStageUI") {
+			nowTex->transform.rotate_ = DegreeToRadian(randAngle_);
+			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
 		}
 	}
 }
