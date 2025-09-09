@@ -43,6 +43,7 @@ void SelectScene::OnEnter(){
 
 	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
 	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/CursolMove.mp3");
+	sceneBackSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Back.mp3");
 	
 	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
 
@@ -92,6 +93,8 @@ void SelectScene::Update(){
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
 		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+			sceneBackSE_.Play(false, 0.5f);
+
 			sceneManager_->ChangeScene<TitleScene>(1.f);
 			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		}
