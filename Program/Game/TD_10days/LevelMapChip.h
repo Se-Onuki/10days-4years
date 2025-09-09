@@ -60,7 +60,14 @@ namespace TD_10days {
 			/// @return 水に対して当たるのならtrue
 			bool IsHasWaterCollision() const { return isWaterCollision_; }
 
+			// 描画スケール
+			void SetDrawScale(const Vector2 &scale) { scale_ = scale; }
+			const Vector2 &GetDrawScale() const { return scale_; }
+
 		private:
+
+			// 描画時のスケール
+			Vector2 scale_ = Vector2::one;
 			/// @brief テクスチャハンドル
 			TextureHandle textureHandle_{};
 			// 当たり判定があるかどうか
@@ -108,6 +115,9 @@ namespace TD_10days {
 		/// @return マップチップのサイズ(y, x)
 		auto GetSize() const { return std::make_pair(y_, x_); }
 
+		/// @brief マップチップに対応するデータを取得する
+		/// @return マップチップに対応するデータの配列
+		std::span<MapChipData> GetMapChipData() { return mapChipData_; }
 		/// @brief マップチップに対応するデータを取得する
 		/// @return マップチップに対応するデータの配列
 		std::span<const MapChipData> GetMapChipData() const { return mapChipData_; }

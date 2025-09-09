@@ -10,7 +10,7 @@ StageEditor::~StageEditor() {
 void StageEditor::ApplyMapChips() {
 	levelMapChip_.CreateHitBox();
 	levelMapChip_.FindActionChips();
-	
+
 }
 
 void StageEditor::InitOnce() {
@@ -72,6 +72,11 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[11])}, false, false},//waterSetUI
 			{TextureHandle{TextureManager::Load(texPath_[12])}, false, false},//goalBord
 			});
+
+		const auto mapChipData = levelMapChip_.GetMapChipData();
+
+		mapChipData[static_cast<size_t>(TD_10days::LevelMapChip::MapChip::kGoalBord)].SetDrawScale(Vector2{ 2.f,1.f });
+
 	}
 
 	if (not newTex_) {
@@ -93,7 +98,7 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 	InitOnce();
 
 	//死んだときに更新しないように
-	if (stageNum_ != SelectToGame::GetInstance()->GetStageNum()){
+	if (stageNum_ != SelectToGame::GetInstance()->GetStageNum()) {
 		// ステージ番号の取得
 		stageNum_ = SelectToGame::GetInstance()->GetStageNum();
 
@@ -122,7 +127,7 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 		}
 	}
 
-	
+
 }
 
 void StageEditor::Finalize() {
@@ -143,7 +148,7 @@ void StageEditor::Update() {
 			blockSize_ = (int)(1.0f / camera_.scale_);
 
 			//カメラを考慮した座標に変換
-		
+
 			world.first = (int32_t)(mousePos.x + (camera_.translation_.x * blockSize_));
 			world.second = (int32_t)(mousePos.y + (camera_.translation_.y * blockSize_));
 
@@ -265,7 +270,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	ImGui::DragInt("縦幅", &mapSize_.first, 1.0f, 0, 300);
 	ImGui::DragInt("横幅", &mapSize_.second, 1.0f, 0, 999);
 
-	if (mapSize_.first != nowMapSize_.first or mapSize_.second != nowMapSize_.second){
+	if (mapSize_.first != nowMapSize_.first or mapSize_.second != nowMapSize_.second) {
 		//サイズ変更してないけど上記の変更したいバーが変わっている状態
 		isNotChangeRange_ = true;
 	}
@@ -278,7 +283,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 	}
 	if (ImGui::Button("現在のステージを保存する")) {
 		if (OperationConfirmation(L"このステージを保存しますか?")) {
-			if (isNotChangeRange_){
+			if (isNotChangeRange_) {
 				if (OperationConfirmation(L"サイズの変更をしていませんが変更しますか？")) {
 					levelMapChip_.Resize(mapSize_.first, mapSize_.second);
 					nowMapSize_ = mapSize_;
@@ -289,7 +294,7 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 			else {
 				SaveFile(kFileName_);
 				isSave_ = true;
-			}			
+			}
 		}
 	}
 	SwapStage();
@@ -370,12 +375,12 @@ void StageEditor::LoadStage() {
 	ApplyMapChips();
 }
 
-void StageEditor::SwapStage(){
+void StageEditor::SwapStage() {
 	static int stageA = 0; // 選択中のステージA
 	static int stageB = 1; // 選択中のステージB
 
 	std::vector<std::string> stages;
-	for (auto& entry : std::filesystem::directory_iterator("resources/Datas/StageData")) {
+	for (auto &entry : std::filesystem::directory_iterator("resources/Datas/StageData")) {
 		if (entry.path().extension() == ".csv") {
 			stages.push_back(entry.path().string());
 		}
@@ -385,8 +390,8 @@ void StageEditor::SwapStage(){
 	ImGui::Text("入れ替えたいステージを選択してください");
 
 	ImGui::Combo("Stage A", &stageA,
-		[](void* data, int idx, const char** out_text) {
-			auto* vec = (std::vector<std::string>*)data;
+		[](void *data, int idx, const char **out_text) {
+			auto *vec = (std::vector<std::string>*)data;
 			if (idx < 0 || idx >= (int)vec->size()) return false;
 			static std::string display;
 			// ファイル名（例: stage1.csv）
@@ -404,11 +409,11 @@ void StageEditor::SwapStage(){
 			*out_text = display.c_str();
 			return true;
 		},
-		(void*)&stages, (int)stages.size());
+		(void *)&stages, (int)stages.size());
 
 	ImGui::Combo("Stage B", &stageB,
-		[](void* data, int idx, const char** out_text) {
-			auto* vec = (std::vector<std::string>*)data;
+		[](void *data, int idx, const char **out_text) {
+			auto *vec = (std::vector<std::string>*)data;
 			if (idx < 0 || idx >= (int)vec->size()) return false;
 			static std::string display;
 			// ファイル名
@@ -426,7 +431,7 @@ void StageEditor::SwapStage(){
 			*out_text = display.c_str();
 			return true;
 		},
-		(void*)&stages, (int)stages.size());
+		(void *)&stages, (int)stages.size());
 
 	// ボタンを押したら入れ替え
 	if (ImGui::Button("ステージを入れ替え")) {
@@ -447,7 +452,7 @@ void StageEditor::SwapStage(){
 				LoadStage();
 
 			}
-			catch (const std::filesystem::filesystem_error& e) {
+			catch (const std::filesystem::filesystem_error &e) {
 				std::cerr << "エラー: " << e.what() << std::endl;
 			}
 		}
@@ -489,7 +494,7 @@ bool StageEditor::LoadChackItem(const std::string &fileName) {
 	}
 }
 
-bool StageEditor::OperationConfirmation(const std::wstring text){
+bool StageEditor::OperationConfirmation(const std::wstring text) {
 	int result = MessageBox(WinApp::GetInstance()->GetHWND(), text.c_str(), L"Confirmation", MB_YESNO | MB_ICONQUESTION);
 	if (result == IDYES) {
 		return true;
