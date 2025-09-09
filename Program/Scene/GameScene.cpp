@@ -257,6 +257,10 @@ void GameScene::Update() {
 	stageEditor_->SetCamera(camera_);
 	stageEditor_->Update();
 
+	if (Fade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
+
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();

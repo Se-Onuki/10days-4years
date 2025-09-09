@@ -189,6 +189,10 @@ void SelectScene::Debug(){
 void SelectScene::PlayerMoving(){
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	if (Fade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
+
 	if (timer_->IsActive()){
 		return;
 	}
