@@ -190,8 +190,10 @@ void SelectScene::PlayerMoving(){
 		timer_->Clear();
 	}
 
+	lStick_ = (input_->GetXInput()->GetState()->stickL_);
+
 	//右入力
-	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
+	if (lStick_.x > 0.65f or input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
 		if (stageNum_ < (kMaxStages_ - 1)) {
 			stageChangeSE_.Play(false, 0.5f);
 			stageNum_++;
@@ -202,7 +204,7 @@ void SelectScene::PlayerMoving(){
 		
 	}
 	//左入力
-	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
+	else if (lStick_.x < -0.65f or input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
 		if (stageNum_ > 0) {
 			stageChangeSE_.Play(false, 0.5f);
 			stageNum_--;
