@@ -68,16 +68,20 @@ namespace TD_10days {
 				const auto chip = line[xi];
 
 				switch (chip) {
-				case MapChipType::kStart: {
+				case MapChip::kStart: {
 					startPos_ = Vector2{ static_cast<float>(xi), static_cast<float>(yi) };
 					break;
 				}
-				case MapChipType::kGoal: {
+				case MapChip::kGoal: {
 					goalPosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
 					break;
 				}
-				case MapChipType::kNeedle: {
+				case MapChip::kNeedle: {
 					needlePosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
+					break;
+				}
+				case MapChip::kFocusPoint: {
+					focusPoints_[Vector2{ static_cast<float>(xi), static_cast<float>(yi) }];
 					break;
 				}
 				default: {
