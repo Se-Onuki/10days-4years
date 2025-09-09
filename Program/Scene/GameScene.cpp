@@ -323,6 +323,8 @@ void GameScene::Draw() {
 
 	DrawWater();
 
+	levelMapChipRenderer_.DrawNet();
+
 	particleManager_->Draw();
 
 	

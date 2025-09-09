@@ -206,11 +206,15 @@ namespace TD_10days {
 		size_t count = 0;
 		// 描画テーブルのメモリ確保
 		for (const auto &[index, positions] : drawList) {
+			if (index == static_cast<size_t>(LevelMapChip::MapChip::kMesh)) {
+				meshSpriteList_.resize(positions.size());
+				continue;
+			}
 			count += positions.size();
 		}
 		spriteList_.resize(count);
 
-		size_t i = 0;
+		std::array<size_t, 2> listIndex = { 0 };
 		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
 			const auto &mapChip = mapChips[index];
@@ -218,14 +222,17 @@ namespace TD_10days {
 			const TextureHandle textureHandle = mapChip.GetTextureHandle();
 			// メモリの確保
 
+			std::vector<std::unique_ptr<Sprite>> &spriteTarget = (index != static_cast<size_t>(LevelMapChip::MapChip::kMesh) ? spriteList_ : meshSpriteList_);
+			size_t &i = (index != static_cast<size_t>(LevelMapChip::MapChip::kMesh) ? listIndex[0] : listIndex[1]);
+
 			// 座標
 			for (const auto &position : positions) {
 				// もしスプライトが無かったら､そこにデータを与える
-				if (auto &sprite = spriteList_[i]; not sprite.get()) {
+				if (auto &sprite = spriteTarget[i]; not sprite.get()) {
 					sprite = Sprite::Generate();
 				}
 
-				Sprite *sprite = spriteList_[i].get();
+				Sprite *sprite = spriteTarget[i].get();
 
 				sprite->SetTextureHaundle(textureHandle.index_);
 				sprite->SetPosition(position);
@@ -253,6 +260,19 @@ namespace TD_10days {
 			sprite->Draw();
 		}
 
+		// 全てに対して描画を実行
+		for (const auto &sprite : meshSpriteList_) {
+			sprite->Draw();
+		}
+
+	}
+	void LevelMapChipRenderer::DrawNet()
+	{
+
+		// 全てに対して描画を実行
+		for (const auto &sprite : meshSpriteList_) {
+			sprite->Draw();
+		}
 	}
 	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x) const
 	{

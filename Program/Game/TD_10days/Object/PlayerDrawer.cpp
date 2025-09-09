@@ -66,17 +66,28 @@ namespace TD_10days {
 		}
 
 		// 移動しているなら
-		if (pPlayer_->velocity_.x != 0.f) {
-			// 左向きの移動であればtrue､そうでないならfalse;
-			isLeftFacing_ = pPlayer_->velocity_.x < 0.f;
-		}
 
 		const float t = stateTime_ / parametor.vTransitionTime_;
 		const float uvX = std::floor(parametor.vTextureFrames_ * t);
 		constexpr float pixelSize = 200.f;
 
+		if (pPlayer_->velocity_.x != 0.f) {
+			
+			// 左向きの移動であればtrue､そうでないならfalse;
+			isLeftFacing_ = pPlayer_->velocity_.x < 0.f;
+		}
+		if (uvX > oldUVX_ + 1.0f){
+			oldUVX_ = uvX;
+		}
+		
+		//泳いでいてアニメーションが変化したら
+		if (sample == PlayerDrawState::kSwim and oldUVX_ == uvX) {
+			//pPlayer_->GetWaterSwimSE().Play(false, pPlayer_->GetSEValume());
+		}
+		
+
 		sprite_->SetTexOrigin({ uvX * pixelSize ,0 });
-		sprite_->SetPosition(pPlayer_->GetPosition());
+		sprite_->SetPosition(pPlayer_->GetPosition() - Vector2::up * 0.1f);
 
 		sprite_->SetInvertX(isLeftFacing_);
 
@@ -109,7 +120,7 @@ namespace TD_10days {
 			if (pPlayer_->pWater_->GetWaterCount() > waterCount_) {
 				return PlayerDrawState::kVomit;
 			}
-
+			
 			return PlayerDrawState::kSwim;
 		}
 

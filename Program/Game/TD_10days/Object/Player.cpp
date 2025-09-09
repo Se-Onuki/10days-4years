@@ -109,6 +109,7 @@ namespace TD_10days {
 		const Vector2 nextDir = player->InputPlaceAble();
 		if (nextDir != Vector2::zero) {
 			// 水を設置する
+			player->GetWaterSettingSE().Play(false, player->GetSEValume());
 			player->pWater_->PlacementWater(nextDir);
 		}
 
@@ -152,6 +153,10 @@ namespace TD_10days {
 		placementUI_->Init(position_);
 		countUI_ = std::make_unique<CountUI>();
 		countUI_->Init();
+
+		waterSettingSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterSet.mp3");
+		waterInOutSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterInOut.mp3");
+		waterSwimSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterSwim.mp3");
 	}
 
 	void Player::PreUpdate([[maybe_unused]] float deltaTime)
@@ -506,10 +511,12 @@ namespace TD_10days {
 			const bool isNowInWater = IsInWater();
 			if (not wasInWater_ && isNowInWater) {
 				// 入った瞬間
+				waterInOutSE_.Play(false, GetSEValume());
 				particleManager_->SpawnSplash(position_, velocity_, true);
 			}
 			else if (wasInWater_ && not isNowInWater) {
 				// 出た瞬間
+				waterInOutSE_.Play(false, GetSEValume());
 				particleManager_->SpawnSplash(position_, velocity_, false);
 			}
 			wasInWater_ = isNowInWater; // 状態更新

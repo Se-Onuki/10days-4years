@@ -2,6 +2,7 @@
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../../../Engine/DirectBase/Render/Camera.h"
+#include<DirectBase/Base/Audio.h>
 #include "../LevelMapChip.h"
 #include "Water.h"
 #include <DirectBase/File/GlobalVariables.h>
@@ -102,9 +103,17 @@ namespace TD_10days {
 
 		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
 
+		float GetSEValume()const {return SEValume_;	}
+
+		SolEngine::Audio::SoundHandle GetWaterSettingSE() const { return waterSettingSE_; }
+		SolEngine::Audio::SoundHandle GetWaterInOutSE() const { return waterInOutSE_; }
+		SolEngine::Audio::SoundHandle GetWaterSwimSE() const { return waterSwimSE_; }
+
 		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
 
 		Vector2 InputPlaceAble() const;
+
+		
 
 	private:
 
@@ -149,6 +158,14 @@ namespace TD_10days {
 		ParticleManager* particleManager_;
 
 		std::unique_ptr<CountUI> countUI_;
+		//水を置いたときの音
+		SolEngine::Audio::SoundHandle waterSettingSE_;
+		//水を出入り(水と当たった)時の音
+		SolEngine::Audio::SoundHandle waterInOutSE_;
+		//水を泳いでいる時の音
+		SolEngine::Audio::SoundHandle waterSwimSE_;
+
+		float SEValume_ = 0.5f;
 
 		// 座標
 		Vector2 position_{};
