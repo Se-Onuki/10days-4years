@@ -460,6 +460,9 @@ namespace TD_10days {
 		if (inputSpeed != 0) {
 			velocity_.x = std::copysign(std::clamp(velocity_.x, -inputSpeed, inputSpeed), velocity_.x);
 		}
+		if (std::abs(velocity_.x) < 0.05f) {
+			velocity_.x = 0.f;
+		}
 		std::list<Vector3> hitNormalList;
 
 		Vector2 moveVec = velocity_ * deltaTime;

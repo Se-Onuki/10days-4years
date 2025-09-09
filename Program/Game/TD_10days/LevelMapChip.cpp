@@ -191,6 +191,12 @@ namespace TD_10days {
 				if (mapChipType == LevelMapChip::MapChip::kEmpty) {
 					continue;
 				}
+#ifndef USE_IMGUI
+				if (mapChipType == LevelMapChip::MapChip::kStart) {
+					continue;
+				}
+#endif // USE_IMGUI
+
 				// データの追加
 				drawList[static_cast<size_t>(mapChipType)].emplace_back(mapChipPosition);
 			}
@@ -207,8 +213,9 @@ namespace TD_10days {
 		size_t i = 0;
 		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
+			const auto &mapChip = mapChips[index];
 			// マップチップのテクスチャハンドル
-			const TextureHandle textureHandle = mapChips[index].GetTextureHandle();
+			const TextureHandle textureHandle = mapChip.GetTextureHandle();
 			// メモリの確保
 
 			// 座標
@@ -222,6 +229,7 @@ namespace TD_10days {
 
 				sprite->SetTextureHaundle(textureHandle.index_);
 				sprite->SetPosition(position);
+				sprite->SetScale(mapChip.GetDrawScale());
 
 				// スプライトの設定
 				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
