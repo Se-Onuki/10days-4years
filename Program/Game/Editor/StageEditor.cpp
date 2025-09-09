@@ -76,7 +76,9 @@ void StageEditor::InitOnce() {
 		const auto mapChipData = levelMapChip_.GetMapChipData();
 
 		mapChipData[static_cast<size_t>(TD_10days::LevelMapChip::MapChip::kGoalBord)].SetDrawScale(Vector2{ 2.f,1.f });
-
+		mapChipData[static_cast<size_t>(TD_10days::LevelMapChip::MapChip::kMoveUI)].SetDrawScale(Vector2{ 2.f,1.f });
+		mapChipData[static_cast<size_t>(TD_10days::LevelMapChip::MapChip::kSwimUI)].SetDrawScale(Vector2{ 2.f,1.f });
+		mapChipData[static_cast<size_t>(TD_10days::LevelMapChip::MapChip::kWaterSetUI)].SetDrawScale(Vector2{ 2.f,1.f });
 	}
 
 	if (not newTex_) {
