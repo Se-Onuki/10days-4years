@@ -179,8 +179,10 @@ void GameScene::Update() {
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE)) {
-		sceneManager_->ChangeScene("SelectScene", 1.f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+			sceneManager_->ChangeScene("SelectScene", 1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}
 	}
 
 	if (stageClearTimer_.IsActive() and stageClearTimer_.IsFinish()) {
