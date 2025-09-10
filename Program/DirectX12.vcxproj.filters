@@ -634,6 +634,9 @@
     <ClCompile Include="Game\TD_10days\Object\FocusCamera.cpp">
       <Filter>Game\TD_10days\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Game\TD_10days\Particle\StarParticle.cpp">
+      <Filter>Game\TD_10days\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene\SceneManager.h">
@@ -1247,6 +1250,9 @@
     </ClInclude>
     <ClInclude Include="Game\TD_10days\Object\FocusCamera.h">
       <Filter>Game\TD_10days\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\Particle\StarParticle.h">
+      <Filter>Game\TD_10days\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

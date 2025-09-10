@@ -93,6 +93,14 @@ void SelectScene::OnEnter(){
 		numbers_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageNumbers.png"));
 	}
 	SelectToGame::GetInstance()->SetStageMax(kMaxStages_);
+
+	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
+	particleManager_->Init();
+
+	if (SelectToGame::GetInstance()->GetClearFlug()) {
+		particleManager_->SpawnStar(20);
+	}
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::StageSelect);
 }
@@ -135,6 +143,8 @@ void SelectScene::Update(){
 
 	BackGroundSetting();
 
+	particleManager_->Update(deltaTime);
+
 	Debug();
 
 	// デルタタイムの取得
@@ -155,6 +165,9 @@ void SelectScene::Draw(){
 
 
 	backGround_->sprite->Draw();
+
+	particleManager_->Draw();
+
 	for (int32_t i = 0; i < kMaxStages_; i++){
 		doors_[i]->sprite->Draw();
 		numbers_[i]->sprite->Draw();
@@ -405,6 +418,8 @@ void SelectScene::BackGroundSetting(){
 		backGround_->sprite->SetTextureHaundle(TextureManager::Load("TD_10days/BackGround/ClearStageSelect.png"));
 		backGround_->sprite->SetTexOrigin(backGroundUV_);
 		backGround_->sprite->SetTexDiff(backGroundUVScale_);
+
+		
 	}
 	
 

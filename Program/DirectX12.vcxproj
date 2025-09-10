@@ -257,6 +257,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\TD_10days\Particle\BackgroundParticle.cpp" />
     <ClCompile Include="Game\TD_10days\Particle\ParticleManager.cpp" />
     <ClCompile Include="Game\TD_10days\Particle\SplashParticle.cpp" />
+    <ClCompile Include="Game\TD_10days\Particle\StarParticle.cpp" />
     <ClCompile Include="Game\UI\ControllerUI.cpp" />
     <ClCompile Include="Game\UI\PlacementUI.cpp" />
     <ClCompile Include="Header\Collision\Collision.cpp" />
@@ -440,6 +441,7 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\TD_10days\Particle\BackgroundParticle.h" />
     <ClInclude Include="Game\TD_10days\Particle\ParticleManager.h" />
     <ClInclude Include="Game\TD_10days\Particle\SplashParticle.h" />
+    <ClInclude Include="Game\TD_10days\Particle\StarParticle.h" />
     <ClInclude Include="Game\TD_10days\SplashParticle.h" />
     <ClInclude Include="Game\UI\ControllerUI.h" />
     <ClInclude Include="Game\UI\PlacementUI.h" />
