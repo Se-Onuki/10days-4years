@@ -52,6 +52,8 @@ namespace TD_10days {
 		/// @brief 初期化処理
 		void Init();
 
+		void SetCameraPos(Vector2 pos);
+
 		/// @brief 更新処理
 		/// @param[in] deltaTime 差分
 		void Update(const float deltaTime);
@@ -60,9 +62,19 @@ namespace TD_10days {
 		/// @return カメラのアドレス
 		const auto *const GetCamera() const { return camera_.get(); }
 
+		/// @brief プレイヤーのアドレスの設定
+		/// @param[in] player プレイヤ
+		void SetEntity(Player *player) { pFocusEntity_ = player; }
 
+		void SetScale(size_t y, size_t x) { y_ = y; x_ = x; }
+
+		Vector2 CalcTargetPoint();
+
+		void CalcWindowSpan();
 
 	private:
+		// ステージのサイズ
+		size_t y_, x_;
 
 		// カメラの実体
 		std::unique_ptr<SolEngine::Camera2D> camera_;
@@ -70,10 +82,14 @@ namespace TD_10days {
 		// 注視する実体
 		Player *pFocusEntity_;
 
+		// プレイヤからの差分
+		Vector2 playerDiff_;
+
 		// 可動範囲の下限
 		Vector2 min_;
 		// 可動範囲の上限
 		Vector2 max_;
+
 
 	};
 

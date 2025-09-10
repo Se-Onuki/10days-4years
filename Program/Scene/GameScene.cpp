@@ -1,4 +1,4 @@
-﻿/// @file GameScene.cpp
+/// @file GameScene.cpp
 /// @brief ゲームの処理を実装する
 /// @author ONUKI seiya
 #include "GameScene.h"
@@ -75,6 +75,8 @@ void GameScene::OnEnter() {
 	camera_.Init();
 	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
 	camera_.translation_.y = 4.f;
+	camera_.scale_ = 0.015f;
+	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
 
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
@@ -115,9 +117,12 @@ void GameScene::OnEnter() {
 
 	targetOffset_.y = 1.0f;
 
-	camera_.Init();
-	camera_.scale_ = 0.015f;
-	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
+	focusCamera_ = std::make_unique<TD_10days::FocusCamera>();
+	focusCamera_->Init();
+	focusCamera_->SetEntity(&player_);
+	focusCamera_->SetScale(mapHeight, mapWidth);
+	focusCamera_->CalcWindowSpan();
+	focusCamera_->SetCameraPos(focusCamera_->CalcTargetPoint());
 
 	playerDrawer_ = std::make_unique<TD_10days::PlayerDrawer>();
 	playerDrawer_->Init(&player_);
@@ -129,7 +134,7 @@ void GameScene::OnEnter() {
 	// パーティクルマネージャー
 	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
 	particleManager_->Init();
-	particleManager_->SpawnBackground(&camera_);
+	particleManager_->SpawnBackground(focusCamera_->GetCamera());
 
 	water_->SetWaterParticleManager(waterParticleManager_.get());
 
@@ -176,7 +181,7 @@ void GameScene::Update() {
 					player_.SetNextState<TD_10days::PlayerSuccess>()->SetTarget(goalPos);
 
 					stageTransitionFunc_ = (&GameScene::StageClear);
-					
+
 				}
 				break;
 			}
@@ -185,11 +190,11 @@ void GameScene::Update() {
 		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			
+
 			stageClearTimer_.Start();
 			player_.SetNextState<TD_10days::PlayerDead>();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
-					
+
 		}
 	}
 
@@ -315,10 +320,10 @@ void GameScene::Update() {
 	camera_.UpdateMatrix();
 
 	// カメラから背景の位置を調整する
-	const float cameraX = (camera_.translation_.x);
+	const float cameraX = (focusCamera_->GetCamera()->translation_.x);
 	background_->SetTexOrigin({ cameraX * 16.f, 0 });
 
-	stageEditor_->SetCamera(camera_);
+	stageEditor_->SetCamera(*focusCamera_->GetCamera());
 	stageEditor_->Update();
 
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
@@ -340,6 +345,8 @@ void GameScene::Update() {
 	waterParticleManager_->Update(levelMapChipWaterHitBox_, 1.0f, deltaTime);
 
 	particleManager_->Update(deltaTime);
+
+	focusCamera_->Update(deltaTime);
 }
 
 void GameScene::Debug() {
@@ -373,8 +380,9 @@ void GameScene::Draw() {
 
 	background_->Draw();
 
+	const auto *camera = focusCamera_->GetCamera();
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 	particleManager_->DrawBack();
 
@@ -529,7 +537,9 @@ void GameScene::DrawWater()
 
 	Sprite::StartDraw(commandList);
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	const auto *camera = focusCamera_->GetCamera();
+
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 	water_->Draw();
 
@@ -565,7 +575,7 @@ void GameScene::DrawWater()
 
 	Sprite::StartDraw(commandList);
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 
 }
@@ -586,7 +596,7 @@ void GameScene::ResetStage(bool isNext)
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
-	
+
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号

@@ -78,7 +78,7 @@ void TD_10days::ParticleManager::SpawnSplash(Vector2 position, Vector2 velocity,
 	
 }
 
-void TD_10days::ParticleManager::SpawnBackground(SolEngine::Camera2D* camera)
+void TD_10days::ParticleManager::SpawnBackground(const SolEngine::Camera2D* camera)
 {
 	for (int i = 0; i < 25; i++) {
 		auto drop = std::make_unique<BackgroundParticle>();

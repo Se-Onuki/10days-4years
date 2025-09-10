@@ -45,6 +45,7 @@
 #include "../Game/TD_10days/Particle/ParticleManager.h"
 #include "../Game/TD_10days/CountUI.h"
 #include "../Game/TD_10days/CircleFade.h"
+#include <TD_10days/Object/FocusCamera.h>
 
 
 /// @class GameScene
@@ -155,7 +156,7 @@ private:
 	const TD_10days::LevelMapChip::LevelMapChipHitBox *levelMapChipWaterHitBox_;
 
 	SolEngine::Camera2D camera_;
-	Vector2 startLine_{7.0f, 5.0f};
+	Vector2 startLine_{ 7.0f, 5.0f };
 	Vector2 endLine_{};
 	Vector2 targetOffset_{ 4.0f, 4.0f };
 	Vector2 maxOffset_{ 4.0f, 1.0f };
@@ -173,6 +174,8 @@ private:
 
 	std::unique_ptr<TD_10days::WaterParticleManager> waterParticleManager_ = nullptr;
 	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
+
+	std::unique_ptr<TD_10days::FocusCamera> focusCamera_;
 
 	// bgm
 	SolEngine::Audio::SoundHandle gameBGM_;
