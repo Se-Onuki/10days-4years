@@ -274,6 +274,8 @@ void StageEditor::Debug([[maybe_unused]] Vector2 mousePos) {
 
 	}
 
+	ImGui::Text("配置箇所 Y ＝ %d, X ＝ %d", tilePos_.second, tilePos_.first);
+
 	ImGui::Text("現在のマップ上限 縦幅 ＝ %d, 横幅 ＝ %d", levelMapChip_.GetSize().first, levelMapChip_.GetSize().second);
 
 	ImGui::DragInt("縦幅", &mapSize_.first, 1.0f, 0, 300);
