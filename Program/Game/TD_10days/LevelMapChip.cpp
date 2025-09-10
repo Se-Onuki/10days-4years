@@ -64,6 +64,7 @@ namespace TD_10days {
 				mapChips_[xi + yi * x_] = static_cast<MapChip>(value);
 			}
 		}
+		FindActionChips();
 	}
 
 	void LevelMapChip::FindActionChips() {
@@ -190,11 +191,12 @@ namespace TD_10days {
 		if (values.size() % elemCount != 0) { return; }
 
 		for (size_t i = 0; i < values.size() / elemCount; ++i) {
-			const Vector2 pos = Vector2(std::stof(values[i + 0].data()), std::stof(values[i + 1].data()));
+			const size_t diff = i * elemCount;
+			const Vector2 pos = Vector2(std::stof(values[diff + 0].data()), std::stof(values[diff + 1].data()));
 			const FocusPoint datas{
-				.focusRadius_ = std::stof(values[i + 2].data()),
-				.focutPower_ = std::stof(values[i + 3].data()),
-				.easing_ = std::stoul(values[i + 4].data()),
+				.focusRadius_ = std::stof(values[diff + 2].data()),
+				.focutPower_ = std::stof(values[diff + 3].data()),
+				.easing_ = std::stoul(values[diff + 4].data()),
 			};
 			focusPoints_[pos] = datas;
 		}
