@@ -105,9 +105,9 @@ void SelectScene::Update(){
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
 		}
-		sceneManager_->ChangeScene<TitleScene>(2.5f);
+		sceneManager_->ChangeScene<TitleScene>(2.0f);
 		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
+		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 	}
 	
 	ApplyGlobalVariables();

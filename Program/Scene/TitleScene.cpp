@@ -156,8 +156,8 @@ void TitleScene::Update() {
 
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive() and isFishMoved_) {
 
-			sceneManager_->ChangeScene<SelectScene>(2.5f);
-			TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
+			sceneManager_->ChangeScene<SelectScene>(2.0f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 
 		isClicked_ = false;

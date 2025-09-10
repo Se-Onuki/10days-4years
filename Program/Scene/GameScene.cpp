@@ -526,12 +526,16 @@ void GameScene::ResetStage(bool isNext)
 	if (finalStageNum != levelSelecter->GetStageMax()){
 		// ステージ番号を加算するかの分岐
 		levelSelecter->SetStageNum(finalStageNum);
-
-		sceneManager_->ChangeScene("GameScene");
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+		}
+		sceneManager_->ChangeScene("GameScene", 2.0f);
 	}
 	else {
-		sceneManager_->ChangeScene("SelectScene", 1.0f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		sceneManager_->ChangeScene("SelectScene", 2.0f);
+		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+
 	}
 	
 }
