@@ -182,7 +182,7 @@ void GameScene::Update() {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				if (not isGoal_) {
 					isGoal_ = true;
-					goalSE_.Play(false, 0.5f);
+					goalSE_.Play(false, 0.7f);
 
 					stageClearTimer_.Start();
 					player_.SetNextState<TD_10days::PlayerSuccess>()->SetTarget(goalPos);
