@@ -35,6 +35,11 @@ void SelectScene::OnEnter(){
 
 	global->AddValue(groupName, "DoorChangeScaleAfter", changeScaleRangeAfter_);
 	global->AddValue(groupName, "ChangeScaleSpeed", changeScaleSpeed_);
+
+	groupName = "BackGround";
+
+	global->AddValue(groupName, "AnimSpeed", backGroundMoveSpeed_);
+	global->AddValue(groupName, "BackUVScale", backGroundUVScale_);
 	
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
@@ -42,6 +47,9 @@ void SelectScene::OnEnter(){
 
 	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimer_->Clear();
+
+	backGroundTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	backGroundTimer_->Clear();
 
 	// bgmのロード
 	selectBGM_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
@@ -116,6 +124,8 @@ void SelectScene::Update(){
 
 	TextureSetting();
 
+	BackGroundSetting();
+
 	Debug();
 
 	// デルタタイムの取得
@@ -186,6 +196,10 @@ void SelectScene::ApplyGlobalVariables() {
 	groupName = "Door";
 	changeScaleRangeAfter_ = global->Get<Vector2>(groupName, "DoorChangeScaleAfter");
 	changeScaleSpeed_ = global->Get<float>(groupName, "ChangeScaleSpeed");
+
+	groupName = "BackGround";
+	backGroundMoveSpeed_ = global->Get<float>(groupName, "AnimSpeed");
+	backGroundUVScale_ = global->Get<Vector2>(groupName, "BackUVScale");
 }
 
 void SelectScene::Debug(){
@@ -355,4 +369,30 @@ void SelectScene::TextureSetting() {
 			}
 		}
 	}
+}
+
+void SelectScene::BackGroundSetting(){
+	bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+	//ステージ6をクリア
+	if (clearFlug){
+
+		
+		//フェードが動いていないとき
+		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+
+			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
+
+			if (not backGroundTimer_->IsActive()) {
+				backGroundUV_.x += kUVMoveValue_;
+
+				backGroundTimer_->Clear();
+				backGroundTimer_->Start(backGroundMoveSpeed_);
+			}
+		}
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTexOrigin(backGroundUV_);
+		backGround_->sprite->SetTexDiff(backGroundUVScale_);
+	}
+	
+
 }

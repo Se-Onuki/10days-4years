@@ -14,6 +14,9 @@
 #include <DirectBase/File/GlobalVariables.h>
 #include <SelectScene.h>
 
+#include<SelectToGame/SelectToGame.h>
+
+
 TitleScene::TitleScene() {
 	input_ = SolEngine::Input::GetInstance();
 	audio_ = SolEngine::Audio::GetInstance();
@@ -55,6 +58,12 @@ void TitleScene::OnEnter() {
 	global->AddValue(groupName, "DashPower", dashPower_);
 	global->AddValue(groupName, "LookAroundLimit", lookAroundLimit_);
 	global->AddValue(groupName, "LookAroundDistance", lookAroundDistance_);
+
+	groupName = "BackGround";
+
+	global->AddValue(groupName, "AnimSpeed", backGroundMoveSpeed_);
+	global->AddValue(groupName, "BackUVScale", backGroundUVScale_);
+
 	// ライトの生成
 	ModelManager::GetInstance()->CreateDefaultModel();
 
@@ -69,6 +78,10 @@ void TitleScene::OnEnter() {
 	titleTexMoveTimer_->Clear();
 	lookAroundMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	lookAroundMoveTimer_->Clear();
+	backGroundTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	backGroundTimer_->Clear();
+
+
 	// bgmのロード
 	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
 	titleBGM_.Play(true, 0.5f);
@@ -237,6 +250,7 @@ void TitleScene::Update() {
 
 	TextureSetting();
 
+	BackGroundSetting();
 	// デルタタイムの取得
 	// const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
@@ -333,6 +347,10 @@ void TitleScene::ApplyGlobalVariables(){
 		lookAroundLimit_ = 2;
 	}
 	lookAroundDistance_ = global->Get<float>(groupName, "LookAroundDistance");
+
+	groupName = "BackGround";
+	backGroundMoveSpeed_ = global->Get<float>(groupName, "AnimSpeed");
+	backGroundUVScale_ = global->Get<Vector2>(groupName, "BackUVScale");
 
 }
 
@@ -478,4 +496,28 @@ void TitleScene::TextureSetting(){
 
 
 
+}
+
+void TitleScene::BackGroundSetting() {
+	bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+	//ステージ6をクリア
+	if (clearFlug) {
+
+
+		//フェードが動いていないとき
+		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+
+			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
+
+			if (not backGroundTimer_->IsActive()) {
+				backGroundUV_.x += kUVMoveValue_;
+
+				backGroundTimer_->Clear();
+				backGroundTimer_->Start(backGroundMoveSpeed_);
+			}
+		}
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTexOrigin(backGroundUV_);
+		backGround_->sprite->SetTexDiff(backGroundUVScale_);
+	}
 }

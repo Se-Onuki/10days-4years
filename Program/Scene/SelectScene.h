@@ -39,6 +39,8 @@ private:
 	//テクスチャの設定や移動など
 	void TextureSetting();
 
+	void BackGroundSetting();
+
 private:
 	// 入力インスタンス
 	SolEngine::Input* input_ = nullptr;
@@ -65,6 +67,10 @@ private:
 	static const int32_t kMaxStages_ = 6;
 	//ステージごとの幅
 	const int32_t kBaseMoveValue_ = 450;
+
+	//培養ポットのUV動かす値
+	const float kUVMoveValue_ = 300.0f;
+
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
 	Vector2 randPos_ = {};
@@ -78,7 +84,6 @@ private:
 
 	float moveSpeed_ = 0.25f;
 
-	std::unique_ptr<Tex2DState> backGround_;
 	//扉
 	std::array<std::unique_ptr<Tex2DState>, kMaxStages_> doors_;
 	//番号
@@ -115,8 +120,20 @@ private:
 	Vector2 changeScaleRangeAfter_ = {};
 	//実際に代入する入れ物
 	Vector2 doorScale_ = {};
+
+	
 	//イージングさせるかどうか
 	bool isEaseDoor_ = false;
 
+	/*背景変更関係*/
+	float backGroundMoveSpeed_ = 0.25f;
+
+	std::unique_ptr<Tex2DState> backGround_;
+
+	std::unique_ptr<SoLib::DeltaTimer> backGroundTimer_ = nullptr;
+
+	//変更後背景のUV
+	Vector2 backGroundUV_ = { 0.0f, 0.0f };
+	Vector2 backGroundUVScale_ = { 0.0f, 0.0f };
 };
 

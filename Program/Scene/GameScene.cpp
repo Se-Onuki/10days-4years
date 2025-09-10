@@ -532,6 +532,7 @@ void GameScene::ResetStage(bool isNext)
 		sceneManager_->ChangeScene("GameScene");
 	}
 	else {
+		levelSelecter->SetClearFlug(true);
 		sceneManager_->ChangeScene("SelectScene", 1.0f);
 		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 	}
