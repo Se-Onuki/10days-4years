@@ -56,7 +56,16 @@ void SelectScene::OnEnter(){
 	// bgmのロード
 	selectBGM_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
 
-	selectBGM_.Play(true, 0.5f);
+	// bgmのロード
+	clearWaveBGM_ = audio_->LoadMP3("resources/Audio/BGM/Wave.mp3");
+	if (SelectToGame::GetInstance()->GetClearFlug()) {
+		clearWaveBGM_.Play(true, 0.5f);
+		selectBGM_.Play(true, 0.3f);
+	}
+	else {
+		selectBGM_.Play(true, 0.5f);
+	}
+
 
 	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
 	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/CursolMove.mp3");
