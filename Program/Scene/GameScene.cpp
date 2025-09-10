@@ -128,7 +128,8 @@ void GameScene::OnEnter() {
 
 	// パーティクルマネージャー
 	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
-	particleManager_->Init(&camera_);
+	particleManager_->Init();
+	particleManager_->SpawnBackground(&camera_);
 
 	water_->SetWaterParticleManager(waterParticleManager_.get());
 

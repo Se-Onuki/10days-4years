@@ -1,15 +1,9 @@
 #include "ParticleManager.h"
 
-void TD_10days::ParticleManager::Init(SolEngine::Camera2D* camera) {
+void TD_10days::ParticleManager::Init() {
 	splashParticles_.clear();
 	backgroundParticles_.clear();
-
-	for (int i = 0; i < 25; i++) {
-		auto drop = std::make_unique<BackgroundParticle>();
-		drop->Init(*camera); // 画面サイズを渡す
-		drop->SetCamera(camera);
-		backgroundParticles_.push_back(std::move(drop));
-	}
+	starParticles_.clear();	
 }
 
 void TD_10days::ParticleManager::Update(float deltaTime) {
@@ -21,10 +15,18 @@ void TD_10days::ParticleManager::Update(float deltaTime) {
 	for (auto& drop : backgroundParticles_) {
 		drop->Update(deltaTime);
 	}
+
+	for (auto& drop : starParticles_) {
+		drop->Update(deltaTime);
+	}
 }
 
 void TD_10days::ParticleManager::Draw() {
 	for (const auto& particle : splashParticles_) {
+		particle->Draw();
+	}
+
+	for (const auto& particle : starParticles_) {
 		particle->Draw();
 	}
 }
@@ -74,4 +76,23 @@ void TD_10days::ParticleManager::SpawnSplash(Vector2 position, Vector2 velocity,
 		splashParticles_.push_back(std::move(particle));
 	}
 	
+}
+
+void TD_10days::ParticleManager::SpawnBackground(SolEngine::Camera2D* camera)
+{
+	for (int i = 0; i < 25; i++) {
+		auto drop = std::make_unique<BackgroundParticle>();
+		drop->Init(*camera); // 画面サイズを渡す
+		drop->SetCamera(camera);
+		backgroundParticles_.push_back(std::move(drop));
+	}
+}
+
+void TD_10days::ParticleManager::SpawnStar(int count)
+{
+	for (int i = 0; i < count; i++) {
+		auto drop = std::make_unique<StarParticle>();
+		drop->Init(); 
+		starParticles_.push_back(std::move(drop));
+	}
 }
