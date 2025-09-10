@@ -48,6 +48,8 @@
 #include "Engine/DirectBase/DxResource/DxResourceBufferPoolManager.h"
 #include "Engine/Utils/Network/WindowsSocket/WindowsSocket.h"
 
+#include "../Game/TD_10days/CircleFade.h"
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -96,6 +98,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Fade::StaticInit(); // 静的初期化
 	Fade::GetInstance()->SetState(SoLib::Vector2{ 0.f,0.f }, 0x000000FF);
 	Fade::GetInstance()->SetEaseFunc(SoLib::easeInQuad);
+
+	TD_10days::CircleFade::StaticInit(10, 10, 0.0f);
+	//TD_10days::CircleFade::GetInstance()->SetEaseFunc(SoLib::easeInQuad);
 
 	GlobalVariables *const gVariable = GlobalVariables::GetInstance();
 	gVariable->LoadFile();

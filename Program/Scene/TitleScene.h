@@ -20,6 +20,8 @@
 #include "../Header/Object/Block/BlockManager.h"
 #include "../Header/Object/Ground.h"
 
+#include "../Game/TD_10days/CircleFade.h"
+
 class TitleScene : public SolEngine::IScene {
 public:
 	TitleScene();

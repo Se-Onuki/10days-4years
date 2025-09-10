@@ -60,4 +60,7 @@ private:
 
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
 	std::unique_ptr<Sprite> sprite_ = nullptr;
+
+
+
 };

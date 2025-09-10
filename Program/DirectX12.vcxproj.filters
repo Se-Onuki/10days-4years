@@ -628,6 +628,9 @@
     <ClCompile Include="Game\TD_10days\Particle\BackgroundParticle.cpp">
       <Filter>Game\TD_10days\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Game\TD_10days\CircleFade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Game\TD_10days\Object\FocusCamera.cpp">
       <Filter>Game\TD_10days\Object</Filter>
     </ClCompile>
@@ -1238,6 +1241,9 @@
     </ClInclude>
     <ClInclude Include="Game\TD_10days\Particle\BackgroundParticle.h">
       <Filter>Game\TD_10days\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TD_10days\CircleFade.h">
+      <Filter>Game\TD_10days</Filter>
     </ClInclude>
     <ClInclude Include="Game\TD_10days\Object\FocusCamera.h">
       <Filter>Game\TD_10days\Object</Filter>

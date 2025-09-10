@@ -119,28 +119,45 @@ void TD_10days::PlacementUI::Update(float deltaTime)
 
 	const auto input = SolEngine::Input::GetInstance();
 	const auto dInput = input->GetDirectInput();
+	const auto* const xInput = input->GetXInput();
+
+	// 次に設置する水の場所
+	Vector2 nextDir = Vector2::zero;
+	if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.0625f) {
+		nextDir = xInput->GetState()->stickL_;
+		if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
+			nextDir.y = 0.f;
+		}
+		else {
+			nextDir.x = 0.f;
+		}
+		nextDir = nextDir.Normalize();
+	}
+
+
+
 
 	// 入力に応じて値を加算する
-	if (dInput->IsTrigger(DIK_D)) {
+	if (dInput->IsTrigger(DIK_D) or nextDir.x > 0.0f) {
 		if (arrows_[0].state_ != ArrowState::kIncapable) {
 			arrows_[0].state_ = ArrowState::kTrigger;
 			arrows_[0].pressTimer = arrows_[0].pressDuration;
 		}
 		
 	}
-	if (dInput->IsTrigger(DIK_W)) {
+	if (dInput->IsTrigger(DIK_W) or nextDir.y > 0.0f) {
 		if (arrows_[1].state_ != ArrowState::kIncapable) {
 			arrows_[1].state_ = ArrowState::kTrigger;
 			arrows_[1].pressTimer = arrows_[1].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_A)) {
+	if (dInput->IsTrigger(DIK_A) or nextDir.x < 0.0f) {
 		if (arrows_[2].state_ != ArrowState::kIncapable) {
 			arrows_[2].state_ = ArrowState::kTrigger;
 			arrows_[2].pressTimer = arrows_[2].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_S)) {
+	if (dInput->IsTrigger(DIK_S) or nextDir.y < 0.0f) {
 		if (arrows_[3].state_ != ArrowState::kIncapable) {
 			arrows_[3].state_ = ArrowState::kTrigger;
 			arrows_[3].pressTimer = arrows_[3].pressDuration;
