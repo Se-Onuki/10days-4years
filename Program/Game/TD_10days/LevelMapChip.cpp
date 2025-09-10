@@ -176,7 +176,7 @@ namespace TD_10days {
 
 			const auto size = str.find("/");
 			values.push_back(str.substr(0, size));
-			str = str.substr(size+1);
+			str = str.substr(size + 1);
 		}
 
 		if (values.size() % 4 != 0) { return; }
@@ -199,7 +199,6 @@ namespace TD_10days {
 		for (const auto &[pos, data] : focusPoints_) {
 			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/';
 		}
-		result += '\n';
 
 		return result;
 	}

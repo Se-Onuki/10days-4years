@@ -149,8 +149,12 @@ namespace TD_10days {
 		const std::unordered_set<Vector2> &GetGoalPosition() const;
 		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
+		/// @brief 文字列を解析して、FocusPointData に変換します。
+		/// @param[in] str 変換対象となる文字列ビュー。
 		void StringToFocusPointData(std::string_view str);
 
+		/// @brief フォーカスポイントを文字列として返します。
+		/// @return フォーカスポイントを表す std::string 型の文字列。
 		const std::string FocusPointToString() const;
 
 	private:
