@@ -497,7 +497,28 @@ namespace TD_10days {
 			// 設置判定をつける
 			isGround_ = true;
 			// 着地したのなら､高さを丸める｡
-			position_.y = std::roundf(position_.y) - (0.5f - size_.y / 2) - 0.01f;
+			position_.y = std::roundf(position_.y) - ((0.5f - size_.y / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), -Vector3::up) != hitNormalList.end()) {
+
+			// 落下を終わらせる
+			velocity_.y = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.y = std::roundf(position_.y) + ((0.5f - size_.y / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), Vector3::right) != hitNormalList.end()) {
+
+			// 左右移動を終わらせる
+			velocity_.x = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.x = std::roundf(position_.x) - ((0.5f - size_.x / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), -Vector3::right) != hitNormalList.end()) {
+
+			// 左右移動を終わらせる
+			velocity_.x = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.x = std::roundf(position_.x) + ((0.5f - size_.x / 2) + 0.01f);
 		}
 
 		// 水しぶきパーティクルを生成する
