@@ -12,12 +12,14 @@
 #include "../../Engine/DirectBase/File/VariantItem.h"		// 外部編集可能な変数の定義
 #include "../../Engine/Utils/IO/CSV.h"
 #include "../../Engine/DirectBase/2D/Sprite.h"
+#include "Utils/SoLib/SoLib_Easing.h"
 
 namespace TD_10days {
 
 	struct FocusPoint {
 		float focusRadius_{};
 		float focutPower_{};
+		SoLib::EaseFunc easing_;
 	};
 
 	class LevelMapChip {
@@ -157,6 +159,8 @@ namespace TD_10days {
 		/// @return フォーカスポイントを表す std::string 型の文字列。
 		const std::string FocusPointToString() const;
 
+		void FocusPointEditor();
+
 	private:
 
 
@@ -180,6 +184,12 @@ namespace TD_10days {
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
+
+#ifdef USE_IMGUI
+		std::unordered_map<Vector2, FocusPoint>::iterator focusItr_ = focusPoints_.end();
+
+#endif // USE_IMGUI
+
 	};
 
 	class LevelMapChipRenderer {

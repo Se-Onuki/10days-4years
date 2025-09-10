@@ -203,6 +203,28 @@ namespace TD_10days {
 		return result;
 	}
 
+	void LevelMapChip::FocusPointEditor()
+	{
+
+#ifdef USE_IMGUI
+		if (focusPoints_.empty()) { return; }
+
+		focusItr_ = SoLib::ImGuiWidget("注視点の選択", &focusPoints_, focusItr_,
+			[](const auto &item)->std::string
+			{
+				return std::string("{ y: ") + std::to_string(static_cast<int32_t>(item->first.y)) + ", x: " + std::to_string(static_cast<int32_t>(item->first.x)) + " }";
+			}
+		);
+		if (focusItr_ == focusPoints_.end()) { return; }
+		ImGui::Text("注視点の調整");
+		SoLib::ImGuiWidget("影響する半径", &focusItr_->second.focusRadius_);
+		SoLib::ImGuiWidget("影響する強度", &focusItr_->second.focutPower_);
+		SoLib::ImGuiWidget("影響の補正値", &focusItr_->second.easing_);
+
+#endif // USE_IMGUI
+
+	}
+
 	std::unique_ptr<LevelMapChip::LevelMapChipHitBox> LevelMapChip::CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const
 	{
 		auto result = std::make_unique<LevelMapChipHitBox>();

@@ -331,6 +331,11 @@ void GameScene::Update() {
 	}
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	ImGui::Text("\n\n");
+
+	// フォーカスの強度
+	pLevelMapChip_->FocusPointEditor();
+
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
