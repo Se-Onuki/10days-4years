@@ -127,6 +127,7 @@ namespace TD_10days {
 
 	void PlayerPlacement::OnEnter() {
 		const auto player = GetPlayer();
+		player->GetWaterSettingSE().Play(false, player->GetSEValume());
 
 		Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
 		if (not player->pHitBox_->at(static_cast<size_t>(placePos.y - 1), static_cast<size_t>(placePos.x))) {
