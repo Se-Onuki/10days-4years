@@ -1,4 +1,4 @@
-﻿/// @file GameScene.cpp
+/// @file GameScene.cpp
 /// @brief ゲームの処理を実装する
 /// @author ONUKI seiya
 #include "GameScene.h"
@@ -60,6 +60,7 @@ void GameScene::OnEnter() {
 	gameBGM_.Play(true, 0.5f);
 
 	goalSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Clear.mp3");
+	deadSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Death.mp3");
 	sceneBackSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Back.mp3");
 
 	gaussianParam_->first = 32.f;
@@ -195,7 +196,7 @@ void GameScene::Update() {
 		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-
+			deadSE_.Play(false, 0.5f);
 			stageClearTimer_.Start();
 			player_.SetNextState<TD_10days::PlayerDead>();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
