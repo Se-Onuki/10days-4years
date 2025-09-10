@@ -111,7 +111,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ウィンドウのxボタンが押されるまでループ
 	while (true) {
-		if (winApp->ProcessMessage()) { break; }
+		if (winApp->ProcessMessage() or input->GetDirectInput()->IsPress(DIK_ESCAPE)) { break; }
 
 		// キーボードの更新
 		input->Update();
