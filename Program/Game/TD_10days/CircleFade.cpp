@@ -51,7 +51,7 @@ namespace TD_10days {
 
         for (int y = 0; y < rows; ++y) {
             for (int x = 0; x < cols; ++x) {
-                auto circle = Sprite::Generate(TextureManager::Load("splash.png"));
+                auto circle = Sprite::Generate(TextureManager::Load("Player-export.png"));
                 circle->SetColor(SoLib::Color::RGB4(0, 0, 0, 255));
                 circle->SetPivot({ 0.5f, 0.5f });
                /* circle->SetScale({ circleSize > 0 ? circleSize : autoCircleSize,
