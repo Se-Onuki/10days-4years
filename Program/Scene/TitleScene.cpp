@@ -176,6 +176,11 @@ void TitleScene::Update() {
 
 	//魚が外に出たら
 	if (isFishOutSide_){
+		if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
+			isFishMoved_ = true;
+		}
+
+
 		if (not isOnGround_){
 			//地面についていないとき
 			acceleration_.y += gravity_ * deltaTime;
