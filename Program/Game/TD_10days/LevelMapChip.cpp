@@ -206,7 +206,7 @@ namespace TD_10days {
 		std::string result;
 
 		for (const auto &[pos, data] : focusPoints_) {
-			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/';
+			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/' + std::to_string(data.easing_.easeFunc_) + '/';
 		}
 
 		return result;

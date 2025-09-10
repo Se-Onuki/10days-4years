@@ -119,6 +119,7 @@ namespace TD_10days {
 		if (focusParams_.first) {
 			targetPos = focusParams_.first->CalcTargetPos(focusParams_.second, targetPos);
 		}
+		targetPos = ClampCameraPos(targetPos);
 
 		const Vector2 cameraPos = camera_->translation_.ToVec2();
 
@@ -129,16 +130,23 @@ namespace TD_10days {
 	}
 
 	Vector2 FocusCamera::CalcTargetPoint()
-	{// プレイヤの位置からある程度位置を算出
+	{
+		// プレイヤの位置からある程度位置を算出
 		const Vector2 playerPos = pFocusEntity_->GetPosition();
 		const Vector2 diff{ pFocusEntity_->GetVelocity().x * 0.25f,0.f };
 
 		playerDiff_ = SoLib::Lerp(diff, playerDiff_, 0.5f);
 
-		Vector2 targetPos = playerPos + playerDiff_;
-		targetPos.x = std::clamp(targetPos.x, min_.x, max_.x);
-		targetPos.y = std::clamp(targetPos.y, min_.y, max_.y);
+		const Vector2 targetPos = ClampCameraPos(playerPos + playerDiff_);
 		return targetPos;
+	}
+
+	Vector2 FocusCamera::ClampCameraPos(const Vector2 &pos) const
+	{
+		Vector2 result;
+		result.x = std::clamp(pos.x, min_.x, max_.x);
+		result.y = std::clamp(pos.y, min_.y, max_.y);
+		return result;
 	}
 
 	void FocusCamera::CalcWindowSpan()

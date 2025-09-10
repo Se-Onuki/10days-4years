@@ -93,6 +93,8 @@ namespace TD_10days {
 
 		Vector2 CalcTargetPoint();
 
+		Vector2 ClampCameraPos(const Vector2 &pos) const;
+
 		void CalcWindowSpan();
 
 		void SetParamAndTime(const std::pair<std::optional<FocusParametor>, float> &params);
