@@ -160,7 +160,7 @@ private:
 	Vector2 targetOffset_{ 4.0f, 4.0f };
 	Vector2 maxOffset_{ 4.0f, 1.0f };
 
-	Vector2 stageOffset_{ 9.0f, 10.0f };
+	Vector2 stageOffset_{ 15.0f, 10.0f };
 
 	bool isGoal_ = false;
 

@@ -108,9 +108,19 @@ void GameScene::OnEnter() {
 
 	// ステージからスクロールを終了地点を決める
 	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
-	for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
-		endLine_.x = goalPos.x - stageOffset_.x;
+	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+		for (int i = mapWidth - 1; i > 0; --i) {
+			TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(goalPos.y)][i];
+			if (mapChipType != TD_10days::LevelMapChip::MapChipType::kEmpty) {
+				endLine_.x = i - stageOffset_.x;
+				break;
+			}
+		}
+
+		//endLine_.x = goalPos.x - stageOffset_.x;
 	}
+
+
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
 
 	targetOffset_.y = 1.0f;
@@ -166,7 +176,7 @@ void GameScene::Update() {
 		// プレイヤの座標からゴールの距離を割り出す
 		const Vector2 playerPos = player_.GetPosition();
 		// ゴール座標からの距離で判定する
-		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
+		for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				if (not isGoal_) {
 					isGoal_ = true;
@@ -176,20 +186,20 @@ void GameScene::Update() {
 					player_.SetNextState<TD_10days::PlayerSuccess>()->SetTarget(goalPos);
 
 					stageTransitionFunc_ = (&GameScene::StageClear);
-					
+
 				}
 				break;
 			}
 		}
 
-		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
+		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			
+
 			stageClearTimer_.Start();
 			player_.SetNextState<TD_10days::PlayerDead>();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
-					
+
 		}
 	}
 
@@ -344,7 +354,7 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef USE_IMGUI
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
 		if (io.MouseWheel > 0.0f) {
@@ -364,8 +374,8 @@ void GameScene::Debug() {
 
 void GameScene::Draw() {
 
-	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
 
 #pragma region 背面スプライト
 
@@ -457,7 +467,7 @@ void GameScene::PostEffectSetup()
 void GameScene::PostEffectEnd()
 {
 
-	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 
 #pragma region ViewportとScissor(シザー)
 
@@ -502,8 +512,8 @@ void GameScene::PostEffectEnd()
 void GameScene::DrawWater()
 {
 
-	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
 
 	auto resultTex = texStrage_->Allocate();
 
@@ -537,7 +547,7 @@ void GameScene::DrawWater()
 
 	Sprite::EndDraw();
 
-	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 	// ポストエフェクトの初期値
 	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
 
@@ -586,7 +596,7 @@ void GameScene::ResetStage(bool isNext)
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
-	
+
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
@@ -616,12 +626,12 @@ void GameScene::ResetStage(bool isNext)
 
 }
 
-void GameScene::Load(const GlobalVariables::Group &)
+void GameScene::Load(const GlobalVariables::Group&)
 {
 
 }
 
-void GameScene::Save(GlobalVariables::Group &) const
+void GameScene::Save(GlobalVariables::Group&) const
 {
 
 }
