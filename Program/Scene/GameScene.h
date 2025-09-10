@@ -158,9 +158,11 @@ private:
 	Vector2 startLine_{7.0f, 5.0f};
 	Vector2 endLine_{};
 	Vector2 targetOffset_{ 4.0f, 4.0f };
-	Vector2 stageOffset_{ 15.0f, 10.0f };
+	Vector2 maxOffset_{ 4.0f, 1.0f };
 
+	Vector2 stageOffset_{ 9.0f, 10.0f };
 
+	bool isGoal_ = false;
 
 	TD_10days::Player player_;
 	std::unique_ptr<TD_10days::PlayerDrawer> playerDrawer_;
