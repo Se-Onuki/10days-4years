@@ -143,6 +143,7 @@ void GameScene::OnEnter() {
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
+	isGoal_ = false;
 }
 
 void GameScene::OnExit() {
@@ -167,10 +168,15 @@ void GameScene::Update() {
 		// ゴール座標からの距離で判定する
 		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
-				goalSE_.Play(false, 0.5f);
-				stageClearTimer_.Start();
+				if (not isGoal_) {
+					isGoal_ = true;
+					goalSE_.Play(false, 0.5f);
 
-				stageTransitionFunc_ = (&GameScene::StageClear);
+					stageClearTimer_.Start();
+
+					stageTransitionFunc_ = (&GameScene::StageClear);
+					
+				}
 				break;
 			}
 		}
@@ -178,9 +184,10 @@ void GameScene::Update() {
 		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-
+			
 			stageClearTimer_.Start();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
+					
 		}
 	}
 
@@ -577,7 +584,7 @@ void GameScene::ResetStage(bool isNext)
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
-
+	
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
