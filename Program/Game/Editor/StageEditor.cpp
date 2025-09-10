@@ -32,6 +32,7 @@ void StageEditor::InitOnce() {
 			{("swimUI")},//swimUI
 			{("waterSetUI")},//waterSetUI
 			{("goalBord")},//goalBord
+			{("focusPoint")},//goalBord
 		};
 	}
 	// もしテクスチャのパスがないなら
@@ -50,6 +51,7 @@ void StageEditor::InitOnce() {
 			{("StageTex/SwimUI.png")},//swimUI
 			{("StageTex/WaterSetUI.png")},//waterSetUI
 			{("StageTex/GoalSignboard.png")},//goalBord
+			{("StageTex/blue.png")},//focusPoint
 		};
 	}
 
@@ -71,6 +73,7 @@ void StageEditor::InitOnce() {
 			{TextureHandle{TextureManager::Load(texPath_[10])}, false, false},//swimUI
 			{TextureHandle{TextureManager::Load(texPath_[11])}, false, false},//waterSetUI
 			{TextureHandle{TextureManager::Load(texPath_[12])}, false, false},//goalBord
+			{TextureHandle{TextureManager::Load(texPath_[13])}, false, false},//focusPoint
 			});
 
 		const auto mapChipData = levelMapChip_.GetMapChipData();
@@ -127,6 +130,10 @@ void StageEditor::Initialize(TD_10days::LevelMapChipRenderer *pLevelMapChipRende
 			levelMapChip_[2][0] = TD_10days::LevelMapChip::MapChip::kWall;
 			levelMapChip_[3][0] = TD_10days::LevelMapChip::MapChip::kWall;
 		}
+		const auto [y, x] = levelMapChip_.GetSize();
+		nowMapSize_.first = static_cast<int32_t>(y);
+		nowMapSize_.second = static_cast<int32_t>(x);
+		mapSize_ = levelMapChip_.GetSize();
 	}
 
 
@@ -338,6 +345,7 @@ void StageEditor::SaveFile([[maybe_unused]] const std::string &fileName) {
 		}
 		ofs << "\n";
 	}
+	ofs << "EX," << levelMapChip_.FocusPointToString();
 
 	//ファイルを閉じる
 	ofs.close();

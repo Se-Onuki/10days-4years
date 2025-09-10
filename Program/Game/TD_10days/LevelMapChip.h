@@ -14,6 +14,12 @@
 #include "../../Engine/DirectBase/2D/Sprite.h"
 
 namespace TD_10days {
+
+	struct FocusPoint {
+		float focusRadius_{};
+		float focutPower_{};
+	};
+
 	class LevelMapChip {
 	public:
 
@@ -31,6 +37,7 @@ namespace TD_10days {
 			kSwimUI,		// 泳ぎUI
 			kWaterSetUI,	// 水設置UI
 			kGoalBord,		// ゴール上の看板
+			kFocusPoint,	// 注視点
 			CountElements // 要素数
 		};
 
@@ -142,6 +149,10 @@ namespace TD_10days {
 		const std::unordered_set<Vector2> &GetGoalPosition() const;
 		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
+		void StringToFocusPointData(std::string_view str);
+
+		const std::string FocusPointToString() const;
+
 	private:
 
 
@@ -159,6 +170,9 @@ namespace TD_10days {
 		Vector2 startPos_{};
 		std::unordered_set<Vector2> goalPosList_{};
 		std::unordered_set<Vector2> needlePosList_{};
+
+		// 注視点の情報
+		std::unordered_map<Vector2, FocusPoint> focusPoints_;
 
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
