@@ -574,4 +574,19 @@ namespace TD_10days {
 	}
 
 
+	void PlayerDead::InputFunc()
+	{
+	}
+
+	void PlayerDead::OnEnter()
+	{
+		auto &player = *GetPlayer();
+		player.acceleration_.y += 5.f;
+		player.velocity_ = Vector2::zero;
+	}
+
+	void PlayerDead::OnExit()
+	{
+	}
+
 }

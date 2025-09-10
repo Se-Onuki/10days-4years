@@ -17,7 +17,7 @@ namespace TD_10days {
 			struct ChainWaterData {
 
 				/// @brief 画像データ
-				//std::unique_ptr<Sprite> sprite_;
+				std::unique_ptr<Sprite> sprite_;
 
 				/// @brief 位置
 				Vector2 position_{};
