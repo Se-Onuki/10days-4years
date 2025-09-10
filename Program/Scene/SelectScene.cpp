@@ -225,6 +225,8 @@ void SelectScene::Debug(){
 void SelectScene::PlayerMoving(){
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+
+	basePos_ = stageNum_ * kBaseMoveValue_;
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
@@ -260,7 +262,7 @@ void SelectScene::PlayerMoving(){
 		
 	}
 
-	basePos_ = stageNum_ * kBaseMoveValue_;
+	
 }
 
 void SelectScene::TextureSetting() {

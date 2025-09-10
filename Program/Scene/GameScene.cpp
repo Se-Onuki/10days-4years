@@ -180,10 +180,10 @@ void GameScene::Update() {
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
-			sceneManager_->ChangeScene("SelectScene", 1.f);
-			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+			sceneManager_->ChangeScene("SelectScene", 2.f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 	}
 
@@ -258,7 +258,7 @@ void GameScene::Update() {
 	stageEditor_->SetCamera(camera_);
 	stageEditor_->Update();
 
-	if (Fade::GetInstance()->GetTimer()->IsActive()) {
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
 
@@ -520,6 +520,10 @@ void GameScene::StageDefeat()
 
 void GameScene::ResetStage(bool isNext)
 {
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
+
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
@@ -532,15 +536,17 @@ void GameScene::ResetStage(bool isNext)
 		levelSelecter->SetStageNum(finalStageNum);
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+			sceneManager_->ChangeScene("GameScene", 2.0f);
 		}
-		sceneManager_->ChangeScene("GameScene", 2.0f);
+		
 	}
 	else {
 		levelSelecter->SetClearFlug(true);
-		sceneManager_->ChangeScene("SelectScene", 2.0f);
-		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
-
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			sceneManager_->ChangeScene("SelectScene", 2.0f);
+			//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+		}
 		
 		
 	}
