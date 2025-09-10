@@ -133,7 +133,7 @@ namespace TD_10days {
 	{
 		// プレイヤの位置からある程度位置を算出
 		const Vector2 playerPos = pFocusEntity_->GetPosition();
-		const Vector2 diff{ pFocusEntity_->GetVelocity().x * 0.25f,0.f };
+		const Vector2 diff{ pFocusEntity_->GetVelocity().x * 0.25f,1.5f };
 
 		playerDiff_ = SoLib::Lerp(diff, playerDiff_, 0.5f);
 
