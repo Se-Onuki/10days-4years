@@ -102,5 +102,21 @@ private:
 	SolEngine::Audio::SoundHandle stageSelectSE_;
 	SolEngine::Audio::SoundHandle stageChangeSE_;
 	SolEngine::Audio::SoundHandle sceneBackSE_;
+	/*扉のイージング*/
+	//扉のイージングのための変数
+	float changeScaleSpeed_ = 0.05f;
+	//扉のイージングのための値
+	float changeScaleValue_ = 0.0f;
+	//イージングの基礎値
+	float moveT_ = 0.0f;
+	//変化の幅
+	Vector2 changeScaleRangeBefore_ = {};
+	//変化の幅
+	Vector2 changeScaleRangeAfter_ = {};
+	//実際に代入する入れ物
+	Vector2 doorScale_ = {};
+	//イージングさせるかどうか
+	bool isEaseDoor_ = false;
+
 };
 

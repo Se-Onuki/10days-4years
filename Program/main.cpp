@@ -111,7 +111,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ウィンドウのxボタンが押されるまでループ
 	while (true) {
-		if (winApp->ProcessMessage() or input->GetDirectInput()->IsPress(DIK_ESCAPE)) { break; }
+		if (winApp->ProcessMessage()) { break; }
 
 		// キーボードの更新
 		input->Update();
@@ -149,6 +149,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ゲームの処理
 		sceneManager->Update(deltaTime);
 
+		if (sceneManager->GetScene<TitleScene>() and input->GetDirectInput()->IsPress(DIK_ESCAPE)){
+			break;
+		}
 
 		///
 		/// ↑ゲーム処理↑

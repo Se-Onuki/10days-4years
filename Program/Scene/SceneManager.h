@@ -73,6 +73,9 @@ namespace SolEngine {
 		template <typename T>
 		T *const GetNextScene() const { return dynamic_cast<T *const>(nextScene_.get()); }
 
+		template <typename T>
+		T* const GetScene() const { return dynamic_cast<T* const>(currentScene_.get()); }
+
 
 		/// @brief シーン遷移
 		/// @param name 遷移先のシーン
