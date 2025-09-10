@@ -113,7 +113,10 @@ void GameScene::OnEnter() {
 	startLine_.y = playerPos.y + targetOffset_.y;
 
 	// ステージからスクロールを終了地点を決める
-	endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
+	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
+	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+		endLine_.x = goalPos.x - stageOffset_.x;
+	}
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
 
 	targetOffset_.y = 1.0f;
