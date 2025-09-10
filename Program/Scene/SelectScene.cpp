@@ -104,7 +104,7 @@ void SelectScene::Update(){
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
-		
+		}
 		sceneManager_->ChangeScene<TitleScene>(2.5f);
 		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
