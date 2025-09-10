@@ -44,6 +44,7 @@
 #include "../Game/UI/PlacementUI.h"
 #include "../Game/TD_10days/Particle/ParticleManager.h"
 #include "../Game/TD_10days/CountUI.h"
+#include "../Game/TD_10days/CircleFade.h"
 
 
 /// @class GameScene

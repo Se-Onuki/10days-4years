@@ -28,7 +28,7 @@ void SelectScene::OnEnter(){
 	// ライトの生成
 	ModelManager::GetInstance()->CreateDefaultModel();
 
-	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
 	GlobalVariables* global = GlobalVariables::GetInstance();
 	const char* groupName = "Door";
@@ -41,6 +41,8 @@ void SelectScene::OnEnter(){
 	global->AddValue(groupName, "AnimSpeed", backGroundMoveSpeed_);
 	global->AddValue(groupName, "BackUVScale", backGroundUVScale_);
 	
+
+	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
@@ -97,27 +99,32 @@ void SelectScene::Update(){
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+		/*if (not Fade::GetInstance()->GetTimer()->IsActive()) {
 			stageSelectSE_.Play(false, 0.5f);
 			isEaseDoor_ = true;
 			SelectToGame::GetInstance()->SetStageNum(stageNum_);
 			sceneManager_->ChangeScene<GameScene>(1.f);
 			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}*/
+
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			stageSelectSE_.Play(false, 0.5f);
+			isEaseDoor_ = true;
+			SelectToGame::GetInstance()->SetStageNum(stageNum_);
+			sceneManager_->ChangeScene<GameScene>(2.0f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
-
-			sceneManager_->ChangeScene<TitleScene>(1.f);
-			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		}
-		
+		sceneManager_->ChangeScene<TitleScene>(2.0f);
+		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 	}
-
 	
-
 	ApplyGlobalVariables();
 
 	PlayerMoving();
@@ -176,7 +183,9 @@ void SelectScene::Draw(){
 	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
 
-	Fade::GetInstance()->Draw();
+	//Fade::GetInstance()->Draw();
+
+	TD_10days::CircleFade::GetInstance()->Draw();
 
 	Sprite::EndDraw();
 
@@ -216,7 +225,7 @@ void SelectScene::Debug(){
 void SelectScene::PlayerMoving(){
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimer_->Update(ImGui::GetIO().DeltaTime);
-	if (Fade::GetInstance()->GetTimer()->IsActive()) {
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
 
@@ -378,7 +387,7 @@ void SelectScene::BackGroundSetting(){
 
 		
 		//フェードが動いていないとき
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 
 			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
 

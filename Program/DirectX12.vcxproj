@@ -246,9 +246,11 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Game\Editor\TextureEditor.cpp" />
     <ClCompile Include="Game\GameScene\GameModel.cpp" />
     <ClCompile Include="Game\GameScene\GameRenderer.cpp" />
+    <ClCompile Include="Game\TD_10days\CircleFade.cpp" />
     <ClCompile Include="Game\TD_10days\CountUI.cpp" />
     <ClCompile Include="Game\TD_10days\GameManager.cpp" />
     <ClCompile Include="Game\TD_10days\LevelMapChip.cpp" />
+    <ClCompile Include="Game\TD_10days\Object\FocusCamera.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Player.cpp" />
     <ClCompile Include="Game\TD_10days\Object\PlayerDrawer.cpp" />
     <ClCompile Include="Game\TD_10days\Object\Water.cpp" />
@@ -426,9 +428,11 @@ copy "$(ProjectDir)externals\libcurl\bin\libcurl.dll" "$(TargetDir)"</Command>
     <ClInclude Include="Game\GameScene\GameRenderer.h" />
     <ClInclude Include="Game\Resource\EnemyDataTable.h" />
     <ClInclude Include="Game\Resource\GameScore.h" />
+    <ClInclude Include="Game\TD_10days\CircleFade.h" />
     <ClInclude Include="Game\TD_10days\CountUI.h" />
     <ClInclude Include="Game\TD_10days\GameManager.h" />
     <ClInclude Include="Game\TD_10days\Level\LevelFileIO.h" />
+    <ClInclude Include="Game\TD_10days\Object\FocusCamera.h" />
     <ClInclude Include="Game\TD_10days\Object\Player.h" />
     <ClInclude Include="Game\TD_10days\LevelMapChip.h" />
     <ClInclude Include="Game\TD_10days\Object\PlayerDrawer.h" />

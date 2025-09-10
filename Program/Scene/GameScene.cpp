@@ -50,7 +50,8 @@ void GameScene::OnEnter() {
 	resourceLoadManager.Init(sceneJson["Resources"]);
 	resourceLoadManager.Load();
 
-	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
 
 
 	offScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
@@ -361,7 +362,8 @@ void GameScene::Draw() {
 	TextureEditor::GetInstance()->PutDraw();
 
 	// スプライトの描画
-	Fade::GetInstance()->Draw();
+	//Fade::GetInstance()->Draw();
+	TD_10days::CircleFade::GetInstance()->Draw();
 
 	Sprite::EndDraw();
 
@@ -528,13 +530,19 @@ void GameScene::ResetStage(bool isNext)
 	if (finalStageNum != levelSelecter->GetStageMax()){
 		// ステージ番号を加算するかの分岐
 		levelSelecter->SetStageNum(finalStageNum);
-
-		sceneManager_->ChangeScene("GameScene");
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+		}
+		sceneManager_->ChangeScene("GameScene", 2.0f);
 	}
 	else {
 		levelSelecter->SetClearFlug(true);
-		sceneManager_->ChangeScene("SelectScene", 1.0f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		sceneManager_->ChangeScene("SelectScene", 2.0f);
+		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+
+		
+		
 	}
 	
 }
