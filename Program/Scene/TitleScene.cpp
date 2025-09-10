@@ -83,12 +83,20 @@ void TitleScene::OnEnter() {
 	backGroundTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	backGroundTimer_->Clear();
 
-
 	// bgmのロード
 	titleBGM_ = audio_->LoadMP3("resources/Audio/BGM/Title.mp3");
-	titleBGM_.Play(true, 0.5f);
+	clearWaveBGM_ = audio_->LoadMP3("resources/Audio/BGM/Wave.mp3");
+	if (SelectToGame::GetInstance()->GetClearFlug()){
+		decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/ClearChoice.mp3");
+		clearWaveBGM_.Play(true, 0.5f);
+		titleBGM_.Play(true, 0.3f);
+	}
+	else {
+		titleBGM_.Play(true, 0.5f);
 
-	decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");	
+		decisionSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Choice.mp3");
+	}
+	
 
 	systemExecuter_.AddSystem<ECS::System::Par::CalcEulerTransMatrix>();
 	systemExecuter_.AddSystem<ECS::System::Par::CalcTransMatrix>();

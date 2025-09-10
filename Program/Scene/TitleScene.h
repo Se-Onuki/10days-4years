@@ -159,6 +159,8 @@ private:
 
 	// bgm
 	SolEngine::Audio::SoundHandle titleBGM_;
+
+	SolEngine::Audio::SoundHandle clearWaveBGM_;
 	// bgm
 	SolEngine::Audio::SoundHandle decisionSE_;
 
