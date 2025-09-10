@@ -21,6 +21,7 @@
 #include "../Header/Object/Ground.h"
 
 #include "../Game/TD_10days/CircleFade.h"
+#include "../Game/TD_10days/Particle/ParticleManager.h"
 
 class TitleScene : public SolEngine::IScene {
 public:
@@ -176,5 +177,7 @@ private:
 	//変更後背景のUV
 	Vector2 backGroundUV_ = { 0.0f, 0.0f };
 	Vector2 backGroundUVScale_ = { 0.0f, 0.0f };
+
+	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
 
 };

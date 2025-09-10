@@ -2,42 +2,29 @@
 
 void TD_10days::SplashParticle::Init(const Vector2& position, const Vector2& velocity)
 {
-	sprite_ = Sprite::Generate(TextureManager::Load(/*"output1.png"*/"splash.png"));
+	sprite_ = Sprite::Generate(TextureManager::Load("splash.png"));
 	sprite_->SetPivot({ 0.5f, 0.5f });
 	position_ = position;
 	sprite_->SetPosition(position_);
 
-	// プレイヤー速度から方向ベクトルを作成（逆方向）
+	// velocity の方向ベクトル
 	Vector2 dir = velocity;
 	dir.Normalize();
 
-	// ランダムで±30度広げる
-	float angle = atan2(dir.y, dir.x);
+	// 方向ベクトルを角度に変換
+	float baseAngle = atan2(dir.y, dir.x);
 
-	// 横方向の動きが強いなら → Y方向に広がりを持たせる
-	if (fabs(dir.x) > fabs(dir.y)) {
-		// 横ベース
-		angle += SoLib::Random::GetRandom(-30.0f, 30.0f) * (SoLib::Angle::PI / 180.0f);
+	// ±30度ランダムにずらす
+	float angleOffset = SoLib::Random::GetRandom(-30.0f, 30.0f) * (SoLib::Angle::PI / 180.0f);
+	float angle = baseAngle + angleOffset;
 
-		velocity_ = {
-			cos(angle) * SoLib::Random::GetRandom(0.1f, 0.3f),
-			sin(angle) *  SoLib::Random::GetRandom(0.2f, 0.5f)
-		};
+	// ランダムな速さ（粒子感を出すため）
+	float speed = SoLib::Random::GetRandom(0.1f, 0.15f);
 
-	}
-	else {
-		// 縦ベース（今まで通り）
-		angle += SoLib::Random::GetRandom(-30.0f, 30.0f) * (SoLib::Angle::PI / 180.0f);
-
-		velocity_ = {
-		        cos(angle) * SoLib::Random::GetRandom(0.1f, 0.25f),
-		        sin(angle) * SoLib::Random::GetRandom(0.08f, 0.1f)
-		};
-
-		if (dir.y < 0.0f) {
-			velocity_.y = -sin(angle) * SoLib::Random::GetRandom(0.01f, 0.05f);
-		}
-	}
+	velocity_ = {
+		cos(angle) * speed,
+		sin(angle) * speed
+	};
 
 	// サイズと色
 	float size = SoLib::Random::GetRandom(size_.min, size_.max);
@@ -45,7 +32,6 @@ void TD_10days::SplashParticle::Init(const Vector2& position, const Vector2& vel
 	sprite_->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f }); // 水色
 
 	isActive_ = true;
-
 }
 
 void TD_10days::SplashParticle::Update(float deltaTime, float gravity)

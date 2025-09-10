@@ -161,9 +161,10 @@ private:
 	Vector2 targetOffset_{ 4.0f, 4.0f };
 	Vector2 maxOffset_{ 4.0f, 1.0f };
 
-	Vector2 stageOffset_{ 9.0f, 10.0f };
+	Vector2 stageOffset_{ 15.0f, 10.0f };
 
 	bool isGoal_ = false;
+	bool isDead_ = false;
 
 	TD_10days::Player player_;
 	std::unique_ptr<TD_10days::PlayerDrawer> playerDrawer_;
@@ -180,5 +181,6 @@ private:
 	// bgm
 	SolEngine::Audio::SoundHandle gameBGM_;
 	SolEngine::Audio::SoundHandle goalSE_;
+	SolEngine::Audio::SoundHandle deadSE_;
 	SolEngine::Audio::SoundHandle sceneBackSE_;
 };

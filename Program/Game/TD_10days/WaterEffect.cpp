@@ -17,6 +17,7 @@ namespace TD_10days
 		startPosition_ = position;
 		sprite_->SetPosition(position_);
 		bounds_ = bounds;
+		dropTime_ = 0.0f;
 	}
 	void WaterParticle::Update(float deltaTime)
 	{
@@ -39,6 +40,12 @@ namespace TD_10days
 		}
 		else {
 			velocity_.y += 0.001f;
+
+			if (dropTime_ > 3.0f) {
+				dropTime_ = 0.0f;
+			}
+			dropTime_ += deltaTime;
+			
 		}
 		position_ += velocity_;
 		sprite_->SetPosition(position_);
@@ -55,15 +62,59 @@ namespace TD_10days
 	void WaterParticleManager::Init()
 	{
 		particles_.clear();
+		drops_.clear();
 	}
 
 	void WaterParticleManager::Update(const LevelMapChip::LevelMapChipHitBox *hitBox, float chipSize, float deltaTime)
 	{
+
+		time_ += deltaTime;
+
+		std::vector<Rect> boundList;
+
 		for (const auto &particle : particles_) {
 			particle->Update(deltaTime);
+
+			Rect bounds = particle->GetBounds();
+			if (particle->GetDropTime() > 3.0f) {
+				if (boundList.size() == 0) {
+					std::unique_ptr<WaterParticle> drop = std::make_unique<WaterParticle>();
+					drop->Init(Vector2{ SoLib::Random::GetRandom(bounds.left, bounds.right), SoLib::Random::GetRandom(bounds.bottom, bounds.top) }, Rect{ 0.0f, 0.0f, 0.0f, 0.0f });
+					drop->SetInBoundary(false);
+					drop->SetSize(Vector2{ 0.2f, 0.2f });
+					drops_.emplace_back(std::move(drop));
+
+					boundList.push_back(bounds);
+				}
+				else {
+
+					for (const auto& bound : boundList) {
+						if (bounds.left != bound.left or bounds.right != bound.right or bounds.top != bound.top or bounds.bottom != bound.bottom) {
+							std::unique_ptr<WaterParticle> drop = std::make_unique<WaterParticle>();
+							drop->Init(Vector2{ SoLib::Random::GetRandom(bounds.left, bounds.right), SoLib::Random::GetRandom(bounds.bottom, bounds.top) }, Rect{ 0.0f, 0.0f, 0.0f, 0.0f });
+							drop->SetInBoundary(false);
+							drop->SetSize(Vector2{ 0.2f, 0.2f });
+							drops_.emplace_back(std::move(drop));
+
+							boundList.push_back(bounds);
+						}
+
+					}
+				}
+				
+			}
+		
 		}
 
 		particles_.remove_if([](const std::unique_ptr<WaterParticle> &particle) {
+			return not particle->GetActive();
+			});
+
+		for (const auto& particle : drops_) {
+			particle->Update(deltaTime);
+		}
+
+		drops_.remove_if([](const std::unique_ptr<WaterParticle>& particle) {
 			return not particle->GetActive();
 			});
 
@@ -73,6 +124,10 @@ namespace TD_10days
 	void WaterParticleManager::Draw()
 	{
 		for (const auto &particle : particles_) {
+			particle->Draw();
+		}
+
+		for (const auto& particle : drops_) {
 			particle->Draw();
 		}
 	}
@@ -131,6 +186,45 @@ namespace TD_10days
 		const float kBoxRadius = 0.6f;
 
 		for (auto &p : particles_) {
+			if (p->GetInBoundary()) { /// --- 境界との衝突 ---
+				CircleBounds(p.get(), p->GetBounds(), 0.8f);
+			}
+			else { // --- マップチップとの衝突 ---
+				if (hitBox) {
+					Vector2 pos = p->GetPosition();
+					int chipX = static_cast<int>(std::floor(pos.x / chipSize));
+					int chipY = static_cast<int>(std::floor(pos.y / chipSize));
+
+					// 近傍チップをチェック
+					for (int dy = -1; dy <= 1; ++dy) {
+						for (int dx = -1; dx <= 1; ++dx) {
+							int nx = chipX + dx;
+							int ny = chipY + dy;
+
+							if (hitBox->at(ny, nx)) {
+								// チップをRectに変換
+								Rect rect;
+								rect.left = nx - kBoxRadius;
+								rect.right = nx + kBoxRadius;
+								rect.top = ny - kBoxRadius;
+								rect.bottom = ny + kBoxRadius;
+
+								CircleAABB(p.get(), rect, 0.5f);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// --- 粒子同士の衝突 ---
+		for (auto it1 = particles_.begin(); it1 != particles_.end(); ++it1) {
+			for (auto it2 = drops_.begin(); it2 != drops_.end(); ++it2) {
+				CircleCircle(it1->get(), it2->get(), 0.2f);
+			}
+		}
+
+		for (auto& p : drops_) {
 			if (p->GetInBoundary()) { /// --- 境界との衝突 ---
 				CircleBounds(p.get(), p->GetBounds(), 0.8f);
 			}

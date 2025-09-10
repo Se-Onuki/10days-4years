@@ -130,6 +130,14 @@ void TitleScene::OnEnter() {
 		}
 		
 	}
+
+	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
+	particleManager_->Init();
+	if (SelectToGame::GetInstance()->GetClearFlug()) {
+		particleManager_->SpawnStar(20);
+	}
+	
+	
 }
 
 void TitleScene::OnExit() {
@@ -263,7 +271,7 @@ void TitleScene::Update() {
 		isClicked_ = false;
 	}
 	
-	
+	particleManager_->Update(deltaTime);
 
 	Debug();
 
@@ -290,6 +298,8 @@ void TitleScene::Draw() {
 
 
 	backGround_->sprite->Draw();
+
+	particleManager_->Draw();
 
 	Sprite::EndDraw();
 
