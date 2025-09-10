@@ -168,6 +168,7 @@ void GameScene::Update() {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				goalSE_.Play(false, 0.5f);
 				stageClearTimer_.Start();
+				player_.SetNextState<TD_10days::PlayerSuccess>()->SetTarget(goalPos);
 
 				stageTransitionFunc_ = (&GameScene::StageClear);
 				break;

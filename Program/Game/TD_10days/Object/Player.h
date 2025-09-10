@@ -95,11 +95,37 @@ namespace TD_10days {
 
 	};
 
+	class PlayerSuccess : public IPlayerState {
+	public:
+		PlayerSuccess() = default;
+		PlayerSuccess(Player *const pPlayer) : IPlayerState(pPlayer) {}
+		~PlayerSuccess() = default;
+
+		void InputFunc() override;
+		void Update(const float deltaTime) override;
+		const std::string &GetStateName() const override { return kStateName_; }
+
+		void OnEnter() override;
+		void OnExit() override;
+
+		void SetTarget(const Vector2 pos);
+
+	private:
+
+		Vector2 targetPos_;
+
+		bool isGoaled_ = false;
+
+		inline static const std::string kStateName_ = "PlayerSuccess";
+
+	};
+
 	class Player {
 		friend IPlayerState;
 		friend PlayerMovement;
 		friend PlayerPlacement;
 		friend PlayerDead;
+		friend PlayerSuccess;
 		friend PlayerDrawer;
 	public:
 
@@ -140,8 +166,9 @@ namespace TD_10days {
 		void SetParticleManager(ParticleManager *particleManager) { particleManager_ = particleManager; }
 
 		template<SoLib::IsBased<IPlayerState> T>
-		inline void SetNextState() {
+		inline auto SetNextState() {
 			nextState_ = std::make_unique<T>(this);
+			return static_cast<T *>(nextState_.get());
 		}
 
 	private:

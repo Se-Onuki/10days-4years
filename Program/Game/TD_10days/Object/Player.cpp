@@ -596,4 +596,39 @@ namespace TD_10days {
 	{
 	}
 
+	void PlayerSuccess::InputFunc()
+	{
+	}
+
+	void PlayerSuccess::Update(const float)
+	{
+		if (isGoaled_) { return; }
+		auto &player = *GetPlayer();
+
+		float diff = targetPos_.x - player.GetPosition().x;
+		if (std::abs(diff) < 0.1f) {
+			isGoaled_ = true;
+			player.velocity_ * 0.675f;
+			return;
+		}
+
+		player.acceleration_.x += std::copysign(player.vWaterSpeed_, diff);
+	}
+
+	void PlayerSuccess::OnEnter()
+	{
+		auto &player = *GetPlayer();
+
+		player.velocity_.x /= 2.f;
+	}
+
+	void PlayerSuccess::OnExit()
+	{
+	}
+
+	void PlayerSuccess::SetTarget(const Vector2 pos)
+	{
+		targetPos_ = pos;
+	}
+
 }
