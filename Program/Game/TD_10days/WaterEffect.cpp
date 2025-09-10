@@ -76,7 +76,7 @@ namespace TD_10days
 			particle->Update(deltaTime);
 
 			Rect bounds = particle->GetBounds();
-			if (particle->GetDropTime() > 3.0f) {
+			if (particle->GetDropTime() > 3.0f and particle->GetInBoundary()) {
 				if (boundList.size() == 0) {
 					std::unique_ptr<WaterParticle> drop = std::make_unique<WaterParticle>();
 					drop->Init(Vector2{ SoLib::Random::GetRandom(bounds.left, bounds.right), SoLib::Random::GetRandom(bounds.bottom, bounds.top) }, Rect{ 0.0f, 0.0f, 0.0f, 0.0f });
