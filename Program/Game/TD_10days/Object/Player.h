@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../../../Engine/DirectBase/Render/Camera.h"
@@ -63,6 +63,12 @@ namespace TD_10days {
 		void OnExit() override;
 	private:
 
+		Vector2 InputPlaceAble();
+
+	private:
+		bool isInputAble_{};
+	private:
+
 		inline static const std::string kStateName_ = "PlayerPlacement";
 
 	};
@@ -108,10 +114,7 @@ namespace TD_10days {
 		SolEngine::Audio::SoundHandle GetWaterSettingSE() const { return waterSettingSE_; }
 		SolEngine::Audio::SoundHandle GetWaterInOutSE() const { return waterInOutSE_; }
 		SolEngine::Audio::SoundHandle GetWaterSwimSE() const { return waterSwimSE_; }
-
-		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
-
-		Vector2 InputPlaceAble() const;
+		void SetParticleManager(ParticleManager *particleManager) { particleManager_ = particleManager; }
 
 		
 
@@ -155,7 +158,7 @@ namespace TD_10days {
 		const LevelMapChip::LevelMapChipHitBox *pWaterHitBox_ = nullptr;
 		// 水ブロック操作UI
 		std::unique_ptr<PlacementUI> placementUI_;
-		ParticleManager* particleManager_;
+		ParticleManager *particleManager_;
 
 		std::unique_ptr<CountUI> countUI_;
 		//水を置いたときの音

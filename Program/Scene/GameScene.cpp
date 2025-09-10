@@ -137,6 +137,11 @@ void GameScene::OnEnter() {
 
 	player_.SetParticleManager(particleManager_.get());
 
+	player_.PreUpdate(0.17f);
+	player_.InputFunc();
+	player_.Update(0.17f);
+	playerDrawer_->Update(0.17f);
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
@@ -181,11 +186,11 @@ void GameScene::Update() {
 		}
 	}
 
-	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
-			sceneManager_->ChangeScene("SelectScene", 1.f);
-			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+			sceneManager_->ChangeScene("SelectScene", 2.f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 	}
 
@@ -308,6 +313,10 @@ void GameScene::Update() {
 
 	stageEditor_->SetCamera(camera_);
 	stageEditor_->Update();
+
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
 	player_.PreUpdate(inGameDeltaTime);
@@ -567,6 +576,10 @@ void GameScene::StageDefeat()
 
 void GameScene::ResetStage(bool isNext)
 {
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
+
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
@@ -579,14 +592,19 @@ void GameScene::ResetStage(bool isNext)
 		levelSelecter->SetStageNum(finalStageNum);
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+			sceneManager_->ChangeScene("GameScene", 2.0f);
 		}
-		sceneManager_->ChangeScene("GameScene", 2.0f);
+		
 	}
 	else {
-		sceneManager_->ChangeScene("SelectScene", 2.0f);
-		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
-
+		levelSelecter->SetClearFlug(true);
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			sceneManager_->ChangeScene("SelectScene", 2.0f);
+			//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+		}
+		
+		
 	}
 	
 }
