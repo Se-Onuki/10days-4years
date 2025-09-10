@@ -134,30 +134,43 @@ void TD_10days::PlacementUI::Update(float deltaTime)
 		nextDir = nextDir.Normalize();
 	}
 
+	if (dInput->IsTrigger(DIK_D) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT)) {
+		nextDir += +Vector2::right;
+	}
+	if (dInput->IsTrigger(DIK_A) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_LEFT)) {
+		nextDir += -Vector2::right;
+	}
+	if (dInput->IsTrigger(DIK_W) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_UP)) {
+		nextDir += +Vector2::up;
+	}
+	if (dInput->IsTrigger(DIK_S) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_DOWN)) {
+		nextDir += -Vector2::up;
+	}
+
 
 
 
 	// 入力に応じて値を加算する
-	if (dInput->IsTrigger(DIK_D) or nextDir.x > 0.0f) {
+	if (/*dInput->IsTrigger(DIK_D) or*/ nextDir.x > 0.0f) {
 		if (arrows_[0].state_ != ArrowState::kIncapable) {
 			arrows_[0].state_ = ArrowState::kTrigger;
 			arrows_[0].pressTimer = arrows_[0].pressDuration;
 		}
 		
 	}
-	if (dInput->IsTrigger(DIK_W) or nextDir.y > 0.0f) {
+	if (/*dInput->IsTrigger(DIK_W) or*/ nextDir.y > 0.0f) {
 		if (arrows_[1].state_ != ArrowState::kIncapable) {
 			arrows_[1].state_ = ArrowState::kTrigger;
 			arrows_[1].pressTimer = arrows_[1].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_A) or nextDir.x < 0.0f) {
+	if (/*dInput->IsTrigger(DIK_A) or*/ nextDir.x < 0.0f) {
 		if (arrows_[2].state_ != ArrowState::kIncapable) {
 			arrows_[2].state_ = ArrowState::kTrigger;
 			arrows_[2].pressTimer = arrows_[2].pressDuration;
 		}
 	}
-	if (dInput->IsTrigger(DIK_S) or nextDir.y < 0.0f) {
+	if (/*dInput->IsTrigger(DIK_S) or*/ nextDir.y < 0.0f) {
 		if (arrows_[3].state_ != ArrowState::kIncapable) {
 			arrows_[3].state_ = ArrowState::kTrigger;
 			arrows_[3].pressTimer = arrows_[3].pressDuration;

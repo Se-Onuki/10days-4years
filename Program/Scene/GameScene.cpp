@@ -1,4 +1,4 @@
-/// @file GameScene.cpp
+﻿/// @file GameScene.cpp
 /// @brief ゲームの処理を実装する
 /// @author ONUKI seiya
 #include "GameScene.h"
@@ -83,15 +83,15 @@ void GameScene::OnEnter() {
 	pLevelMapChip_->CreateHitBox();
 	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
-	
+
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
 	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
-	
+
 	water_ = std::make_unique<TD_10days::Water>();
-	
+
 	player_.SetWater(water_.get());
 
 	// 念の為特殊なブロックの位置を再計算
@@ -109,8 +109,18 @@ void GameScene::OnEnter() {
 	// ステージからスクロールを終了地点を決める
 	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
 	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
-		endLine_.x = goalPos.x - stageOffset_.x;
+		for (int i = mapWidth - 1; i > 0; --i) {
+			TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(goalPos.y)][i];
+			if (mapChipType != TD_10days::LevelMapChip::MapChipType::kEmpty) {
+				endLine_.x = i - stageOffset_.x;
+				break;
+			}
+		}
+
+		//endLine_.x = goalPos.x - stageOffset_.x;
 	}
+
+
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
 
 	targetOffset_.y = 1.0f;
@@ -166,28 +176,30 @@ void GameScene::Update() {
 		// プレイヤの座標からゴールの距離を割り出す
 		const Vector2 playerPos = player_.GetPosition();
 		// ゴール座標からの距離で判定する
-		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
+		for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				if (not isGoal_) {
 					isGoal_ = true;
 					goalSE_.Play(false, 0.5f);
 
 					stageClearTimer_.Start();
+					player_.SetNextState<TD_10days::PlayerSuccess>()->SetTarget(goalPos);
 
 					stageTransitionFunc_ = (&GameScene::StageClear);
-					
+
 				}
 				break;
 			}
 		}
 
-		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
+		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			
+
 			stageClearTimer_.Start();
+			player_.SetNextState<TD_10days::PlayerDead>();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
-					
+
 		}
 	}
 
@@ -219,7 +231,7 @@ void GameScene::Update() {
 
 	const auto input = SolEngine::Input::GetInstance();
 	const auto dInput = input->GetDirectInput();
-	const auto* const xInput = input->GetXInput();
+	const auto *const xInput = input->GetXInput();
 
 
 	// カメラ追従処理
@@ -291,7 +303,7 @@ void GameScene::Update() {
 	if (mapChipType == TD_10days::LevelMapChip::MapChipType::kEmpty) {
 		camera_.translation_.y = player_.GetPosition().y;
 	}*/
-	
+
 	//if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
 	//	camera_.translation_.y = player_.GetPosition().y;
 	//}
@@ -308,7 +320,7 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	
+
 
 	camera_.UpdateMatrix();
 
@@ -327,7 +339,7 @@ void GameScene::Update() {
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
-	playerDrawer_->Update(inGameDeltaTime);
+	playerDrawer_->Update(deltaTime);
 
 	/*auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }*/
@@ -342,7 +354,7 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef USE_IMGUI
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
 		if (io.MouseWheel > 0.0f) {
@@ -362,8 +374,8 @@ void GameScene::Debug() {
 
 void GameScene::Draw() {
 
-	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
 
 #pragma region 背面スプライト
 
@@ -378,7 +390,7 @@ void GameScene::Draw() {
 
 	stageEditor_->PutDraw();
 
-	
+
 
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
@@ -391,7 +403,7 @@ void GameScene::Draw() {
 
 	particleManager_->Draw();
 
-	
+
 
 	player_.DrawUI();
 
@@ -455,7 +467,7 @@ void GameScene::PostEffectSetup()
 void GameScene::PostEffectEnd()
 {
 
-	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 
 #pragma region ViewportとScissor(シザー)
 
@@ -500,8 +512,8 @@ void GameScene::PostEffectEnd()
 void GameScene::DrawWater()
 {
 
-	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
+	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
 
 	auto resultTex = texStrage_->Allocate();
 
@@ -535,7 +547,7 @@ void GameScene::DrawWater()
 
 	Sprite::EndDraw();
 
-	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 	// ポストエフェクトの初期値
 	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
 
@@ -568,7 +580,7 @@ void GameScene::DrawWater()
 
 }
 
-void GameScene::StageClear(){
+void GameScene::StageClear() {
 
 	ResetStage(true);
 
@@ -584,7 +596,7 @@ void GameScene::ResetStage(bool isNext)
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 		return;
 	}
-	
+
 	// ステージ番号のマネージャ
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
@@ -592,14 +604,14 @@ void GameScene::ResetStage(bool isNext)
 
 	int32_t finalStageNum = stageNum + (isNext ? 1 : 0);
 
-	if (finalStageNum != levelSelecter->GetStageMax()){
+	if (finalStageNum != levelSelecter->GetStageMax()) {
 		// ステージ番号を加算するかの分岐
 		levelSelecter->SetStageNum(finalStageNum);
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
 			sceneManager_->ChangeScene("GameScene", 1.0f);
 		}
-		
+
 	}
 	else {
 		levelSelecter->SetClearFlug(true);
@@ -608,18 +620,18 @@ void GameScene::ResetStage(bool isNext)
 			//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
 		}
-		
-		
+
+
 	}
-	
+
 }
 
-void GameScene::Load(const GlobalVariables::Group &)
+void GameScene::Load(const GlobalVariables::Group&)
 {
 
 }
 
-void GameScene::Save(GlobalVariables::Group &) const
+void GameScene::Save(GlobalVariables::Group&) const
 {
 
 }

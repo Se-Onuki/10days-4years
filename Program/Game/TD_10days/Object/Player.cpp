@@ -127,6 +127,7 @@ namespace TD_10days {
 
 	void PlayerPlacement::OnEnter() {
 		const auto player = GetPlayer();
+		player->GetWaterSettingSE().Play(false, player->GetSEValume());
 
 		Vector2 placePos = Vector2{ std::roundf(player->position_.x), std::roundf(player->position_.y) };
 		if (not player->pHitBox_->at(static_cast<size_t>(placePos.y - 1), static_cast<size_t>(placePos.x))) {
@@ -231,6 +232,7 @@ namespace TD_10days {
 
 	void Player::Update([[maybe_unused]] const float deltaTime) {
 
+		playerState_->Update(deltaTime);
 
 		// 移動処理
 		MoveUpdate(deltaTime);
@@ -578,15 +580,56 @@ namespace TD_10days {
 	{
 	}
 
+	void PlayerDead::Update(const float deltaTime)
+	{
+		auto &player = *GetPlayer();
+		player.acceleration_.y += 0.98f * deltaTime;
+	}
+
 	void PlayerDead::OnEnter()
 	{
 		auto &player = *GetPlayer();
-		player.acceleration_.y += 5.f;
+		player.acceleration_.y += 3.f;
 		player.velocity_ = Vector2::zero;
 	}
 
 	void PlayerDead::OnExit()
 	{
+	}
+
+	void PlayerSuccess::InputFunc()
+	{
+	}
+
+	void PlayerSuccess::Update(const float)
+	{
+		if (isGoaled_) { return; }
+		auto &player = *GetPlayer();
+
+		float diff = targetPos_.x - player.GetPosition().x;
+		if (std::abs(diff) < 0.1f) {
+			isGoaled_ = true;
+			player.velocity_ * 0.675f;
+			return;
+		}
+
+		player.acceleration_.x += std::copysign(player.vWaterSpeed_, diff);
+	}
+
+	void PlayerSuccess::OnEnter()
+	{
+		auto &player = *GetPlayer();
+
+		player.velocity_.x /= 2.f;
+	}
+
+	void PlayerSuccess::OnExit()
+	{
+	}
+
+	void PlayerSuccess::SetTarget(const Vector2 pos)
+	{
+		targetPos_ = pos;
 	}
 
 }
