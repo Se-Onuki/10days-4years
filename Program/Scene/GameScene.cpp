@@ -372,8 +372,6 @@ void GameScene::Draw() {
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
 
-	water_->Draw();
-
 	playerDrawer_->Draw();
 
 	DrawWater();
@@ -519,6 +517,8 @@ void GameScene::DrawWater()
 	Sprite::StartDraw(commandList);
 
 	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+
+	water_->Draw();
 
 	waterParticleManager_->Draw();
 
