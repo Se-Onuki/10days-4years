@@ -155,6 +155,7 @@ void GameScene::OnEnter() {
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
 	isGoal_ = false;
+	isDead_ = false;
 }
 
 void GameScene::OnExit() {
@@ -196,10 +197,13 @@ void GameScene::Update() {
 		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			deadSE_.Play(false, 0.5f);
-			stageClearTimer_.Start();
-			player_.SetNextState<TD_10days::PlayerDead>();
-			stageTransitionFunc_ = (&GameScene::StageDefeat);
+			if (not isDead_){
+				isDead_ = true;
+				deadSE_.Play(false, 0.5f);
+				stageClearTimer_.Start();
+				player_.SetNextState<TD_10days::PlayerDead>();
+				stageTransitionFunc_ = (&GameScene::StageDefeat);
+				}
 
 		}
 	}
