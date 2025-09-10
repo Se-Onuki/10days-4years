@@ -68,7 +68,7 @@ void TitleScene::OnEnter() {
 	ModelManager::GetInstance()->CreateDefaultModel();
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
-	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
+	TD_10days::CircleFade::GetInstance()->Start(1.5f, false);
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
@@ -112,7 +112,6 @@ void TitleScene::OnEnter() {
 
 			nowTex->sprite->SetTextureHaundle((TextureManager::Load("UI/Title/PlayerInCultureSolution.png")));
 
-			break;
 		}
 		if (nowTex->textureName == "PlayerWalk") {
 
@@ -136,52 +135,16 @@ void TitleScene::Update() {
 
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
-	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
-		if (clearFlug){
-			sceneManager_->ChangeScene<SelectScene>(2.0f);
-			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
-		}
-
-		if (not isFishOutSide_){
-			isClicked_ = true;
-			isOnGround_ = false;
-			decisionSE_.Play(false, 0.5f);
-			
-			playerPotUV_ = { 0.0f,0.0f };
-			isFishOutSide_ = true;
-			velocity_ = Vector2::zero;
-			velocity_.y -= jumpPower_;
-			velocity_.x += movePower_;
-			playerPos_ = BasePlayerPos_;
-		}
-		
-	}
-	else {
-		/*if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
-			
-			sceneManager_->ChangeScene<SelectScene>(1.f);
-			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		}	*/
-
-		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive() and isFishMoved_) {
-
-			sceneManager_->ChangeScene<SelectScene>(2.0f);
-			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
-		}
-
-		isClicked_ = false;
-	}
 	playerAnimTimer_->Update(ImGui::GetIO().DeltaTime);
 
 	//魚が外に出たら
-	if (isFishOutSide_){
+	if (isFishOutSide_) {
 		if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
 			isFishMoved_ = true;
 		}
 
 
-		if (not isOnGround_){
+		if (not isOnGround_) {
 			//地面についていないとき
 			acceleration_.y += gravity_ * deltaTime;
 
@@ -191,7 +154,7 @@ void TitleScene::Update() {
 			//地面についた後
 			velocity_.y = 0;
 
-			if (isLookAround_){
+			if (isLookAround_) {
 				/*きょろきょろし終わったら*/
 				velocity_.x = dashPower_;
 
@@ -205,7 +168,7 @@ void TitleScene::Update() {
 			else {
 				/*きょろきょろする動作*/
 				//タイマーによって切り替える
-				
+
 				if (not playerAnimTimer_->IsActive()) {
 					playerUV_.x = 0;
 					playerAnimTimer_->Clear();
@@ -214,13 +177,13 @@ void TitleScene::Update() {
 					if (not lookAroundMoveTimer_->IsActive()) {
 						lookAroundNum_++;
 						isLookLeft_ = !isLookLeft_;
-						if (lookAroundNum_ == lookAroundLimit_){
+						if (lookAroundNum_ == lookAroundLimit_) {
 							isLookAround_ = true;
 						}
 						else {
 							lookAroundMoveTimer_->Clear();
 							lookAroundMoveTimer_->Start(lookAroundDistance_);
-						}						
+						}
 					}
 
 
@@ -249,10 +212,49 @@ void TitleScene::Update() {
 		// 加速度をリセット
 		acceleration_ = Vector2::zero;
 		//プレイヤーがある程度行ったら遷移させる
-		if (playerPos_.x > 1400.0f){
+		if (playerPos_.x > 1400.0f) {
 			isFishMoved_ = true;
 		}
 	}
+
+
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
+		bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+		if (clearFlug){
+			sceneManager_->ChangeScene<SelectScene>(1.0f);
+			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
+		}
+
+		if (not isFishOutSide_){
+			isClicked_ = true;
+			isOnGround_ = false;
+			decisionSE_.Play(false, 0.5f);
+			
+			playerPotUV_ = { 0.0f,0.0f };
+			isFishOutSide_ = true;
+			velocity_ = Vector2::zero;
+			velocity_.y -= jumpPower_;
+			velocity_.x += movePower_;
+			playerPos_ = BasePlayerPos_;
+		}
+		
+	}
+	else {
+		/*if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
+			
+			sceneManager_->ChangeScene<SelectScene>(1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}	*/
+
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive() and isFishMoved_) {
+
+			sceneManager_->ChangeScene<SelectScene>(1.0f);
+			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
+		}
+
+		isClicked_ = false;
+	}
+	
 	
 
 	Debug();
