@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../../../Engine/DirectBase/Render/Camera.h"
@@ -73,10 +73,29 @@ namespace TD_10days {
 
 	};
 
+	class PlayerDead : public IPlayerState {
+	public:
+		PlayerDead() = default;
+		PlayerDead(Player *const pPlayer) : IPlayerState(pPlayer) {}
+		~PlayerDead() = default;
+
+		void InputFunc() override;
+		const std::string &GetStateName() const override { return kStateName_; }
+
+		void OnEnter() override;
+		void OnExit() override;
+
+	private:
+
+		inline static const std::string kStateName_ = "PlayerDead";
+
+	};
+
 	class Player {
 		friend IPlayerState;
 		friend PlayerMovement;
 		friend PlayerPlacement;
+		friend PlayerDead;
 		friend PlayerDrawer;
 	public:
 
