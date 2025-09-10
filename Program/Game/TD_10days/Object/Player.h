@@ -62,6 +62,12 @@ namespace TD_10days {
 		void OnExit() override;
 	private:
 
+		Vector2 InputPlaceAble();
+
+	private:
+		bool isInputAble_{};
+	private:
+
 		inline static const std::string kStateName_ = "PlayerPlacement";
 
 	};
@@ -100,11 +106,9 @@ namespace TD_10days {
 
 		void Save() const;
 
-		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
+		PlacementUI *GetPlacementUI() { return placementUI_.get(); }
 
-		void SetParticleManager(ParticleManager* particleManager) { particleManager_ = particleManager; }
-
-		Vector2 InputPlaceAble() const;
+		void SetParticleManager(ParticleManager *particleManager) { particleManager_ = particleManager; }
 
 	private:
 
@@ -146,7 +150,7 @@ namespace TD_10days {
 		const LevelMapChip::LevelMapChipHitBox *pWaterHitBox_ = nullptr;
 		// 水ブロック操作UI
 		std::unique_ptr<PlacementUI> placementUI_;
-		ParticleManager* particleManager_;
+		ParticleManager *particleManager_;
 
 		std::unique_ptr<CountUI> countUI_;
 

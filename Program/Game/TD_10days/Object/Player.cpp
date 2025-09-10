@@ -106,7 +106,7 @@ namespace TD_10days {
 		//	}
 		//}
 
-		const Vector2 nextDir = player->InputPlaceAble();
+		const Vector2 nextDir = InputPlaceAble();
 		if (nextDir != Vector2::zero) {
 			// 水を設置する
 			player->pWater_->PlacementWater(nextDir);
@@ -137,6 +137,59 @@ namespace TD_10days {
 	void PlayerPlacement::OnExit() {
 		const auto player = GetPlayer();
 		player->pWater_->Activate(player->vWaterLifeTime_);
+	}
+	Vector2 PlayerPlacement::InputPlaceAble()
+	{
+		const auto player = GetPlayer();
+
+		const auto *const input = SolEngine::Input::GetInstance();
+		const auto *const dInput = input->GetDirectInput();
+		const auto *const xInput = input->GetXInput();
+
+		// 次に設置する水の場所
+		Vector2 nextDir = Vector2::zero;
+		if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.0625f) {
+			isInputAble_ = true;
+		}
+		if (isInputAble_) {
+			nextDir = xInput->GetState()->stickL_;
+			//もし範囲外なら破棄
+			if (nextDir.LengthSQ() < 0.5625f) { nextDir = Vector2::zero; }
+			else { isInputAble_ = false; }
+			if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
+				nextDir.y = 0.f;
+			}
+			else {
+				nextDir.x = 0.f;
+			}
+			nextDir = nextDir.Normalize();
+
+		}
+
+		if (nextDir == Vector2::zero) {
+			// 入力に応じて値を加算する
+			if (dInput->IsTrigger(DIK_D) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT)) {
+				nextDir += +Vector2::right;
+			}
+			if (dInput->IsTrigger(DIK_A) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_LEFT)) {
+				nextDir += -Vector2::right;
+			}
+			if (dInput->IsTrigger(DIK_W) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_UP)) {
+				nextDir += +Vector2::up;
+			}
+			if (dInput->IsTrigger(DIK_S) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_DOWN)) {
+				nextDir += -Vector2::up;
+			}
+		}
+
+		// 水の方向がどこか一つに定まっていたら
+		if (nextDir.LengthSQ() == 1.f) {
+			// 尚且つ､水が配置できる座標ならば
+			if (player->pWater_->IsPlaceAble(player->pWaterHitBox_, nextDir)) {
+				return nextDir;
+			}
+		}
+		return Vector2::zero;
 	}
 
 	void Player::Init() {
@@ -256,51 +309,6 @@ namespace TD_10days {
 
 	}
 
-	Vector2 Player::InputPlaceAble() const
-	{
-
-		const auto *const input = SolEngine::Input::GetInstance();
-		const auto *const dInput = input->GetDirectInput();
-		const auto *const xInput = input->GetXInput();
-
-		// 次に設置する水の場所
-		Vector2 nextDir = Vector2::zero;
-		if (xInput->GetPreState()->stickL_.LengthSQ() <= 0.0625f) {
-			nextDir = xInput->GetState()->stickL_;
-			if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
-				nextDir.y = 0.f;
-			}
-			else {
-				nextDir.x = 0.f;
-			}
-			nextDir = nextDir.Normalize();
-		}
-
-		if (nextDir == Vector2::zero) {
-			// 入力に応じて値を加算する
-			if (dInput->IsTrigger(DIK_D) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_RIGHT)) {
-				nextDir += +Vector2::right;
-			}
-			if (dInput->IsTrigger(DIK_A) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_LEFT)) {
-				nextDir += -Vector2::right;
-			}
-			if (dInput->IsTrigger(DIK_W) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_UP)) {
-				nextDir += +Vector2::up;
-			}
-			if (dInput->IsTrigger(DIK_S) or xInput->IsTrigger(SolEngine::KeyCode::DPAD_DOWN)) {
-				nextDir += -Vector2::up;
-			}
-		}
-
-		// 水の方向がどこか一つに定まっていたら
-		if (nextDir.LengthSQ() == 1.f) {
-			// 尚且つ､水が配置できる座標ならば
-			if (pWater_->IsPlaceAble(pWaterHitBox_, nextDir)) {
-				return nextDir;
-			}
-		}
-		return Vector2::zero;
-	}
 
 	void Player::SetPosInStage()
 	{
