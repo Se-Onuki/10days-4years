@@ -41,6 +41,7 @@ namespace TD_10days {
 		Rect GetBounds() const { return bounds_; }
 		bool GetInBoundary() const { return inBoundary_; }
 		bool GetIsMovable() const { return isMovable_; }
+		float GetDropTime() const { return dropTime_; }
 
 		void SetActive(bool isActive) { isActive_ = isActive; }
 		void SetSize(const Vector2& size) { sprite_->SetScale(size); }
@@ -68,6 +69,7 @@ namespace TD_10days {
 		static inline constexpr float initialScale_ = 0.6f;
 		static inline constexpr float survivalTime_ = 3.0f;
 		float lifeTime_ = 3.0f;
+		float dropTime_ = 0.0f;
 
 		Vector2 basePosition_{};
 		Vector2 velocity_{};
@@ -98,6 +100,8 @@ namespace TD_10days {
 	private:
 		float side_ = 0.5f;
 		std::list<std::unique_ptr<WaterParticle>> particles_;
+		std::list<std::unique_ptr<WaterParticle>> drops_;
+		float time_ = 0;
 	};
 
 }
