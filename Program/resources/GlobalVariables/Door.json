@@ -1,0 +1,9 @@
+{
+    "Door": {
+        "ChangeScaleSpeed": 0.029999999329447746,
+        "DoorChangeScaleAfter": [
+            2400.0,
+            2400.0
+        ]
+    }
+}

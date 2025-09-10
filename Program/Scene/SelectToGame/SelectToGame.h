@@ -32,6 +32,10 @@ public:
 		return cameraScale_;
 	}
 
+	bool GetClearFlug()const {
+		return isClear_;
+	}
+
 	/// @brief ステージ番号を設定する
 	/// @param[in] num 設定するステージ番号
 	void SetStageNum(const int32_t num) {
@@ -50,12 +54,18 @@ public:
 		cameraScale_ = num;
 	}
 
+	void SetClearFlug(bool flug) {
+		isClear_ = flug;
+	}
+
 
 private:
 	//ステージ番号
 	int32_t stageNum_ = 0;
 
 	int32_t stageMax_ = 0;
+
+	bool isClear_ = false;
 	//良い場所が浮かばなかったので究極的なとりあえずここに
 	float cameraScale_ = 0.0125f;
 };
