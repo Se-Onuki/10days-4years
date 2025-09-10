@@ -110,6 +110,8 @@ void GameScene::OnEnter() {
 	endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
 
+	targetOffset_.y = 1.0f;
+
 	camera_.Init();
 	camera_.scale_ = 0.015f;
 	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
@@ -204,9 +206,58 @@ void GameScene::Update() {
 
 	const Vector2 playerPosition = player_.GetPosition();
 
+	const auto input = SolEngine::Input::GetInstance();
+	const auto dInput = input->GetDirectInput();
+	const auto* const xInput = input->GetXInput();
+
+
 	// カメラ追従処理
 	if (playerPosition.x > startLine_.x and playerPosition.x < endLine_.x) { // x方向
+
+		// 次に設置する水の場所
+		Vector2 cameraMove = {};
+		Vector2 nextDir = Vector2::zero;
+		if (xInput->GetPreState()->stickR_.LengthSQ()) {
+			nextDir = xInput->GetState()->stickR_;
+			if (std::abs(nextDir.x) > std::abs(nextDir.y)) {
+				nextDir.y = 0.f;
+			}
+			else {
+				nextDir.x = 0.f;
+			}
+			nextDir = nextDir.Normalize();
+		}
+
+
+		// 入力に応じて値を加算する
+		if (dInput->IsPress(DIK_RIGHT) or nextDir.x > 0.0f) {
+			cameraMove.x += 0.1f;
+		}
+		if (dInput->IsPress(DIK_UP) or nextDir.y > 0.0f) {
+			cameraMove.y += 0.1f;
+		}
+		if (dInput->IsPress(DIK_LEFT) or nextDir.x < 0.0f) {
+			cameraMove.x -= 0.1f;
+		}
+		if (dInput->IsPress(DIK_DOWN) or nextDir.y < 0.0f) {
+			cameraMove.y -= 0.1f;
+		}
+
+		if (cameraMove.LengthSQ() == 0.0f) {
+			// 入力が無いときは即基底位置に戻す
+			targetOffset_ = { 4.0f, 1.0f };
+		}
+		else {
+			// 入力があればオフセットを加算
+			targetOffset_.x = std::clamp(targetOffset_.x + cameraMove.x, -maxOffset_.x, maxOffset_.x);
+			targetOffset_.y = std::clamp(targetOffset_.y + cameraMove.y, -maxOffset_.y, maxOffset_.y);
+		}
+
+		targetOffset_.x = std::clamp(targetOffset_.x + cameraMove.x, -maxOffset_.x, maxOffset_.x);
+		targetOffset_.y = std::clamp(targetOffset_.y + cameraMove.y, -maxOffset_.y, maxOffset_.y);
+
 		camera_.translation_.x = playerPosition.x + targetOffset_.x;
+
 	}
 	else {
 		// 範囲外 → 近い方のラインに固定
@@ -214,16 +265,16 @@ void GameScene::Update() {
 		float distToEnd = std::abs(playerPosition.x - endLine_.x);
 
 		if (distToStart < distToEnd) {
-			camera_.translation_.x = startLine_.x + targetOffset_.x;
+			camera_.translation_.x = startLine_.x + maxOffset_.x;
 		}
 		else {
-			camera_.translation_.x = endLine_.x + targetOffset_.x;
+			camera_.translation_.x = endLine_.x + maxOffset_.x;
 		}
 	}
 
 	//const auto hoge =(*pLevelMapChip_)[0][0];
 
-	camera_.translation_.y = SoLib::Lerp(player_.GetPosition().y, camera_.translation_.y, 0.5f) + 1.0f;
+	camera_.translation_.y = SoLib::Lerp(player_.GetPosition().y, camera_.translation_.y, 0.5f) + targetOffset_.y;
 
 	/*TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(playerPosition.y + 4.0f)][static_cast<int>(playerPosition.x)];
 	if (mapChipType == TD_10days::LevelMapChip::MapChipType::kEmpty) {

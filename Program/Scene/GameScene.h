@@ -158,6 +158,8 @@ private:
 	Vector2 startLine_{7.0f, 5.0f};
 	Vector2 endLine_{};
 	Vector2 targetOffset_{ 4.0f, 4.0f };
+	Vector2 maxOffset_{ 4.0f, 1.0f };
+
 	Vector2 stageOffset_{ 15.0f, 10.0f };
 
 
