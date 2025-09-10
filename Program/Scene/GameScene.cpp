@@ -135,6 +135,11 @@ void GameScene::OnEnter() {
 
 	player_.SetParticleManager(particleManager_.get());
 
+	player_.PreUpdate(0.17f);
+	player_.InputFunc();
+	player_.Update(0.17f);
+	playerDrawer_->Update(0.17f);
+
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::Game);
 
