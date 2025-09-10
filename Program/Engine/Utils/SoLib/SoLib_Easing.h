@@ -71,7 +71,7 @@ namespace SoLib {
 	};
 
 	struct EaseFunc {
-		float operator()(float value) {
+		float operator()(float value) const {
 			return kFuncList[easeFunc_].second(value);
 		}
 

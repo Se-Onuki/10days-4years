@@ -22,10 +22,10 @@ namespace TD_10days {
         void Update(float deltaTime);
         void Draw();
 
-        void SetCamera(SolEngine::Camera2D* camera) { pCamera_ = camera; }
+        void SetCamera(const SolEngine::Camera2D* camera) { pCamera_ = camera; }
 
     private:
-        SolEngine::Camera2D* pCamera_;
+        const SolEngine::Camera2D* pCamera_;
         std::unique_ptr<Sprite> sprite_;
         Vector2 position_;
         Vector2 velocity_;

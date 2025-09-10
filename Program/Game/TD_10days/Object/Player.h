@@ -147,6 +147,9 @@ namespace TD_10days {
 		void SetWaterHitBox(const LevelMapChip::LevelMapChipHitBox *const pHitBox) { pWaterHitBox_ = pHitBox; }
 
 		Vector2 &GetPosition() { return position_; }
+		const Vector2 &GetPosition() const { return position_; }
+		Vector2 &GetVelocity() { return velocity_; }
+		const Vector2 &GetVelocity() const { return velocity_; }
 
 		std::array<Vector2, 4u> GetVertex() const;
 

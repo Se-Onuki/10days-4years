@@ -93,6 +93,11 @@ namespace SolEngine {
 		return false;
 	}
 
+	Vector2 Camera<Render::CameraType::Othographic>::GetVisibleSize() const
+	{
+		return windowSize_ * scale_;;
+	}
+
 	void Camera<Render::CameraType::Othographic>::CalcMatrix() {
 		matView_ = Matrix4x4::Affine(Vector3{ 1,-1,1 }, rotation_, translation_).InverseSRT();
 

@@ -109,6 +109,13 @@ namespace TD_10days {
 		}
 		// マップチップ上のものと紐づけて書き込む
 		focusPoints_ = focusChips;
+
+#ifdef USE_IMGUI
+
+		focusItr_ = focusPoints_.end();
+
+#endif // USE_IMGUI
+
 	}
 
 	std::span<LevelMapChip::MapChip> LevelMapChip::operator[](const uint32_t index) {
@@ -168,6 +175,7 @@ namespace TD_10days {
 
 	void LevelMapChip::StringToFocusPointData(std::string_view str)
 	{
+		const uint32_t elemCount = 5;
 		const auto source = str;
 		std::vector<std::string_view> values;
 
@@ -176,16 +184,17 @@ namespace TD_10days {
 
 			const auto size = str.find("/");
 			values.push_back(str.substr(0, size));
-			str = str.substr(size+1);
+			str = str.substr(size + 1);
 		}
 
-		if (values.size() % 4 != 0) { return; }
+		if (values.size() % elemCount != 0) { return; }
 
-		for (size_t i = 0; i < values.size() / 4; ++i) {
+		for (size_t i = 0; i < values.size() / elemCount; ++i) {
 			const Vector2 pos = Vector2(std::stof(values[i + 0].data()), std::stof(values[i + 1].data()));
 			const FocusPoint datas{
 				.focusRadius_ = std::stof(values[i + 2].data()),
 				.focutPower_ = std::stof(values[i + 3].data()),
+				.easing_ = std::stoul(values[i + 4].data()),
 			};
 			focusPoints_[pos] = datas;
 		}
@@ -197,11 +206,32 @@ namespace TD_10days {
 		std::string result;
 
 		for (const auto &[pos, data] : focusPoints_) {
-			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/';
+			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/' + std::to_string(data.easing_.easeFunc_) + '/';
 		}
-		result += '\n';
 
 		return result;
+	}
+
+	void LevelMapChip::FocusPointEditor()
+	{
+
+#ifdef USE_IMGUI
+		if (focusPoints_.empty()) { return; }
+
+		focusItr_ = SoLib::ImGuiWidget("注視点の選択", &focusPoints_, focusItr_,
+			[](const auto &item)->std::string
+			{
+				return std::string("{ y: ") + std::to_string(static_cast<int32_t>(item->first.y)) + ", x: " + std::to_string(static_cast<int32_t>(item->first.x)) + " }";
+			}
+		);
+		if (focusItr_ == focusPoints_.end()) { return; }
+		ImGui::Text("注視点の調整");
+		SoLib::ImGuiWidget("影響する半径", &focusItr_->second.focusRadius_);
+		SoLib::ImGuiWidget("影響する強度", &focusItr_->second.focutPower_);
+		SoLib::ImGuiWidget("影響の補正値", &focusItr_->second.easing_);
+
+#endif // USE_IMGUI
+
 	}
 
 	std::unique_ptr<LevelMapChip::LevelMapChipHitBox> LevelMapChip::CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const

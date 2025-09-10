@@ -76,6 +76,8 @@ void GameScene::OnEnter() {
 	camera_.Init();
 	camera_.scale_ = SelectToGame::GetInstance()->GetCameraScale();
 	camera_.translation_.y = 4.f;
+	camera_.scale_ = 0.015f;
+	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
 
 	stageEditor_->Initialize(&levelMapChipRenderer_);
 
@@ -109,7 +111,7 @@ void GameScene::OnEnter() {
 
 	// ステージからスクロールを終了地点を決める
 	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
-	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+	for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 		for (int i = mapWidth - 1; i > 0; --i) {
 			TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(goalPos.y)][i];
 			if (mapChipType != TD_10days::LevelMapChip::MapChipType::kEmpty) {
@@ -126,9 +128,16 @@ void GameScene::OnEnter() {
 
 	targetOffset_.y = 1.0f;
 
-	camera_.Init();
-	camera_.scale_ = 0.015f;
-	camera_.translation_ = Vector3{ startLine_.x + targetOffset_.x , startLine_.y, camera_.translation_.z };
+	focusManager_ = std::make_unique<TD_10days::FocusManager>();
+	focusManager_->SetLevelMapChip(pLevelMapChip_);
+	focusManager_->SetPlayer(&player_);
+
+	focusCamera_ = std::make_unique<TD_10days::FocusCamera>();
+	focusCamera_->Init();
+	focusCamera_->SetEntity(&player_);
+	focusCamera_->SetScale(mapHeight, mapWidth);
+	focusCamera_->CalcWindowSpan();
+	focusCamera_->SetCameraPos(focusCamera_->CalcTargetPoint());
 
 	playerDrawer_ = std::make_unique<TD_10days::PlayerDrawer>();
 	playerDrawer_->Init(&player_);
@@ -140,7 +149,7 @@ void GameScene::OnEnter() {
 	// パーティクルマネージャー
 	particleManager_ = std::make_unique<TD_10days::ParticleManager>();
 	particleManager_->Init();
-	particleManager_->SpawnBackground(&camera_);
+	particleManager_->SpawnBackground(focusCamera_->GetCamera());
 
 	water_->SetWaterParticleManager(waterParticleManager_.get());
 
@@ -178,7 +187,7 @@ void GameScene::Update() {
 		// プレイヤの座標からゴールの距離を割り出す
 		const Vector2 playerPos = player_.GetPosition();
 		// ゴール座標からの距離で判定する
-		for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				if (not isGoal_) {
 					isGoal_ = true;
@@ -194,16 +203,16 @@ void GameScene::Update() {
 			}
 		}
 
-		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
+		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			if (not isDead_){
+			if (not isDead_) {
 				isDead_ = true;
 				deadSE_.Play(false, 0.5f);
 				stageClearTimer_.Start();
 				player_.SetNextState<TD_10days::PlayerDead>();
 				stageTransitionFunc_ = (&GameScene::StageDefeat);
-				}
+			}
 
 		}
 	}
@@ -329,11 +338,15 @@ void GameScene::Update() {
 
 	camera_.UpdateMatrix();
 
+	focusManager_->Update(deltaTime);
+	focusCamera_->SetParamAndTime(focusManager_->GetParamAndTime());
+	focusCamera_->Update(deltaTime);
+
 	// カメラから背景の位置を調整する
-	const float cameraX = (camera_.translation_.x);
+	const float cameraX = (focusCamera_->GetCamera()->translation_.x);
 	background_->SetTexOrigin({ cameraX * 16.f, 0 });
 
-	stageEditor_->SetCamera(camera_);
+	stageEditor_->SetCamera(*focusCamera_->GetCamera());
 	stageEditor_->Update();
 
 	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
@@ -341,6 +354,11 @@ void GameScene::Update() {
 	}
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
+	ImGui::Text("\n\n");
+
+	// フォーカスの強度
+	pLevelMapChip_->FocusPointEditor();
+
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
@@ -359,7 +377,7 @@ void GameScene::Update() {
 
 void GameScene::Debug() {
 #ifdef USE_IMGUI
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
 		if (io.MouseWheel > 0.0f) {
@@ -379,8 +397,8 @@ void GameScene::Debug() {
 
 void GameScene::Draw() {
 
-	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
 
 #pragma region 背面スプライト
 
@@ -388,8 +406,9 @@ void GameScene::Draw() {
 
 	background_->Draw();
 
+	const auto *camera = focusCamera_->GetCamera();
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 	particleManager_->DrawBack();
 
@@ -472,7 +491,7 @@ void GameScene::PostEffectSetup()
 void GameScene::PostEffectEnd()
 {
 
-	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 
 #pragma region ViewportとScissor(シザー)
 
@@ -517,8 +536,8 @@ void GameScene::PostEffectEnd()
 void GameScene::DrawWater()
 {
 
-	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
 
 	auto resultTex = texStrage_->Allocate();
 
@@ -544,7 +563,9 @@ void GameScene::DrawWater()
 
 	Sprite::StartDraw(commandList);
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	const auto *camera = focusCamera_->GetCamera();
+
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 	water_->Draw();
 
@@ -552,7 +573,7 @@ void GameScene::DrawWater()
 
 	Sprite::EndDraw();
 
-	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 	// ポストエフェクトの初期値
 	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
 
@@ -580,7 +601,7 @@ void GameScene::DrawWater()
 
 	Sprite::StartDraw(commandList);
 
-	Sprite::SetProjection(camera_.matView_ * camera_.matProjection_);
+	Sprite::SetProjection(camera->matView_ * camera->matProjection_);
 
 
 }
@@ -631,12 +652,12 @@ void GameScene::ResetStage(bool isNext)
 
 }
 
-void GameScene::Load(const GlobalVariables::Group&)
+void GameScene::Load(const GlobalVariables::Group &)
 {
 
 }
 
-void GameScene::Save(GlobalVariables::Group&) const
+void GameScene::Save(GlobalVariables::Group &) const
 {
 
 }

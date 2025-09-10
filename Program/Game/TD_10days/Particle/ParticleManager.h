@@ -27,7 +27,7 @@ namespace TD_10days {
 		void DrawBack();
 
 		void SpawnSplash(Vector2 position, Vector2 velocity, bool isEnter);
-		void SpawnBackground(SolEngine::Camera2D* camera);
+		void SpawnBackground(const SolEngine::Camera2D* camera);
 		void SpawnStar(int count);
 
 	private:

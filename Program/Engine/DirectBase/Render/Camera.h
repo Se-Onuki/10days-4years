@@ -143,6 +143,10 @@ namespace SolEngine {
 		/// @return 変更されたらtrue
 		bool ImGuiWidget();
 
+		/// @brief カメラで見ることができる最大の距離
+		/// @return 画面のサイズ * スケール
+		Vector2 GetVisibleSize() const;
+
 	};
 
 	/// @brief 3次元カメラ
