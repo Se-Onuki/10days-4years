@@ -109,6 +109,7 @@ namespace TD_10days {
 		const Vector2 nextDir = player->InputPlaceAble();
 		if (nextDir != Vector2::zero) {
 			// 水を設置する
+			player->GetWaterSettingSE().Play(false, player->GetSEValume());
 			player->pWater_->PlacementWater(nextDir);
 		}
 
@@ -152,6 +153,10 @@ namespace TD_10days {
 		placementUI_->Init(position_);
 		countUI_ = std::make_unique<CountUI>();
 		countUI_->Init();
+
+		waterSettingSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterSet.mp3");
+		waterInOutSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterInOut.mp3");
+		waterSwimSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterSwim.mp3");
 	}
 
 	void Player::PreUpdate([[maybe_unused]] float deltaTime)
@@ -460,6 +465,9 @@ namespace TD_10days {
 		if (inputSpeed != 0) {
 			velocity_.x = std::copysign(std::clamp(velocity_.x, -inputSpeed, inputSpeed), velocity_.x);
 		}
+		if (std::abs(velocity_.x) < 0.05f) {
+			velocity_.x = 0.f;
+		}
 		std::list<Vector3> hitNormalList;
 
 		Vector2 moveVec = velocity_ * deltaTime;
@@ -494,7 +502,28 @@ namespace TD_10days {
 			// 設置判定をつける
 			isGround_ = true;
 			// 着地したのなら､高さを丸める｡
-			position_.y = std::roundf(position_.y) - (0.5f - size_.y / 2) - 0.01f;
+			position_.y = std::roundf(position_.y) - ((0.5f - size_.y / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), -Vector3::up) != hitNormalList.end()) {
+
+			// 落下を終わらせる
+			velocity_.y = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.y = std::roundf(position_.y) + ((0.5f - size_.y / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), Vector3::right) != hitNormalList.end()) {
+
+			// 左右移動を終わらせる
+			velocity_.x = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.x = std::roundf(position_.x) - ((0.5f - size_.x / 2) + 0.01f);
+		}
+		if (std::find(hitNormalList.begin(), hitNormalList.end(), -Vector3::right) != hitNormalList.end()) {
+
+			// 左右移動を終わらせる
+			velocity_.x = 0.f;
+			// 着地したのなら､高さを丸める｡
+			position_.x = std::roundf(position_.x) + ((0.5f - size_.x / 2) + 0.01f);
 		}
 
 		// 水しぶきパーティクルを生成する
@@ -503,10 +532,12 @@ namespace TD_10days {
 			const bool isNowInWater = IsInWater();
 			if (not wasInWater_ && isNowInWater) {
 				// 入った瞬間
+				waterInOutSE_.Play(false, GetSEValume());
 				particleManager_->SpawnSplash(position_, velocity_, true);
 			}
 			else if (wasInWater_ && not isNowInWater) {
 				// 出た瞬間
+				waterInOutSE_.Play(false, GetSEValume());
 				particleManager_->SpawnSplash(position_, velocity_, false);
 			}
 			wasInWater_ = isNowInWater; // 状態更新

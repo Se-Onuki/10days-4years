@@ -48,6 +48,7 @@ void TitleScene::OnEnter() {
 	groupName = "TitlePlayerMove";
 	global->CreateGroups(groupName);
 	//アイテムの追加
+	global->AddValue(groupName, "AnimSpeed", playerAnimSpeed_);
 	global->AddValue(groupName, "Gravity", gravity_);
 	global->AddValue(groupName, "JumpPower", jumpPower_);
 	global->AddValue(groupName, "MovePower", movePower_); 
@@ -64,8 +65,6 @@ void TitleScene::OnEnter() {
 	timer_->Clear();
 	playerAnimTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	playerAnimTimer_->Clear();
-	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
-	colorTimer_->Clear();
 	colorTimerStart_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimerStart_->Clear();
 	titleTexMoveTimer_ = std::make_unique<SoLib::DeltaTimer>();
@@ -185,7 +184,7 @@ void TitleScene::Update() {
 					playerUV_.x += kUVMovePlayerValue_;
 
 					playerAnimTimer_->Clear();
-					playerAnimTimer_->Start(moveSpeed_);
+					playerAnimTimer_->Start(playerAnimSpeed_);
 				}
 			}
 			else {
@@ -333,6 +332,7 @@ void TitleScene::ApplyGlobalVariables(){
 	titleTexMoveRange_ = global->Get<Vector2>(groupName, "TitleTexMoveRange");
 
 	groupName = "TitlePlayerMove";
+	playerAnimSpeed_ = global->Get<float>(groupName, "AnimSpeed");
 	gravity_ = global->Get<float>(groupName, "Gravity");
 	jumpPower_ = global->Get<float>(groupName, "JumpPower");
 	movePower_ = global->Get<float>(groupName, "MovePower");
@@ -407,7 +407,6 @@ void TitleScene::TextureSetting(){
 	//タイマーによって切り替える
 	//ポット
 	timer_->Update(ImGui::GetIO().DeltaTime);
-	colorTimer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimerStart_->Update(ImGui::GetIO().DeltaTime);
 	titleTexMoveTimer_->Update(ImGui::GetIO().DeltaTime);
 
@@ -418,18 +417,6 @@ void TitleScene::TextureSetting(){
 
 		timer_->Clear();
 		timer_->Start(moveSpeed_);
-	}
-	//ボタン
-	if (not colorTimer_->IsActive()) {
-		if (buttomColor_ == 0xffffffff){
-			buttomColor_ = 0x00000000;
-		}
-		else {
-			buttomColor_ = 0xffffffff;
-		}
-
-		colorTimer_->Clear();
-		colorTimer_->Start(moveSpeedButtom_);
 	}
 	//始めるUI
 	if (not colorTimerStart_->IsActive()) {
@@ -450,6 +437,7 @@ void TitleScene::TextureSetting(){
 		
 
 		startTexColor_ = color4;
+		buttomColor_ = color4;
 
 		colorTimerStart_->Clear();
 		colorTimerStart_->Start(colorChangeSpeed_);

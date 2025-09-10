@@ -66,7 +66,7 @@ void GameScene::OnEnter() {
 	gameBGM_.Play(true, 0.5f);
 
 	goalSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Clear.mp3");
-
+	sceneBackSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Back.mp3");
 
 	gaussianParam_->first = 32.f;
 	gaussianParam_->second = 8;
@@ -176,6 +176,14 @@ void GameScene::Update() {
 
 			stageClearTimer_.Start();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
+		}
+	}
+
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE)) {
+		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+			sceneBackSE_.Play(false, 0.5f);
+			sceneManager_->ChangeScene("SelectScene", 1.f);
+			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		}
 	}
 
@@ -315,6 +323,8 @@ void GameScene::Draw() {
 	playerDrawer_->Draw();
 
 	DrawWater();
+
+	levelMapChipRenderer_.DrawNet();
 
 	particleManager_->Draw();
 
@@ -493,8 +503,8 @@ void GameScene::DrawWater()
 
 }
 
-void GameScene::StageClear()
-{
+void GameScene::StageClear(){
+
 	ResetStage(true);
 
 }
@@ -510,10 +520,20 @@ void GameScene::ResetStage(bool isNext)
 	const auto levelSelecter = SelectToGame::GetInstance();
 	// ステージ番号
 	const auto stageNum = levelSelecter->GetStageNum();
-	// ステージ番号を加算するかの分岐
-	levelSelecter->SetStageNum(stageNum + (isNext ? 1 : 0));
 
-	sceneManager_->ChangeScene("GameScene");
+	int32_t finalStageNum = stageNum + (isNext ? 1 : 0);
+
+	if (finalStageNum != levelSelecter->GetStageMax()){
+		// ステージ番号を加算するかの分岐
+		levelSelecter->SetStageNum(finalStageNum);
+
+		sceneManager_->ChangeScene("GameScene");
+	}
+	else {
+		sceneManager_->ChangeScene("SelectScene", 1.0f);
+		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+	}
+	
 }
 
 void GameScene::Load(const GlobalVariables::Group &)

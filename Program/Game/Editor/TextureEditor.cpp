@@ -758,7 +758,7 @@ void TextureEditor::ClickPushMove(const SceneID id, Vector2 mousePos) {
 		for (size_t j = 0; j < texies_[i].size(); j++) {
 			if (isSelecteTex_) {
 				//左を押している間拾う
-				if (ImGui::IsMouseDown(0) and selectNumber_ != -1) {
+				if (ImGui::IsMouseDown(0) and selectNumber_ != -1 and not ImGui::GetIO().WantCaptureMouse) {
 					texies_[i][selectNumber_]->originalTransform.translate_ = mousePos;
 				}
 			}

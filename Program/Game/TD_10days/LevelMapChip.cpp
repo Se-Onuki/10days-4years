@@ -43,9 +43,17 @@ namespace TD_10days {
 
 	void LevelMapChip::Init(const SoLib::IO::CSV &csv)
 	{
+
 		// 縦横のデータを取得
 		x_ = static_cast<uint32_t>(csv.GetWidth());
 		y_ = static_cast<uint32_t>(csv.GetHeight());
+		// もし末尾に拡張文字があったら
+		if ((*(--csv.end())->begin()) == "EX") {
+			// 縦情報を1つ減らす
+			y_ -= 1;
+			// 文字列を変換する
+			StringToFocusPointData(csv[y_][1]);
+		}
 
 		mapChips_.resize(y_ * x_, static_cast<MapChip>(0));
 
@@ -62,22 +70,29 @@ namespace TD_10days {
 		goalPosList_.clear();
 		needlePosList_.clear();
 
+		// マップチップ上に保存されているデータの場所
+		std::unordered_map<Vector2, FocusPoint> focusChips;
+
 		for (uint32_t yi = 0; yi < y_; ++yi) {
 			const auto &line = (*this)[yi];
 			for (uint32_t xi = 0; xi < x_; ++xi) {
 				const auto chip = line[xi];
 
 				switch (chip) {
-				case MapChipType::kStart: {
+				case MapChip::kStart: {
 					startPos_ = Vector2{ static_cast<float>(xi), static_cast<float>(yi) };
 					break;
 				}
-				case MapChipType::kGoal: {
+				case MapChip::kGoal: {
 					goalPosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
 					break;
 				}
-				case MapChipType::kNeedle: {
+				case MapChip::kNeedle: {
 					needlePosList_.insert(Vector2{ static_cast<float>(xi), static_cast<float>(yi) });
+					break;
+				}
+				case MapChip::kFocusPoint: {
+					focusChips[Vector2{ static_cast<float>(xi), static_cast<float>(yi) }];
 					break;
 				}
 				default: {
@@ -86,6 +101,14 @@ namespace TD_10days {
 				}
 			}
 		}
+
+		// マップチップにデータがないなら破棄
+		for (const auto &[pos, data] : focusPoints_) {
+			if (focusChips.find(pos) == focusChips.end()) { continue; }
+			focusChips[pos] = data;
+		}
+		// マップチップ上のものと紐づけて書き込む
+		focusPoints_ = focusChips;
 	}
 
 	std::span<LevelMapChip::MapChip> LevelMapChip::operator[](const uint32_t index) {
@@ -143,6 +166,44 @@ namespace TD_10days {
 		return needlePosList_;
 	}
 
+	void LevelMapChip::StringToFocusPointData(std::string_view str)
+	{
+		const auto source = str;
+		std::vector<std::string_view> values;
+
+		while (true) {
+			if (str.empty() or str.size() <= 0 or str.starts_with('\n')) { break; }
+
+			const auto size = str.find("/");
+			values.push_back(str.substr(0, size));
+			str = str.substr(size+1);
+		}
+
+		if (values.size() % 4 != 0) { return; }
+
+		for (size_t i = 0; i < values.size() / 4; ++i) {
+			const Vector2 pos = Vector2(std::stof(values[i + 0].data()), std::stof(values[i + 1].data()));
+			const FocusPoint datas{
+				.focusRadius_ = std::stof(values[i + 2].data()),
+				.focutPower_ = std::stof(values[i + 3].data()),
+			};
+			focusPoints_[pos] = datas;
+		}
+
+	}
+
+	const std::string LevelMapChip::FocusPointToString() const
+	{
+		std::string result;
+
+		for (const auto &[pos, data] : focusPoints_) {
+			result += std::to_string(pos.x) + '/' + std::to_string(pos.y) + '/' + std::to_string(data.focusRadius_) + '/' + std::to_string(data.focutPower_) + '/';
+		}
+		result += '\n';
+
+		return result;
+	}
+
 	std::unique_ptr<LevelMapChip::LevelMapChipHitBox> LevelMapChip::CreateHitBox(const std::function<bool(const MapChip &)> &checkFunc) const
 	{
 		auto result = std::make_unique<LevelMapChipHitBox>();
@@ -191,6 +252,12 @@ namespace TD_10days {
 				if (mapChipType == LevelMapChip::MapChip::kEmpty) {
 					continue;
 				}
+#ifndef USE_IMGUI
+				if (mapChipType == LevelMapChip::MapChip::kStart or mapChipType == LevelMapChip::MapChip::kFocusPoint) {
+					continue;
+				}
+#endif // USE_IMGUI
+
 				// データの追加
 				drawList[static_cast<size_t>(mapChipType)].emplace_back(mapChipPosition);
 			}
@@ -200,33 +267,47 @@ namespace TD_10days {
 		size_t count = 0;
 		// 描画テーブルのメモリ確保
 		for (const auto &[index, positions] : drawList) {
+			if (index == static_cast<size_t>(LevelMapChip::MapChip::kMesh)) {
+				meshSpriteList_.resize(positions.size());
+				continue;
+			}
 			count += positions.size();
 		}
 		spriteList_.resize(count);
 
-		size_t i = 0;
+		std::array<size_t, 2> listIndex = { 0 };
 		// 描画テーブルへの追加
 		for (const auto &[index, positions] : drawList) {
+			const auto &mapChip = mapChips[index];
 			// マップチップのテクスチャハンドル
-			const TextureHandle textureHandle = mapChips[index].GetTextureHandle();
+			const TextureHandle textureHandle = mapChip.GetTextureHandle();
 			// メモリの確保
+
+			std::vector<std::unique_ptr<Sprite>> &spriteTarget = (index != static_cast<size_t>(LevelMapChip::MapChip::kMesh) ? spriteList_ : meshSpriteList_);
+			size_t &i = (index != static_cast<size_t>(LevelMapChip::MapChip::kMesh) ? listIndex[0] : listIndex[1]);
 
 			// 座標
 			for (const auto &position : positions) {
 				// もしスプライトが無かったら､そこにデータを与える
-				if (auto &sprite = spriteList_[i]; not sprite.get()) {
+				if (auto &sprite = spriteTarget[i]; not sprite.get()) {
 					sprite = Sprite::Generate();
 				}
 
-				// スプライトの生成
-				Sprite *sprite = spriteList_[i].get();
+				Sprite *sprite = spriteTarget[i].get();
 
 				sprite->SetTextureHaundle(textureHandle.index_);
 				sprite->SetPosition(position);
+				sprite->SetScale(mapChip.GetDrawScale());
 
 				// スプライトの設定
 				sprite->SetPivot(Vector2::one / 2);	// 中心に設定
 				sprite->SetInvertY(true);			// UVのY軸反転
+
+				if (index == static_cast<size_t>(LevelMapChip::MapChip::kFloor)) {
+					sprite->SetTexDiff(Vector2::one * 128);
+					sprite->SetTexOrigin(StageToDrawMap(position) * 128.f);
+				}
+
 				i += 1;
 			}
 		}
@@ -240,9 +321,285 @@ namespace TD_10days {
 			sprite->Draw();
 		}
 
+		// 全てに対して描画を実行
+		for (const auto &sprite : meshSpriteList_) {
+			sprite->Draw();
+		}
+
+	}
+	void LevelMapChipRenderer::DrawNet()
+	{
+
+		// 全てに対して描画を実行
+		for (const auto &sprite : meshSpriteList_) {
+			sprite->Draw();
+		}
 	}
 	Vector2 LevelMapChipRenderer::CalcMapChipPosition(const uint32_t y, const uint32_t x) const
 	{
 		return Vector2(x * vMapChipScale_, y * vMapChipScale_);
+	}
+
+	Vector2 LevelMapChipRenderer::StageToDrawMap(Vector2 pos) {
+		//	const int stage = *stagePointer;
+
+		const auto [ySize, xSize] = pLevelMapChip_->GetSize();
+
+		const auto &hitMap = *pLevelMapChip_;
+
+		const auto BlockChip = LevelMapChip::MapChip::kFloor;
+
+		const int32_t dx = static_cast<int32_t>(pos.x), dy = static_cast<int32_t>(pos.y);
+
+
+		if ((*pLevelMapChip_)[dy][dx] == BlockChip) {
+			std::bitset<10> mapChipConnect = { 0 };
+
+			if (dy <= 0) {
+				mapChipConnect[1] = true;
+				mapChipConnect[2] = true;
+				mapChipConnect[3] = true;
+			}
+			if (dy >= static_cast<int32_t>(ySize - 1)) {
+				mapChipConnect[7] = true;
+				mapChipConnect[8] = true;
+				mapChipConnect[9] = true;
+
+			}
+
+			if (dx <= 0) {
+				mapChipConnect[1] = true;
+				mapChipConnect[4] = true;
+				mapChipConnect[7] = true;
+			}
+			if (dx >= static_cast<int32_t>(xSize - 1)) {
+				mapChipConnect[3] = true;
+				mapChipConnect[6] = true;
+				mapChipConnect[9] = true;
+			}
+
+			if (dy > 0) {
+				if (dx > 0) {
+					if (hitMap[dy - 1][dx - 1] == BlockChip) {
+						mapChipConnect[1] = true;
+					}
+				}
+				if (hitMap[dy - 1][dx] == BlockChip) {
+					mapChipConnect[2] = true;
+				}
+				if (dx < static_cast<int32_t>(xSize - 1)) {
+					if (hitMap[dy - 1][dx + 1] == BlockChip) {
+						mapChipConnect[3] = true;
+					}
+				}
+			}
+
+
+			if (dx > 0) {
+				if (hitMap[dy][dx - 1] == BlockChip) {
+					mapChipConnect[4] = true;
+				}
+			}
+			if (dx < static_cast<int32_t>(xSize - 1)) {
+				if (hitMap[dy][dx + 1] == BlockChip) {
+					mapChipConnect[6] = true;
+				}
+			}
+
+			if (dy < static_cast<int32_t>(ySize - 1)) {
+				if (dx > 0) {
+					if (hitMap[dy + 1][dx - 1] == BlockChip) {
+						mapChipConnect[7] = true;
+					}
+				}
+				if (hitMap[dy + 1][dx] == BlockChip) {
+					mapChipConnect[8] = true;
+				}
+				if (dx < static_cast<int32_t>(xSize - 1)) {
+					if (hitMap[dy + 1][dx + 1] == BlockChip) {
+						mapChipConnect[9] = true;
+					}
+				}
+			}
+
+
+			if ((!mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,3 };
+			}
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,0 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,1 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 3,2 };
+			}
+
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6])) {
+				return { 0,3 };
+			}
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6])) {
+				return { 1,3 };
+			}
+			else if ((!mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6])) {
+				return { 2,3 };
+			}
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3])) {
+				return { 0,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3])) {
+				return { 1,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1])) {
+				return { 2,0 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3] && mapChipConnect[9])) {
+				return { 0,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 1,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[7])) {
+				return { 2,1 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[9])) {
+				return { 0,2 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[7] && mapChipConnect[9])) {
+				return { 1,2 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[7])) {
+				return { 2,2 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3])) {
+				return { 4,0 };
+			}
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3])) {
+				return { 5,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3])) {
+				return { 6,0 };
+			}
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3])) {
+				return { 8,0 };
+			}
+
+			else if ((mapChipConnect[2] && !mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1])) {
+				return { 7,0 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3] && mapChipConnect[9])) {
+				return { 4,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 5,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,1 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && mapChipConnect[9])) {
+				return { 8,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[7])) {
+				return { 7,1 };
+			}
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[3] && !mapChipConnect[9])) {
+				return { 4,2 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,2 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[7])) {
+				return { 7,2 };
+			}
+
+
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[9])) {
+				return { 4,3 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,3 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,3 };
+			}
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,3 };
+			}
+
+			else if ((!mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[7])) {
+				return { 7,3 };
+			}
+
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (!mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[3] && !mapChipConnect[9])) {
+				return { 4,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 5,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 6,4 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && !mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[7])) {
+				return { 7,4 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 8,4 };
+			}
+
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 9,0 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 9,1 };
+			}
+
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 9,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && mapChipConnect[9])) {
+				return { 9,3 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (mapChipConnect[1] && !mapChipConnect[3] && !mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 10,2 };
+			}
+			else if ((mapChipConnect[2] && mapChipConnect[8]) && (mapChipConnect[4] && mapChipConnect[6]) && (!mapChipConnect[1] && !mapChipConnect[3] && mapChipConnect[7] && !mapChipConnect[9])) {
+				return { 10,3 };
+			}
+
+		}
+
+		return {};
 	}
 }

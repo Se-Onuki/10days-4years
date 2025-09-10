@@ -90,8 +90,6 @@ private:
 	std::unique_ptr<SoLib::DeltaTimer> timer_ = nullptr;
 	//プレイヤーアニメーションのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> playerAnimTimer_ = nullptr;
-	//ボタンUIのタイマー
-	std::unique_ptr<SoLib::DeltaTimer> colorTimer_ = nullptr;
 	//始めるUIのタイマー
 	std::unique_ptr<SoLib::DeltaTimer> colorTimerStart_ = nullptr;
 	//タイトルロゴのタイマー
@@ -125,7 +123,7 @@ private:
 
 	float moveSpeed_ = 0.25f;
 	float moveSpeedPlayer_ = 0.25f;
-	float moveSpeedButtom_ = 0.5f;
+	float playerAnimSpeed_ = 0.25f;
 
 	float colorChangeSpeed_ = 0.05f;
 	float colorChangeValue_ = 0.05f;

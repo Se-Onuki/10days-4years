@@ -175,5 +175,5 @@ private:
 	// bgm
 	SolEngine::Audio::SoundHandle gameBGM_;
 	SolEngine::Audio::SoundHandle goalSE_;
-
+	SolEngine::Audio::SoundHandle sceneBackSE_;
 };

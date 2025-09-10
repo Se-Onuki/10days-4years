@@ -14,6 +14,12 @@
 #include "../../Engine/DirectBase/2D/Sprite.h"
 
 namespace TD_10days {
+
+	struct FocusPoint {
+		float focusRadius_{};
+		float focutPower_{};
+	};
+
 	class LevelMapChip {
 	public:
 
@@ -31,6 +37,7 @@ namespace TD_10days {
 			kSwimUI,		// 泳ぎUI
 			kWaterSetUI,	// 水設置UI
 			kGoalBord,		// ゴール上の看板
+			kFocusPoint,	// 注視点
 			CountElements // 要素数
 		};
 
@@ -60,7 +67,14 @@ namespace TD_10days {
 			/// @return 水に対して当たるのならtrue
 			bool IsHasWaterCollision() const { return isWaterCollision_; }
 
+			// 描画スケール
+			void SetDrawScale(const Vector2 &scale) { scale_ = scale; }
+			const Vector2 &GetDrawScale() const { return scale_; }
+
 		private:
+
+			// 描画時のスケール
+			Vector2 scale_ = Vector2::one;
 			/// @brief テクスチャハンドル
 			TextureHandle textureHandle_{};
 			// 当たり判定があるかどうか
@@ -110,6 +124,9 @@ namespace TD_10days {
 
 		/// @brief マップチップに対応するデータを取得する
 		/// @return マップチップに対応するデータの配列
+		std::span<MapChipData> GetMapChipData() { return mapChipData_; }
+		/// @brief マップチップに対応するデータを取得する
+		/// @return マップチップに対応するデータの配列
 		std::span<const MapChipData> GetMapChipData() const { return mapChipData_; }
 
 		std::span<const MapChip> GetMapChips() const { return mapChips_; }
@@ -132,6 +149,10 @@ namespace TD_10days {
 		const std::unordered_set<Vector2> &GetGoalPosition() const;
 		const std::unordered_set<Vector2> &GetNeedlePosition() const;
 
+		void StringToFocusPointData(std::string_view str);
+
+		const std::string FocusPointToString() const;
+
 	private:
 
 
@@ -150,6 +171,9 @@ namespace TD_10days {
 		std::unordered_set<Vector2> goalPosList_{};
 		std::unordered_set<Vector2> needlePosList_{};
 
+		// 注視点の情報
+		std::unordered_map<Vector2, FocusPoint> focusPoints_;
+
 		/// @brief マップチップの縦横の数
 		uint32_t y_{}, x_{};
 	};
@@ -162,10 +186,17 @@ namespace TD_10days {
 		void Init(const LevelMapChip *levelMapChip);
 		void CalcSpriteData();
 		void Draw();
+		void DrawNet();
+
+		/// @brief 
+		/// @param[in] pos 
+		/// @return 
+		Vector2 StageToDrawMap(Vector2 pos);
 
 	private:
 
 		std::vector<std::unique_ptr<Sprite>> spriteList_;
+		std::vector<std::unique_ptr<Sprite>> meshSpriteList_;
 		const LevelMapChip *pLevelMapChip_ = nullptr;
 		/// @brief マップチップの位置を計算する
 		Vector2 CalcMapChipPosition(const uint32_t y, const uint32_t x) const;

@@ -58,7 +58,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp::StaticInit();
 
 	WinApp *const winApp = WinApp::GetInstance();
-	winApp->CreateGameWindow("四年チーム制作");
+	winApp->CreateGameWindow("4004_ぷくぷくシェイプ");
 
 	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Init(winApp);

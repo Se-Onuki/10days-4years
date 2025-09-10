@@ -61,7 +61,9 @@ private:
 	//数字のそれ以外の時の大きさ
 	Vector2 defaultScaleNumber_ = { 160.0f,160.0f };
 
-	static const int32_t kMaxStages_ = 15;
+	Vector2 lStick_{};
+
+	static const int32_t kMaxStages_ = 6;
 	//ステージごとの幅
 	const int32_t kBaseMoveValue_ = 450;
 	//ランダムで変化する変数
@@ -100,5 +102,6 @@ private:
 	SolEngine::Audio::SoundHandle selectBGM_;
 	SolEngine::Audio::SoundHandle stageSelectSE_;
 	SolEngine::Audio::SoundHandle stageChangeSE_;
+	SolEngine::Audio::SoundHandle sceneBackSE_;
 };
 

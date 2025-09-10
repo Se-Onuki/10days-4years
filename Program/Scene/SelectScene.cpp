@@ -45,7 +45,9 @@ void SelectScene::OnEnter(){
 
 	stageSelectSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/StageChoice.mp3");
 	stageChangeSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/CursolMove.mp3");
+	sceneBackSE_ = audio_->LoadMP3("resources/Audio/SE/Scene/Back.mp3");
 	
+	stageNum_ = SelectToGame::GetInstance()->GetStageNum();
 
 	backGround_ = std::make_unique<Tex2DState>();
 	backGround_->originalTransform.scale_ = { 1280.0f,720.0f };
@@ -66,7 +68,7 @@ void SelectScene::OnEnter(){
 		numbers_[i]->uvTransform.translate_ = { i * 240.0f,0.0f };
 		numbers_[i]->sprite = Sprite::Generate(TextureManager::Load("UI/Select/StageNumbers.png"));
 	}
-
+	SelectToGame::GetInstance()->SetStageMax(kMaxStages_);
 	//各シーンの最初に入れる
 	TextureEditor::GetInstance()->SetSceneId(SceneID::StageSelect);
 }
@@ -100,10 +102,14 @@ void SelectScene::Update(){
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			sceneBackSE_.Play(false, 0.5f);
+		
 		sceneManager_->ChangeScene<TitleScene>(2.5f);
 		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
 	}
+	
 	ApplyGlobalVariables();
 
 	PlayerMoving();
@@ -202,8 +208,10 @@ void SelectScene::PlayerMoving(){
 		timer_->Clear();
 	}
 
+	lStick_ = (input_->GetXInput()->GetState()->stickL_);
+
 	//右入力
-	if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
+	if (lStick_.x > 0.65f or input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_RIGHT) or input_->GetDirectInput()->IsPress(DIK_RIGHT) or input_->GetDirectInput()->IsPress(DIK_D)) {
 		if (stageNum_ < (kMaxStages_ - 1)) {
 			stageChangeSE_.Play(false, 0.5f);
 			stageNum_++;
@@ -211,20 +219,20 @@ void SelectScene::PlayerMoving(){
 			timer_->Start(moveSpeed_);
 
 		}
-
-		basePos_ = stageNum_ * kBaseMoveValue_;
+		
 	}
 	//左入力
-	else if (input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
+	else if (lStick_.x < -0.65f or input_->GetXInput()->IsPress(SolEngine::KeyCode::DPAD_LEFT) or input_->GetDirectInput()->IsPress(DIK_LEFT) or input_->GetDirectInput()->IsPress(DIK_A)) {
 		if (stageNum_ > 0) {
 			stageChangeSE_.Play(false, 0.5f);
 			stageNum_--;
 			// タイマーの実行
 			timer_->Start(moveSpeed_);
 		}
-
-		basePos_ = stageNum_ * kBaseMoveValue_;
+		
 	}
+
+	basePos_ = stageNum_ * kBaseMoveValue_;
 }
 
 void SelectScene::TextureSetting() {
