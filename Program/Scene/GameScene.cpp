@@ -43,12 +43,6 @@ void GameScene::OnEnter() {
 	pShaderManager_ = SolEngine::ResourceObjectManager<Shader, ShaderSource>::GetInstance();
 	texStrage_ = SolEngine::FullScreenTextureStrage::GetInstance();
 
-	SolEngine::Resource::ResourceLoadManager resourceLoadManager;
-	SoLib::IO::File file{ "resources/Scene/GameScene.jsonc" };
-	nlohmann::json sceneJson;
-	file >> sceneJson;
-	resourceLoadManager.Init(sceneJson["Resources"]);
-	resourceLoadManager.Load();
 
 	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
