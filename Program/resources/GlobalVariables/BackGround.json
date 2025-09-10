@@ -2,8 +2,8 @@
     "BackGround": {
         "AnimSpeed": 1.0,
         "BackUVScale": [
-            300.0,
-            400.0
+            1280.0,
+            720.0
         ]
     }
 }

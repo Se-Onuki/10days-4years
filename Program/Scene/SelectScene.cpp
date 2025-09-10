@@ -398,7 +398,7 @@ void SelectScene::BackGroundSetting(){
 				backGroundTimer_->Start(backGroundMoveSpeed_);
 			}
 		}
-		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("TD_10days/BackGround/ClearStageSelect.png"));
 		backGround_->sprite->SetTexOrigin(backGroundUV_);
 		backGround_->sprite->SetTexDiff(backGroundUVScale_);
 	}

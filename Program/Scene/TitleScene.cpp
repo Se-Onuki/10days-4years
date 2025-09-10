@@ -146,6 +146,12 @@ void TitleScene::Update() {
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
+		bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+		if (clearFlug){
+			sceneManager_->ChangeScene<SelectScene>(2.0f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
+		}
+
 		if (not isFishOutSide_){
 			isClicked_ = true;
 			isOnGround_ = false;
@@ -376,6 +382,8 @@ void TitleScene::TextureSetting(){
 
 	//テクスチャエディターの物
 	texDetas_ = TextureEditor::GetInstance()->GetTitleTextures();
+	bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+
 	for (size_t i = 0; i < texDetas_.size(); i++) {
 		Tex2DState* nowTex = texDetas_[i];
 		if (nowTex->textureName == "PlayerInCultureSolution") {
@@ -383,12 +391,21 @@ void TitleScene::TextureSetting(){
 				nowTex->sprite->SetTextureHaundle((TextureManager::Load("UI/Title/BreakCultureSolution.png")));
 			}
 			nowTex->uvTransform.translate_ = (playerPotUV_);
+			if (clearFlug){
+				nowTex->transform.scale_ = Vector2::zero;
+			}
 		}
 		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == -74.0f) {
 			nowTex->uvTransform.translate_ = (nullPotLeftUV_);
+			if (clearFlug) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
 		}
 		if (nowTex->textureName == "CultureSolution" and nowTex->originalTransform.translate_.x == 500.0f) {
 			nowTex->uvTransform.translate_ = (nullPotRightUV_);
+			if (clearFlug) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
 		}
 		if (nowTex->textureName == "AButtomUI") {			
 			if (isFishOutSide_){
@@ -412,13 +429,22 @@ void TitleScene::TextureSetting(){
 			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + titleTexPos_;
 				
 		}
+		if (nowTex->textureName == "Floor"){
+			if (clearFlug) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+		}		
+
 		if (nowTex->textureName == "PlayerWalk") {
 			if (isFishOutSide_){			
 				nowTex->transform.translate_ = playerPos_;
 				nowTex->color = 0xffffffff;
 				nowTex->uvTransform.translate_ = playerUV_;
 				nowTex->sprite->SetInvertX(isLookLeft_);
-			}			
+			}
+			if (clearFlug) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
 		}
 
 	}
@@ -520,13 +546,13 @@ void TitleScene::BackGroundSetting() {
 			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
 
 			if (not backGroundTimer_->IsActive()) {
-				backGroundUV_.x += kUVMoveValue_;
+				backGroundUV_.x += kClearUVMoveValue_;
 
 				backGroundTimer_->Clear();
 				backGroundTimer_->Start(backGroundMoveSpeed_);
 			}
 		}
-		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("TD_10days/BackGround/ClearTitleBackGround.png"));
 		backGround_->sprite->SetTexOrigin(backGroundUV_);
 		backGround_->sprite->SetTexDiff(backGroundUVScale_);
 	}

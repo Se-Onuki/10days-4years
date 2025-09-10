@@ -163,6 +163,8 @@ private:
 	SolEngine::Audio::SoundHandle decisionSE_;
 
 	/*背景変更関係*/
+	float kClearUVMoveValue_ = 1280.0f;
+
 	float backGroundMoveSpeed_ = 0.25f;
 
 	std::unique_ptr<Tex2DState> backGround_;
