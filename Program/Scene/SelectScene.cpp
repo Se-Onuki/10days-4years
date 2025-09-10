@@ -28,7 +28,9 @@ void SelectScene::OnEnter(){
 	// ライトの生成
 	ModelManager::GetInstance()->CreateDefaultModel();
 
-	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+
+	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
@@ -80,18 +82,27 @@ void SelectScene::Update(){
 	[[maybe_unused]] const float deltaTime = std::clamp(ImGui::GetIO().DeltaTime, 0.f, 0.1f);
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
-		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
+		/*if (not Fade::GetInstance()->GetTimer()->IsActive()) {
 			stageSelectSE_.Play(false, 0.5f);
 		
 			SelectToGame::GetInstance()->SetStageNum(stageNum_);
 			sceneManager_->ChangeScene<GameScene>(1.f);
 			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		}*/
+
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+			stageSelectSE_.Play(false, 0.5f);
+
+			SelectToGame::GetInstance()->SetStageNum(stageNum_);
+			sceneManager_->ChangeScene<GameScene>(2.0f);
+			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 	}
 
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
-		sceneManager_->ChangeScene<TitleScene>(1.f);
-		Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		sceneManager_->ChangeScene<TitleScene>(2.5f);
+		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
+		TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
 	}
 	ApplyGlobalVariables();
 
@@ -149,7 +160,9 @@ void SelectScene::Draw(){
 	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
 
-	Fade::GetInstance()->Draw();
+	//Fade::GetInstance()->Draw();
+
+	TD_10days::CircleFade::GetInstance()->Draw();
 
 	Sprite::EndDraw();
 

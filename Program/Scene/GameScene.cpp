@@ -50,7 +50,8 @@ void GameScene::OnEnter() {
 	resourceLoadManager.Init(sceneJson["Resources"]);
 	resourceLoadManager.Load();
 
-	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
 
 
 	offScreen_ = std::make_unique<PostEffect::OffScreenRenderer>();
@@ -347,7 +348,8 @@ void GameScene::Draw() {
 	TextureEditor::GetInstance()->PutDraw();
 
 	// スプライトの描画
-	Fade::GetInstance()->Draw();
+	//Fade::GetInstance()->Draw();
+	TD_10days::CircleFade::GetInstance()->Draw();
 
 	Sprite::EndDraw();
 

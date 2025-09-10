@@ -105,6 +105,7 @@ namespace SolEngine {
 
 		// フェード演出の更新
 		Fade::GetInstance()->Update(deltaTime);
+		TD_10days::CircleFade::GetInstance()->Update(deltaTime);
 
 		if (transitionTimer_.Update(deltaTime) && transitionTimer_.IsFinish()) {
 			ChangeScene(std::move(nextScene_));

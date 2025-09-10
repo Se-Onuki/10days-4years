@@ -58,6 +58,8 @@ void TitleScene::OnEnter() {
 	ModelManager::GetInstance()->CreateDefaultModel();
 
 	Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
+	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
+
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
 	timer_->Clear();
 	playerAnimTimer_ = std::make_unique<SoLib::DeltaTimer>();
@@ -147,11 +149,18 @@ void TitleScene::Update() {
 		
 	}
 	else {
-		if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
+		/*if (not Fade::GetInstance()->GetTimer()->IsActive() and isFishMoved_){
 			
 			sceneManager_->ChangeScene<SelectScene>(1.f);
 			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
-		}	
+		}	*/
+
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive() and isFishMoved_) {
+
+			sceneManager_->ChangeScene<SelectScene>(2.5f);
+			TD_10days::CircleFade::GetInstance()->Start(2.5f, true);
+		}
+
 		isClicked_ = false;
 	}
 	playerAnimTimer_->Update(ImGui::GetIO().DeltaTime);
@@ -282,7 +291,8 @@ void TitleScene::Draw() {
 	TextureEditor::GetInstance()->Draw();
 	TextureEditor::GetInstance()->PutDraw();
 
-	Fade::GetInstance()->Draw();
+	//Fade::GetInstance()->Draw();
+	TD_10days::CircleFade::GetInstance()->Draw();
 
 	Sprite::EndDraw();
 

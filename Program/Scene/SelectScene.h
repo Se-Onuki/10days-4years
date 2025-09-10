@@ -16,6 +16,7 @@
 
 #include "../Header/Object/Block/BlockManager.h"
 #include "../Header/Object/Ground.h"
+#include "../Game/TD_10days/CircleFade.h"
 
 
 class SelectScene : public SolEngine::IScene {
