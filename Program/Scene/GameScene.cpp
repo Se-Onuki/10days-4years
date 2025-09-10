@@ -83,15 +83,15 @@ void GameScene::OnEnter() {
 	pLevelMapChip_->CreateHitBox();
 	levelMapChipHitBox_ = pLevelMapChip_->GetPlayerHitBox();
 	levelMapChipWaterHitBox_ = pLevelMapChip_->GetWaterHitBox();
-	
+
 
 	player_.Init();
 	player_.SetHitBox(levelMapChipHitBox_);
 	player_.SetWaterHitBox(levelMapChipWaterHitBox_);
 
-	
+
 	water_ = std::make_unique<TD_10days::Water>();
-	
+
 	player_.SetWater(water_.get());
 
 	// 念の為特殊なブロックの位置を再計算
@@ -108,7 +108,7 @@ void GameScene::OnEnter() {
 
 	// ステージからスクロールを終了地点を決める
 	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
-	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+	for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 		endLine_.x = goalPos.x - stageOffset_.x;
 	}
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
@@ -179,6 +179,7 @@ void GameScene::Update() {
 		if (needlePos.find(roundPos) != needlePos.end()) {
 
 			stageClearTimer_.Start();
+			player_.SetNextState<TD_10days::PlayerDead>();
 			stageTransitionFunc_ = (&GameScene::StageDefeat);
 		}
 	}
@@ -211,7 +212,7 @@ void GameScene::Update() {
 
 	const auto input = SolEngine::Input::GetInstance();
 	const auto dInput = input->GetDirectInput();
-	const auto* const xInput = input->GetXInput();
+	const auto *const xInput = input->GetXInput();
 
 
 	// カメラ追従処理
@@ -283,7 +284,7 @@ void GameScene::Update() {
 	if (mapChipType == TD_10days::LevelMapChip::MapChipType::kEmpty) {
 		camera_.translation_.y = player_.GetPosition().y;
 	}*/
-	
+
 	//if (player_.GetPosition().y > startLine_.y and player_.GetPosition().y < endLine_.y) { // y方向
 	//	camera_.translation_.y = player_.GetPosition().y;
 	//}
@@ -300,7 +301,7 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	
+
 
 	camera_.UpdateMatrix();
 
@@ -319,7 +320,7 @@ void GameScene::Update() {
 	player_.PreUpdate(inGameDeltaTime);
 	player_.InputFunc();
 	player_.Update(inGameDeltaTime);
-	playerDrawer_->Update(inGameDeltaTime);
+	playerDrawer_->Update(deltaTime);
 
 	/*auto material = SolEngine::ResourceObjectManager<SolEngine::Material>::GetInstance()->ImGuiWidget("MaterialManager");
 	if (material) { SoLib::ImGuiWidget("Material", *material); }*/
@@ -370,7 +371,7 @@ void GameScene::Draw() {
 
 	stageEditor_->PutDraw();
 
-	
+
 
 	// スプライトの描画
 	levelMapChipRenderer_.Draw();
@@ -383,7 +384,7 @@ void GameScene::Draw() {
 
 	particleManager_->Draw();
 
-	
+
 
 	player_.DrawUI();
 
@@ -560,7 +561,7 @@ void GameScene::DrawWater()
 
 }
 
-void GameScene::StageClear(){
+void GameScene::StageClear() {
 
 	ResetStage(true);
 
@@ -584,14 +585,14 @@ void GameScene::ResetStage(bool isNext)
 
 	int32_t finalStageNum = stageNum + (isNext ? 1 : 0);
 
-	if (finalStageNum != levelSelecter->GetStageMax()){
+	if (finalStageNum != levelSelecter->GetStageMax()) {
 		// ステージ番号を加算するかの分岐
 		levelSelecter->SetStageNum(finalStageNum);
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
 			sceneManager_->ChangeScene("GameScene", 1.0f);
 		}
-		
+
 	}
 	else {
 		levelSelecter->SetClearFlug(true);
@@ -600,10 +601,10 @@ void GameScene::ResetStage(bool isNext)
 			//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 			TD_10days::CircleFade::GetInstance()->Start(1.5f, true);
 		}
-		
-		
+
+
 	}
-	
+
 }
 
 void GameScene::Load(const GlobalVariables::Group &)

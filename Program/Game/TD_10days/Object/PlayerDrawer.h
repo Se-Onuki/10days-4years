@@ -22,10 +22,12 @@ namespace TD_10days {
 
 		// 次の画像に遷移する時間
 		VariantItem<"一周にかかる時間", float> vTransitionTime_;
-		VariantItem<"画像数", uint32_t> vTextureFrames_;
+		VariantItem<"画像数", uint32_t> vTextureFrames_;		
 
 		// 使用する画像
 		TextureHandle texture_;
+
+		VariantItem<"複数回再生するか", bool> vIsMultiPlay_ = true;
 	};
 
 

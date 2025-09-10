@@ -38,6 +38,13 @@ namespace TD_10days {
 			.texture_ = TextureManager::Load("TD_10days/Player/PlayerVomit.png")
 		};
 
+		GetParametor(PlayerDrawState::kDead) = PlayerDrawParametor{
+			.vTransitionTime_ = 1.f,
+			.vTextureFrames_ = 8u,
+			.texture_ = TextureManager::Load("TD_10days/Player/PlayerDeath.png"),
+			.vIsMultiPlay_ = false,
+		};
+
 		pPlayer_ = player;
 
 		sprite_ = Sprite::Generate();
@@ -70,12 +77,12 @@ namespace TD_10days {
 
 		// 移動しているなら
 
-		const float t = stateTime_ / parametor.vTransitionTime_;
+		const float t = parametor.vIsMultiPlay_ ? stateTime_ / parametor.vTransitionTime_ : std::clamp(stateTime_ / parametor.vTransitionTime_, 0.f, 1.f);
 		const float uvX = std::floor(parametor.vTextureFrames_ * t);
 		constexpr float pixelSize = 200.f;
 
 		if (pPlayer_->velocity_.x != 0.f) {
-			
+
 			// 左向きの移動であればtrue､そうでないならfalse;
 			isLeftFacing_ = pPlayer_->velocity_.x < 0.f;
 		}
@@ -88,7 +95,7 @@ namespace TD_10days {
 				swimSETimer_->Clear();
 				swimSETimer_->Start(0.7f);
 			}
-			
+
 		}
 
 		sprite_->SetTexOrigin({ uvX * pixelSize ,0 });
@@ -112,8 +119,13 @@ namespace TD_10days {
 
 	PlayerDrawState PlayerDrawer::TransitionSample(const Player &player) const
 	{
+		const auto &playerStateName = player.playerState_->GetStateName();
+		if (playerStateName == "PlayerDead") {
+			return PlayerDrawState::kDead;
+		}
+
 		// もし設置状態なら設置状態にする
-		if (player.playerState_->GetStateName() == "PlayerPlacement") {
+		if (playerStateName == "PlayerPlacement") {
 			// 吐き出す処理が完了してない場合は吐き出し状態にする
 			if (playerState_ == PlayerDrawState::kVomit and (stateTime_ / GetParametor(playerState_).vTransitionTime_) <= 1.f) {
 				return PlayerDrawState::kVomit;
@@ -125,7 +137,7 @@ namespace TD_10days {
 			if (pPlayer_->pWater_->GetWaterCount() > waterCount_) {
 				return PlayerDrawState::kVomit;
 			}
-			
+
 			return PlayerDrawState::kSwim;
 		}
 

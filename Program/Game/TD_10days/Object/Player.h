@@ -22,6 +22,7 @@ namespace TD_10days {
 		virtual ~IPlayerState() = default;
 
 		virtual void InputFunc() = 0;
+		virtual void Update(const float deltaTime) = 0;
 		virtual const std::string &GetStateName() const = 0;
 		virtual void OnEnter() {}
 		virtual void OnExit() {}
@@ -39,6 +40,7 @@ namespace TD_10days {
 		~PlayerMovement() = default;
 
 		void InputFunc() override;
+		void Update(const float) {}
 		const std::string &GetStateName() const override { return kStateName_; }
 
 		void OnEnter() override;
@@ -57,6 +59,7 @@ namespace TD_10days {
 		~PlayerPlacement() = default;
 
 		void InputFunc() override;
+		void Update(const float) {}
 		const std::string &GetStateName() const override { return kStateName_; }
 
 		void OnEnter() override;
@@ -80,6 +83,7 @@ namespace TD_10days {
 		~PlayerDead() = default;
 
 		void InputFunc() override;
+		void Update(const float deltaTime) override;
 		const std::string &GetStateName() const override { return kStateName_; }
 
 		void OnEnter() override;
@@ -126,16 +130,19 @@ namespace TD_10days {
 
 		void Save() const;
 
-		PlacementUI* GetPlacementUI() { return placementUI_.get(); }
+		PlacementUI *GetPlacementUI() { return placementUI_.get(); }
 
-		float GetSEValume()const {return SEValume_;	}
+		float GetSEValume()const { return SEValume_; }
 
 		SolEngine::Audio::SoundHandle GetWaterSettingSE() const { return waterSettingSE_; }
 		SolEngine::Audio::SoundHandle GetWaterInOutSE() const { return waterInOutSE_; }
 		SolEngine::Audio::SoundHandle GetWaterSwimSE() const { return waterSwimSE_; }
 		void SetParticleManager(ParticleManager *particleManager) { particleManager_ = particleManager; }
 
-		
+		template<SoLib::IsBased<IPlayerState> T>
+		inline void SetNextState() {
+			nextState_ = std::make_unique<T>(this);
+		}
 
 	private:
 

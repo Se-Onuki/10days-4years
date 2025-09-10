@@ -231,6 +231,7 @@ namespace TD_10days {
 
 	void Player::Update([[maybe_unused]] const float deltaTime) {
 
+		playerState_->Update(deltaTime);
 
 		// 移動処理
 		MoveUpdate(deltaTime);
@@ -578,10 +579,16 @@ namespace TD_10days {
 	{
 	}
 
+	void PlayerDead::Update(const float deltaTime)
+	{
+		auto &player = *GetPlayer();
+		player.acceleration_.y += 0.98f * deltaTime;
+	}
+
 	void PlayerDead::OnEnter()
 	{
 		auto &player = *GetPlayer();
-		player.acceleration_.y += 5.f;
+		player.acceleration_.y += 3.f;
 		player.velocity_ = Vector2::zero;
 	}
 
