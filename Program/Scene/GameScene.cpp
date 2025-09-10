@@ -1,4 +1,4 @@
-﻿/// @file GameScene.cpp
+/// @file GameScene.cpp
 /// @brief ゲームの処理を実装する
 /// @author ONUKI seiya
 #include "GameScene.h"
@@ -111,7 +111,7 @@ void GameScene::OnEnter() {
 
 	// ステージからスクロールを終了地点を決める
 	//endLine_.x = static_cast<float>(mapWidth - 1)  - stageOffset_.x;
-	for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+	for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 		for (int i = mapWidth - 1; i > 0; --i) {
 			TD_10days::LevelMapChip::MapChipType mapChipType = (*pLevelMapChip_)[static_cast<int>(goalPos.y)][i];
 			if (mapChipType != TD_10days::LevelMapChip::MapChipType::kEmpty) {
@@ -127,6 +127,10 @@ void GameScene::OnEnter() {
 	endLine_.y = static_cast<float>(mapHeight - 1) - stageOffset_.y;
 
 	targetOffset_.y = 1.0f;
+
+	focusManager_ = std::make_unique<TD_10days::FocusManager>();
+	focusManager_->SetLevelMapChip(pLevelMapChip_);
+	focusManager_->SetPlayer(&player_);
 
 	focusCamera_ = std::make_unique<TD_10days::FocusCamera>();
 	focusCamera_->Init();
@@ -183,7 +187,7 @@ void GameScene::Update() {
 		// プレイヤの座標からゴールの距離を割り出す
 		const Vector2 playerPos = player_.GetPosition();
 		// ゴール座標からの距離で判定する
-		for (const auto& goalPos : pLevelMapChip_->GetGoalPosition()) {
+		for (const auto &goalPos : pLevelMapChip_->GetGoalPosition()) {
 			if ((goalPos - playerPos).LengthSQ() < 1.f) {
 				if (not isGoal_) {
 					isGoal_ = true;
@@ -199,16 +203,16 @@ void GameScene::Update() {
 			}
 		}
 
-		const auto& needlePos = pLevelMapChip_->GetNeedlePosition();
+		const auto &needlePos = pLevelMapChip_->GetNeedlePosition();
 		const Vector2 roundPos = Vector2{ std::roundf(playerPos.x), std::roundf(playerPos.y) };
 		if (needlePos.find(roundPos) != needlePos.end()) {
-			if (not isDead_){
+			if (not isDead_) {
 				isDead_ = true;
 				deadSE_.Play(false, 0.5f);
 				stageClearTimer_.Start();
 				player_.SetNextState<TD_10days::PlayerDead>();
 				stageTransitionFunc_ = (&GameScene::StageDefeat);
-				}
+			}
 
 		}
 	}
@@ -334,6 +338,10 @@ void GameScene::Update() {
 
 	camera_.UpdateMatrix();
 
+	focusManager_->Update(deltaTime);
+	focusCamera_->SetParamAndTime(focusManager_->GetParamAndTime());
+	focusCamera_->Update(deltaTime);
+
 	// カメラから背景の位置を調整する
 	const float cameraX = (focusCamera_->GetCamera()->translation_.x);
 	background_->SetTexOrigin({ cameraX * 16.f, 0 });
@@ -365,13 +373,11 @@ void GameScene::Update() {
 	waterParticleManager_->Update(levelMapChipWaterHitBox_, 1.0f, deltaTime);
 
 	particleManager_->Update(deltaTime);
-
-	focusCamera_->Update(deltaTime);
 }
 
 void GameScene::Debug() {
 #ifdef USE_IMGUI
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	if (not ImGui::GetIO().WantCaptureMouse) {
 
 		if (io.MouseWheel > 0.0f) {
@@ -391,8 +397,8 @@ void GameScene::Debug() {
 
 void GameScene::Draw() {
 
-	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
 
 #pragma region 背面スプライト
 
@@ -485,7 +491,7 @@ void GameScene::PostEffectSetup()
 void GameScene::PostEffectEnd()
 {
 
-	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 
 #pragma region ViewportとScissor(シザー)
 
@@ -530,8 +536,8 @@ void GameScene::PostEffectEnd()
 void GameScene::DrawWater()
 {
 
-	DirectXCommon* const dxCommon = DirectXCommon::GetInstance();
-	ID3D12GraphicsCommandList* const commandList = dxCommon->GetCommandList();
+	DirectXCommon *const dxCommon = DirectXCommon::GetInstance();
+	ID3D12GraphicsCommandList *const commandList = dxCommon->GetCommandList();
 
 	auto resultTex = texStrage_->Allocate();
 
@@ -567,7 +573,7 @@ void GameScene::DrawWater()
 
 	Sprite::EndDraw();
 
-	auto* const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
+	auto *const postEffectProcessor = PostEffect::ShaderEffectProcessor::GetInstance();
 	// ポストエフェクトの初期値
 	postEffectProcessor->Input(resultTex->renderTargetTexture_.Get());
 
@@ -646,12 +652,12 @@ void GameScene::ResetStage(bool isNext)
 
 }
 
-void GameScene::Load(const GlobalVariables::Group&)
+void GameScene::Load(const GlobalVariables::Group &)
 {
 
 }
 
-void GameScene::Save(GlobalVariables::Group&) const
+void GameScene::Save(GlobalVariables::Group &) const
 {
 
 }

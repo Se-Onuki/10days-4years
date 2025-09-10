@@ -5,6 +5,7 @@
 
 #include "Utils/Math/Math.hpp"
 #include "DirectBase/Render/Camera.h"
+#include "Utils/SoLib/SoLib_Easing.h"
 
 namespace TD_10days {
 
@@ -16,11 +17,16 @@ namespace TD_10days {
 		// 目標となる座標
 		Vector2 position_;
 
-		// 範囲内に入っている時間
-		float time_;
+		// 範囲の広さ
+		float focusRadius_;
 
 		// 設定された強度
 		float focusPower_;
+
+		// イージングの関数
+		SoLib::EaseFunc easing_;
+
+		Vector2 CalcTargetPos(const float time, const Vector2 pos) const;
 	};
 
 	class FocusManager {
@@ -29,15 +35,32 @@ namespace TD_10days {
 		~FocusManager() = default;
 
 		/// @brief マップチップの割当
-		/// @param[in] levelMapChip 
+		/// @param[in] levelMapChip マップチップのアドレス
 		void SetLevelMapChip(LevelMapChip *levelMapChip) { pLevelMapChip_ = levelMapChip; }
 
+		/// @brief プレイヤの割当
+		/// @param[in] player プレイヤのアドレス
+		void SetPlayer(Player *player) { pPlayer_ = player; }
+
+		// 更新処理
 		void Update(const float deltaTime);
 
+		std::optional<Vector2> CalcTargetPos() const;
+
+		std::pair<std::optional<FocusParametor>, float> GetParamAndTime() const { return { currentTarget_, timer_ }; }
+
+	private:
+
+		std::optional<Vector2> FindFocusTarget(const LevelMapChip &mapChip, const Vector2 pos) const;
 
 	private:
 		// マップチップの借用
 		LevelMapChip *pLevelMapChip_;
+
+		Player *pPlayer_ = nullptr;
+
+		// 目標の注視点
+		std::optional<FocusParametor> currentTarget_ = std::nullopt;
 
 		float timer_;
 	};
@@ -72,6 +95,8 @@ namespace TD_10days {
 
 		void CalcWindowSpan();
 
+		void SetParamAndTime(const std::pair<std::optional<FocusParametor>, float> &params);
+
 	private:
 		// ステージのサイズ
 		size_t y_, x_;
@@ -90,6 +115,9 @@ namespace TD_10days {
 		// 可動範囲の上限
 		Vector2 max_;
 
+		std::optional<Vector2> targetPos_;
+
+		std::pair<std::optional<FocusParametor>, float> focusParams_;
 
 	};
 

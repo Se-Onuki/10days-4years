@@ -109,6 +109,13 @@ namespace TD_10days {
 		}
 		// マップチップ上のものと紐づけて書き込む
 		focusPoints_ = focusChips;
+
+#ifdef USE_IMGUI
+
+		focusItr_ = focusPoints_.end();
+
+#endif // USE_IMGUI
+
 	}
 
 	std::span<LevelMapChip::MapChip> LevelMapChip::operator[](const uint32_t index) {
@@ -168,6 +175,7 @@ namespace TD_10days {
 
 	void LevelMapChip::StringToFocusPointData(std::string_view str)
 	{
+		const uint32_t elemCount = 5;
 		const auto source = str;
 		std::vector<std::string_view> values;
 
@@ -179,13 +187,14 @@ namespace TD_10days {
 			str = str.substr(size + 1);
 		}
 
-		if (values.size() % 4 != 0) { return; }
+		if (values.size() % elemCount != 0) { return; }
 
-		for (size_t i = 0; i < values.size() / 4; ++i) {
+		for (size_t i = 0; i < values.size() / elemCount; ++i) {
 			const Vector2 pos = Vector2(std::stof(values[i + 0].data()), std::stof(values[i + 1].data()));
 			const FocusPoint datas{
 				.focusRadius_ = std::stof(values[i + 2].data()),
 				.focutPower_ = std::stof(values[i + 3].data()),
+				.easing_ = std::stoul(values[i + 4].data()),
 			};
 			focusPoints_[pos] = datas;
 		}

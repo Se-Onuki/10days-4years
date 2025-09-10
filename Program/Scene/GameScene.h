@@ -177,6 +177,7 @@ private:
 	std::unique_ptr<TD_10days::ParticleManager> particleManager_;
 
 	std::unique_ptr<TD_10days::FocusCamera> focusCamera_;
+	std::unique_ptr<TD_10days::FocusManager> focusManager_;
 
 	// bgm
 	SolEngine::Audio::SoundHandle gameBGM_;
