@@ -30,6 +30,18 @@ void SelectScene::OnEnter(){
 
 	//Fade::GetInstance()->Start(Vector2{}, 0x00000000, 1.f);
 
+	GlobalVariables* global = GlobalVariables::GetInstance();
+	const char* groupName = "Door";
+
+	global->AddValue(groupName, "DoorChangeScaleAfter", changeScaleRangeAfter_);
+	global->AddValue(groupName, "ChangeScaleSpeed", changeScaleSpeed_);
+
+	groupName = "BackGround";
+
+	global->AddValue(groupName, "AnimSpeed", backGroundMoveSpeed_);
+	global->AddValue(groupName, "BackUVScale", backGroundUVScale_);
+	
+
 	TD_10days::CircleFade::GetInstance()->Start(2.5f, false);
 
 	timer_ = std::make_unique<SoLib::DeltaTimer>();
@@ -37,6 +49,9 @@ void SelectScene::OnEnter(){
 
 	colorTimer_ = std::make_unique<SoLib::DeltaTimer>();
 	colorTimer_->Clear();
+
+	backGroundTimer_ = std::make_unique<SoLib::DeltaTimer>();
+	backGroundTimer_->Clear();
 
 	// bgmのロード
 	selectBGM_ = audio_->LoadMP3("resources/Audio/BGM/StageSelect.mp3");
@@ -86,7 +101,7 @@ void SelectScene::Update(){
 	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::A) or input_->GetDirectInput()->IsTrigger(DIK_SPACE)) {
 		/*if (not Fade::GetInstance()->GetTimer()->IsActive()) {
 			stageSelectSE_.Play(false, 0.5f);
-		
+			isEaseDoor_ = true;
 			SelectToGame::GetInstance()->SetStageNum(stageNum_);
 			sceneManager_->ChangeScene<GameScene>(1.f);
 			Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
@@ -94,14 +109,14 @@ void SelectScene::Update(){
 
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			stageSelectSE_.Play(false, 0.5f);
-
+			isEaseDoor_ = true;
 			SelectToGame::GetInstance()->SetStageNum(stageNum_);
 			sceneManager_->ChangeScene<GameScene>(2.0f);
 			TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 		}
 	}
 
-	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::B) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
 		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
 		}
@@ -115,6 +130,8 @@ void SelectScene::Update(){
 	PlayerMoving();
 
 	TextureSetting();
+
+	BackGroundSetting();
 
 	Debug();
 
@@ -185,6 +202,13 @@ void SelectScene::ApplyGlobalVariables() {
 	angleMinMax_.second = global->Get<int>(groupName, "AngleRandomMax");
 	posMinMax_.first = global->Get<Vector2>(groupName, "PosRandomMin");
 	posMinMax_.second = global->Get<Vector2>(groupName, "PosRandomMax");
+	groupName = "Door";
+	changeScaleRangeAfter_ = global->Get<Vector2>(groupName, "DoorChangeScaleAfter");
+	changeScaleSpeed_ = global->Get<float>(groupName, "ChangeScaleSpeed");
+
+	groupName = "BackGround";
+	backGroundMoveSpeed_ = global->Get<float>(groupName, "AnimSpeed");
+	backGroundUVScale_ = global->Get<Vector2>(groupName, "BackUVScale");
 }
 
 void SelectScene::Debug(){
@@ -201,6 +225,10 @@ void SelectScene::Debug(){
 void SelectScene::PlayerMoving(){
 	timer_->Update(ImGui::GetIO().DeltaTime);
 	colorTimer_->Update(ImGui::GetIO().DeltaTime);
+	if (TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
+
 	if (timer_->IsActive()){
 		return;
 	}
@@ -245,11 +273,32 @@ void SelectScene::TextureSetting() {
 			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, selectScaleDoor_, changeSpeed_);
 			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, selectScaleNumber_, changeSpeed_);
 			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 400.0f, changeSpeed_);
+			changeScaleRangeBefore_ = selectScaleDoor_;
+			if (isEaseDoor_) {
+				changeScaleValue_ += changeScaleSpeed_;
+
+				moveT_ = SoLib::easeInBack(changeScaleValue_);
+
+				if (moveT_ > 1.0f){
+					moveT_ = 1.0f;
+				}
+
+				doors_[i]->transform.scale_ = SoLib::Lerp(changeScaleRangeBefore_, changeScaleRangeAfter_, moveT_);
+				numbers_[i]->transform.scale_ = Vector2::zero;
+			}
 		}
 		else {
-			doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, defaultScaleDoor_, changeSpeed_);
-			numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, defaultScaleNumber_, changeSpeed_);
-			numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 380.0f, changeSpeed_);
+			if (isEaseDoor_) {
+				doors_[i]->transform.scale_ = Vector2::zero;
+				numbers_[i]->transform.scale_ = Vector2::zero;
+
+			}
+			else {
+				doors_[i]->transform.scale_ = SoLib::Lerp(doors_[i]->transform.scale_, defaultScaleDoor_, changeSpeed_);
+				numbers_[i]->transform.scale_ = SoLib::Lerp(numbers_[i]->transform.scale_, defaultScaleNumber_, changeSpeed_);
+				numbers_[i]->transform.translate_.y = SoLib::Lerp(numbers_[i]->transform.translate_.y, 380.0f, changeSpeed_);
+
+			}
 		}
 
 		doors_[i]->sprite->SetPosition(doors_[i]->transform.translate_);
@@ -284,12 +333,75 @@ void SelectScene::TextureSetting() {
 	for (size_t i = 0; i < texDetas_.size(); i++) {
 		Tex2DState* nowTex = texDetas_[i];
 		if (nowTex->textureName == "AButtomUI") {
+			if (isEaseDoor_){
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+			else {
+				nowTex->transform.scale_ = nowTex->originalTransform.scale_;
+			}
 			nowTex->color = (buttomColor_);
 		}
 
 		if (nowTex->textureName == "EnterTheStageUI") {
+			if (isEaseDoor_) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+			else {
+				nowTex->transform.scale_ = nowTex->originalTransform.scale_;
+			}
 			nowTex->transform.rotate_ = DegreeToRadian(randAngle_);
 			nowTex->transform.translate_ = nowTex->originalTransform.translate_ + randPos_;
 		}
+
+		if (nowTex->textureName == "StageSelectUI") {
+			if (isEaseDoor_) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+			else {
+				nowTex->transform.scale_ = nowTex->originalTransform.scale_;
+			}
+		}
+		if (nowTex->textureName == "StartButtomUI") {
+			if (isEaseDoor_) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+			else {
+				nowTex->transform.scale_ = nowTex->originalTransform.scale_;
+			}
+		}
+		if (nowTex->textureName == "GoTitleUI") {
+			if (isEaseDoor_) {
+				nowTex->transform.scale_ = Vector2::zero;
+			}
+			else {
+				nowTex->transform.scale_ = nowTex->originalTransform.scale_;
+			}
+		}
 	}
+}
+
+void SelectScene::BackGroundSetting(){
+	bool clearFlug = SelectToGame::GetInstance()->GetClearFlug();
+	//ステージ6をクリア
+	if (clearFlug){
+
+		
+		//フェードが動いていないとき
+		if (not TD_10days::CircleFade::GetInstance()->GetTimer()->IsActive()) {
+
+			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
+
+			if (not backGroundTimer_->IsActive()) {
+				backGroundUV_.x += kUVMoveValue_;
+
+				backGroundTimer_->Clear();
+				backGroundTimer_->Start(backGroundMoveSpeed_);
+			}
+		}
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTexOrigin(backGroundUV_);
+		backGround_->sprite->SetTexDiff(backGroundUVScale_);
+	}
+	
+
 }

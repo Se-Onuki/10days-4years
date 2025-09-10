@@ -42,6 +42,8 @@ private:
 	//テクスチャの設定や移動など
 	void TextureSetting();
 
+	void BackGroundSetting();
+
 private:
 	// 入力インスタンス
 	SolEngine::Input *input_ = nullptr;
@@ -52,8 +54,6 @@ private:
 
 	ECS::World world_;
 	ECS::SystemExecuter systemExecuter_;
-
-	std::unique_ptr<Tex2DState> backGround_;
 
 	//テクスチャの情報群
 	std::vector<Tex2DState*> texDetas_;
@@ -161,5 +161,16 @@ private:
 	SolEngine::Audio::SoundHandle titleBGM_;
 	// bgm
 	SolEngine::Audio::SoundHandle decisionSE_;
+
+	/*背景変更関係*/
+	float backGroundMoveSpeed_ = 0.25f;
+
+	std::unique_ptr<Tex2DState> backGround_;
+
+	std::unique_ptr<SoLib::DeltaTimer> backGroundTimer_ = nullptr;
+
+	//変更後背景のUV
+	Vector2 backGroundUV_ = { 0.0f, 0.0f };
+	Vector2 backGroundUVScale_ = { 0.0f, 0.0f };
 
 };

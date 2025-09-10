@@ -154,6 +154,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ゲームの処理
 		sceneManager->Update(deltaTime);
 
+		if (sceneManager->GetScene<TitleScene>() and input->GetDirectInput()->IsPress(DIK_ESCAPE)){
+			break;
+		}
 
 		///
 		/// ↑ゲーム処理↑

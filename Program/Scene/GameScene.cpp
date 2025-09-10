@@ -179,7 +179,7 @@ void GameScene::Update() {
 		}
 	}
 
-	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_BACKSPACE)) {
+	if (input_->GetXInput()->IsTrigger(SolEngine::KeyCode::START) or input_->GetDirectInput()->IsTrigger(DIK_ESCAPE)) {
 		if (not Fade::GetInstance()->GetTimer()->IsActive()) {
 			sceneBackSE_.Play(false, 0.5f);
 			sceneManager_->ChangeScene("SelectScene", 1.f);
@@ -257,6 +257,10 @@ void GameScene::Update() {
 
 	stageEditor_->SetCamera(camera_);
 	stageEditor_->Update();
+
+	if (Fade::GetInstance()->GetTimer()->IsActive()) {
+		return;
+	}
 
 	SoLib::ImGuiWidget("PlayerPos", &player_.GetPosition());
 	player_.PreUpdate(inGameDeltaTime);
@@ -532,10 +536,13 @@ void GameScene::ResetStage(bool isNext)
 		sceneManager_->ChangeScene("GameScene", 2.0f);
 	}
 	else {
+		levelSelecter->SetClearFlug(true);
 		sceneManager_->ChangeScene("SelectScene", 2.0f);
 		//Fade::GetInstance()->Start(Vector2{}, 0x000000FF, 1.f);
 		TD_10days::CircleFade::GetInstance()->Start(2.0f, true);
 
+		
+		
 	}
 	
 }
