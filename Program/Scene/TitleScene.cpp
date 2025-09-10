@@ -520,13 +520,13 @@ void TitleScene::BackGroundSetting() {
 			backGroundTimer_->Update(ImGui::GetIO().DeltaTime);
 
 			if (not backGroundTimer_->IsActive()) {
-				backGroundUV_.x += kUVMoveValue_;
+				backGroundUV_.x += kClearUVMoveValue_;
 
 				backGroundTimer_->Clear();
 				backGroundTimer_->Start(backGroundMoveSpeed_);
 			}
 		}
-		backGround_->sprite->SetTextureHaundle(TextureManager::Load("UI/Title/PlayerInCultureSolution.png"));
+		backGround_->sprite->SetTextureHaundle(TextureManager::Load("TD_10days/BackGround/ClearTitleBackGround.png"));
 		backGround_->sprite->SetTexOrigin(backGroundUV_);
 		backGround_->sprite->SetTexDiff(backGroundUVScale_);
 	}

@@ -70,7 +70,7 @@ private:
 	const int32_t kBaseMoveValue_ = 450;
 
 	//培養ポットのUV動かす値
-	const float kUVMoveValue_ = 300.0f;
+	const float kUVMoveValue_ = 1280.0f;
 
 	//ランダムで変化する変数
 	int32_t randAngle_ = 0;
