@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <list>
+#include<DirectBase/Base/Audio.h>
 #include "../../../Engine/Utils/Math/Math.hpp"
 #include "../../../Engine/DirectBase/2D/Sprite.h"
 #include "../LevelMapChip.h"
@@ -105,6 +106,9 @@ namespace TD_10days {
 		float lifeTime_ = 0.f;
 
 		bool isActive_ = false;
+
+		//水を置いたときの音
+		SolEngine::Audio::SoundHandle waterFallSE_;
 
 		WaterParticleManager *waterParticleManager_ = nullptr;
 	};

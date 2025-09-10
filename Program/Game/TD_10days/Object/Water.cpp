@@ -9,7 +9,7 @@ namespace TD_10days {
 		color_ = color;
 
 		isActive_ = false;
-
+		waterFallSE_ = SolEngine::Audio::GetInstance()->LoadMP3("resources/Audio/SE/Water/WaterFall.mp3");
 		DeleteWater();
 
 		chainWater_ = std::make_unique<ChainWater>();
@@ -24,6 +24,7 @@ namespace TD_10days {
 		}
 		if (lifeTime_ <= 0.f) {
 			isActive_ = false;
+			waterFallSE_.Play(false, 0.2f);
 			DeleteWater();
 			if (chainWater_) {
 				chainWater_->CalcUpdate();

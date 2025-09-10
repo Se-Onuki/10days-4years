@@ -101,5 +101,6 @@ private:
 	SolEngine::Audio::SoundHandle selectBGM_;
 	SolEngine::Audio::SoundHandle stageSelectSE_;
 	SolEngine::Audio::SoundHandle stageChangeSE_;
+	SolEngine::Audio::SoundHandle sceneBackSE_;
 };
 
